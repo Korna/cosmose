@@ -5,9 +5,6 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.maps.MapLayer;
-import com.badlogic.gdx.maps.MapObject;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
@@ -20,8 +17,6 @@ import com.swar.game.managers.GameContactListener;
 import com.swar.game.managers.GameInputProcessor;
 import com.swar.game.managers.GameStateManagement;
 
-import java.util.Iterator;
-
 import static com.badlogic.gdx.math.MathUtils.random;
 import static com.swar.game.utils.constants.*;
 
@@ -29,7 +24,7 @@ import static com.swar.game.utils.constants.*;
  * Created by Koma on 17.01.2017.
  */
 public class PlayState extends GameState{
-    private boolean debug = true; //отрисовывать ли контуры столкновения объектов
+    private final boolean DEBUG_RENDER = true; //отрисовывать ли контуры столкновения объектов
 
 
 
@@ -56,16 +51,12 @@ public class PlayState extends GameState{
         Gdx.input.setInputProcessor(new GameInputProcessor());
 
 
-
         world.setContactListener(cl);
         b2dr = new Box2DDebugRenderer();
         batch = new SpriteBatch();
 
 
-        Gdx.input.setInputProcessor(new GameInputProcessor());
-
-
-        createBorders();
+        createBorders(world);
 
         this.listAsteroid = new Array();
         this.listBulletPlayer = new Array();
@@ -137,20 +128,19 @@ public class PlayState extends GameState{
         batch.end();
 
 
-        if(debug)
+        if(DEBUG_RENDER)
             b2dr.render(world, maincamera.combined);
 
-        //rendering crystals
-        for(int i = 0; i < listAsteroid.size; i++){
-            listAsteroid.get(i).render(batch);
-        }
 
-        for(int i = 0; i < listBulletPlayer.size; i++){
-            listBulletPlayer.get(i).render(batch);
-        }
+
+        for(Asteroid asteroid : listAsteroid)
+            asteroid.render(batch);
+
+        for(Bullet bullet : listBulletPlayer)
+            bullet.render(batch);
+
 
         player.render(batch);
-
         hud.render(batch_hud);
     }
 
@@ -171,21 +161,6 @@ public class PlayState extends GameState{
     }
 
 
-    /*
-        public void handleInput(){
-
-            if(GameInput.isPressed(GameInput.BUTTON1)){
-                if(cl.isPlayerOnGround()){
-                    player.getBody().applyForceToCenter(0, 27, false);
-                }
-
-                //  System.out.println("pressed z");
-            }
-            if(GameInput.isPressed(GameInput.BUTTON2)){
-                //    System.out.println("pressed x");
-            }
-        }
-    */
     public void inputUpdate(float delta){
         int horizontalForse = 0;
         int verticalForse = 0;
@@ -268,12 +243,12 @@ public class PlayState extends GameState{
         fdef.isSensor = true;
         Body body = this.world.createBody(bdef);
         body.createFixture(fdef).setUserData("bulletPlayer");
-        Bullet b = new Bullet(body);
+        Bullet b = new Bullet(body, player.bulletIndex);
         this.listBulletPlayer.add(b);
         body.setUserData(b);
     }
 
-    private void createBorders(){
+    private void createBorders(World world){
 
 
 

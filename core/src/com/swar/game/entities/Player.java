@@ -14,23 +14,28 @@ public class Player extends Sprite{//все параметры игрока: д�
     public int shipIndex = 1;//выбранный корабль
     public Ship ship;
 
-    private Texture tex;//текстура корабля
+    private Texture shipTexture;//текстура корабля
+
+    public int bulletIndex = 1;//выбранная текстура пули
+    private Texture bulletTexture;
 
     private GameContactListener player_cl;
     private int speed = 300;
     private Weapon listWeapon[];
     private int weaponNumber;
 
-    public Player(Body body, GameContactListener cl, int shipIndex, Ship ship) {
+    public Player(Body body, GameContactListener cl, int shipIndex, Ship ship, int weaponIndex) {
         super(body);
         this.shipIndex = shipIndex;
         this.ship = ship;
         player_cl = cl;
 
 
-        tex = Game.res.getTexture("ship_" + String.valueOf(shipIndex));
+        shipTexture = Game.res.getTexture("ship_" + String.valueOf(shipIndex));
+        bulletIndex = weaponIndex;
+        bulletTexture = Game.res.getTexture("bullet_" + String.valueOf(weaponIndex));
 
-        TextureRegion[] sprites = TextureRegion.split(tex, 32, 32)[0];
+        TextureRegion[] sprites = TextureRegion.split(shipTexture, 32, 32)[0];
         setAnimation(sprites, 1 / 12f);
 
 
@@ -40,43 +45,42 @@ public class Player extends Sprite{//все параметры игрока: д�
         player_cl = cl;
 
 
-        tex = Game.res.getTexture("ship_" + String.valueOf(shipIndex));
+        shipTexture = Game.res.getTexture("ship_" + String.valueOf(shipIndex));
 
-        TextureRegion[] sprites = TextureRegion.split(tex, 32, 32)[0];
+        TextureRegion[] sprites = TextureRegion.split(shipTexture, 32, 32)[0];
         setAnimation(sprites, 1 / 12f);
     }
 
 
     public void ship_l(){
-        if(tex == Game.res.getTexture("ship_" + String.valueOf(shipIndex) + "_r"))
-            tex = Game.res.getTexture("ship_" + String.valueOf(shipIndex));
+        if(shipTexture == Game.res.getTexture("ship_" + String.valueOf(shipIndex) + "_r"))
+            shipTexture = Game.res.getTexture("ship_" + String.valueOf(shipIndex));
         else
-            tex = Game.res.getTexture("ship_" + String.valueOf(shipIndex) + "_l");
+            shipTexture = Game.res.getTexture("ship_" + String.valueOf(shipIndex) + "_l");
 
-        TextureRegion[] sprites = TextureRegion.split(tex, 32, 32)[0];
+        TextureRegion[] sprites = TextureRegion.split(shipTexture, 32, 32)[0];
         setAnimation(sprites, 1 / 12f);
     }
 
     public void ship_r(){
-        if(tex == Game.res.getTexture("ship_"+String.valueOf(shipIndex) +"_l"))
-            tex = Game.res.getTexture("ship_" + String.valueOf(shipIndex));
+        if(shipTexture == Game.res.getTexture("ship_"+String.valueOf(shipIndex) +"_l"))
+            shipTexture = Game.res.getTexture("ship_" + String.valueOf(shipIndex));
         else
-            tex = Game.res.getTexture("ship_"+String.valueOf(shipIndex)+"_r");
+            shipTexture = Game.res.getTexture("ship_"+String.valueOf(shipIndex)+"_r");
 
-        TextureRegion[] sprites = TextureRegion.split(tex, 32, 32)[0];
+        TextureRegion[] sprites = TextureRegion.split(shipTexture, 32, 32)[0];
         setAnimation(sprites, 1 / 12f);
     }
 
     public void ship(){
-        tex = Game.res.getTexture("ship_" + String.valueOf(shipIndex));
+        shipTexture = Game.res.getTexture("ship_" + String.valueOf(shipIndex));
 
-        TextureRegion[] sprites = TextureRegion.split(tex, 32, 32)[0];
+        TextureRegion[] sprites = TextureRegion.split(shipTexture, 32, 32)[0];
         setAnimation(sprites, 1 / 12f);
 
     }
     public int getHp(){return player_cl.getHp();}
     public int getCredits(){return player_cl.getCredits(); }
     public int getSpeed(){return speed;}
-    public int getWeaponNumber(){return weaponNumber;}
-    public void setWeaponNumber(int num){weaponNumber = num;}
+
 }

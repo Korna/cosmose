@@ -12,14 +12,11 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.swar.game.Game;
-import com.swar.game.entities.GameButton;
 import com.swar.game.entities.Player;
 import com.swar.game.managers.GameContactListener;
 import com.swar.game.managers.GameStateManagement;
 
-import static com.swar.game.managers.GameStateManagement.State.PLAY;
 import static com.swar.game.utils.constants.*;
-import static com.uwsoft.editor.renderer.physics.PhysicsBodyLoader.SCALE;
 
 /**
  * Created by Koma on 25.01.2017.
@@ -127,32 +124,39 @@ public class HubState extends GameState {
 
 
         // putting stuff together
-
+        //hangar text
         table.add(heading).pad(100).padTop(10);
         table.row().height(100);
 
-
+        //minus
         table.add(buttonMinus).width(55).height(35);
+        //plus
         table.add(buttonPlus).width(55).height(35);
 
+
         table.row().height(30);
+
         table.add(buttonArrowLeft_weapon).width(55).height(35);
         table.add(currentWeapon).fill();
         table.add(buttonArrowRight_weapon).width(55).height(35);
 
         table.row().height(30);
+
         table.add(buttonArrowLeft_ship).width(55).height(35);
         table.add(currentShip).fill();
         table.add(buttonArrowRight_ship).width(55).height(35);
 
         table.row().height(30);
+
         table.add(buttonSet).width(55).height(35).center().right();
 
         table.row().height(30);
+
         table.add(buttonBack).height(35);
         table.add(buttonPlay).height(35);
 
         table.debug();//показывает линии
+
         stage.addActor(table);
 
         buttonBack.addListener(new ClickListener() {
@@ -160,7 +164,6 @@ public class HubState extends GameState {
             public void clicked(InputEvent event, float x, float y) {
                 super.clicked(event, x, y);
                 setBack();
-
             }
         });
 
@@ -172,6 +175,29 @@ public class HubState extends GameState {
             }
         });
 
+
+        //WEAPON
+        buttonArrowRight_weapon.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                super.clicked(event, x, y);
+                System.out.printf("%d\n", currentPositionWeapon);
+                currentPositionWeapon++;
+                imageUpdate();
+            }
+        });
+        buttonArrowLeft_weapon.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                super.clicked(event, x, y);
+                System.out.printf("%d\n", currentPositionWeapon);
+                currentPositionWeapon--;
+                imageUpdate();
+
+            }
+        });
+
+        //SHIP
         buttonArrowRight_ship.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -181,12 +207,11 @@ public class HubState extends GameState {
                 imageUpdate();
             }
         });
-
         buttonArrowLeft_ship.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 super.clicked(event, x, y);
-                System.out.printf("%d\n", currentPositionWeapon);
+                System.out.printf("%d\n", currentPositionShip);
                 currentPositionShip--;
                 imageUpdate();
 
@@ -198,7 +223,9 @@ public class HubState extends GameState {
             public void clicked(InputEvent event, float x, float y) {
                 super.clicked(event, x, y);
                 chosenShip = currentPositionShip;
-                System.out.printf("Now is%d\n", chosenShip);
+                chosenWeapon = currentPositionWeapon;
+                System.out.printf("Ship now is%d\n", chosenShip);
+                System.out.printf("Weapon now is%d\n", chosenWeapon);
 
             }
         });
@@ -255,7 +282,7 @@ public class HubState extends GameState {
     public void dispose() {
         playerBody = createPlayer(GAME_WIDTH / 4, 10, 20, 30);
 
-        player = new Player(playerBody, cl, chosenShip, null);//здесь по индексу передаём корабль из ДБ
+        player = new Player(playerBody, cl, chosenShip, null, chosenWeapon);//здесь по индексу передаём корабль из ДБ
         player.initSprite(playerBody);
 
         gsm.cl = cl;

@@ -3,19 +3,13 @@ package com.swar.game;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.swar.game.managers.Content;
 import com.swar.game.managers.GameStateManagement;
 import com.swar.game.resources.bulletData.bulletDB;
 import com.swar.game.resources.shipData.shipDB;
 import com.swar.game.resources.weaponData.weaponDB;
-
-import static com.swar.game.utils.constants.GAME_HEIGHT;
-import static com.swar.game.utils.constants.GAME_WIDTH;
 
 public class Game extends ApplicationAdapter {
 
@@ -48,8 +42,22 @@ public class Game extends ApplicationAdapter {
 		float h = Gdx.graphics.getHeight();
 
 		res = new Content();
+		resLoader(res);
 
 
+
+
+
+		batch = new SpriteBatch();
+
+		maincamera = new OrthographicCamera();
+		maincamera.setToOrtho(false, w / SCALE, h / SCALE);
+
+		gsm = new GameStateManagement(this);
+
+	}
+
+	private void resLoader(Content res){
 		res.loadTexture("data/images/splash.png", "splash");
 		res.loadTexture("data/images/background.png", "background_1");
 		res.loadTexture("data/images/background_menu.png", "background_menu");
@@ -66,22 +74,16 @@ public class Game extends ApplicationAdapter {
 		res.loadTexture("data/sprites/asteroid_3.png", "asteroid_3");
 
 		res.loadTexture("data/sprites/bullet_1.png", "bullet_1");
+		res.loadTexture("data/sprites/bullet_2.png", "bullet_2");
 
 		res.loadTexture("data/sprites/ship_1.png", "ship_1");
 		res.loadTexture("data/sprites/ship_1_left.png", "ship_1_l");
 		res.loadTexture("data/sprites/ship_1_right.png", "ship_1_r");
+
 		res.loadTexture("data/sprites/ship_2.png", "ship_2");
 		res.loadTexture("data/sprites/ship_2_left.png", "ship_2_l");
 		res.loadTexture("data/sprites/ship_2_right.png", "ship_2_r");
 
-
-
-		batch = new SpriteBatch();
-
-		maincamera = new OrthographicCamera();
-		maincamera.setToOrtho(false, w / SCALE, h / SCALE);
-
-		gsm = new GameStateManagement(this);
 
 	}
 
