@@ -74,8 +74,8 @@ public class PlayState extends GameState{
     @Override
     public void update(float delta) {
 
-        int bulletSpeed = 350;
-        int asteroidSpeed = -50;
+        int bulletSpeed = GAME_WIDTH/2;
+        int asteroidSpeed = -(GAME_WIDTH/10);
 
         player.update(delta);
 
@@ -124,7 +124,8 @@ public class PlayState extends GameState{
 
 
         batch.begin();
-        batch.draw(tex_background, 0, 0);
+        batch.draw(tex_background, 0, 0, GAME_WIDTH, GAME_HEIGHT);
+
         batch.end();
 
 
@@ -168,6 +169,15 @@ public class PlayState extends GameState{
 
         player.ship();
 
+        if(Gdx.input.isTouched()){
+            createBulletPlayer();
+            Gdx.input.vibrate(9);
+        }
+
+
+
+
+
         if(Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.A)){
             --horizontalForse;
             player.ship_l();
@@ -196,25 +206,23 @@ public class PlayState extends GameState{
 
     }
     private void createAsteroid() {
-
-
         BodyDef bdef = new BodyDef();
         FixtureDef fdef = new FixtureDef();
 
-
-
         bdef.type = BodyDef.BodyType.DynamicBody;
-        int x = random.nextInt(300) + 15;
-        int y = 480;
-
+        int x = random.nextInt(GAME_WIDTH/2 + 15) - 15;
+        int y = GAME_HEIGHT/2 - 50;
         bdef.position.set(x, y);
+
         CircleShape cshape = new CircleShape();
-        cshape.setRadius(10F);
+        cshape.setRadius(GAME_WIDTH/40);
+
         fdef.shape = cshape;
         fdef.isSensor = true;
         fdef.filter.categoryBits = BIT_ENEMY;
         fdef.filter.maskBits = BIT_PLAYER | BIT_BULLET | BIT_BORDER;
         fdef.isSensor = true;
+
         Body body = this.world.createBody(bdef);
         body.createFixture(fdef).setUserData("asteroid");
         Asteroid a = new Asteroid(body);
@@ -222,6 +230,7 @@ public class PlayState extends GameState{
         body.setUserData(a);
     }
 
+    private int bulletAmount = 0;
     private void createBulletPlayer() {
 
 
@@ -235,7 +244,7 @@ public class PlayState extends GameState{
 
         bdef.position.set(x, y);
         CircleShape cshape = new CircleShape();
-        cshape.setRadius(1.5F);
+        cshape.setRadius(GAME_WIDTH/190);
         fdef.shape = cshape;
         fdef.isSensor = true;
         fdef.filter.categoryBits = BIT_BULLET;
@@ -245,6 +254,8 @@ public class PlayState extends GameState{
         body.createFixture(fdef).setUserData("bulletPlayer");
         Bullet b = new Bullet(body, player.bulletIndex);
         this.listBulletPlayer.add(b);
+        ++bulletAmount;
+        System.out.println(bulletAmount);
         body.setUserData(b);
     }
 
@@ -258,7 +269,7 @@ public class PlayState extends GameState{
 
 
         PolygonShape shape = new PolygonShape();
-        shape.setAsBox(GAME_WIDTH/ 4
+        shape.setAsBox(GAME_WIDTH
                 //  / PPM
                 , 1
                 //  / PPM
@@ -267,7 +278,7 @@ public class PlayState extends GameState{
         fdef.shape = shape;
         fdef.filter.categoryBits = BIT_BORDER;
 
-        def.position.set(GAME_WIDTH/ 4
+        def.position.set(GAME_WIDTH
                 //    / PPM
                 , 0
                 //      / PPM
@@ -280,11 +291,11 @@ public class PlayState extends GameState{
         def = new BodyDef();
         def.type = BodyDef.BodyType.StaticBody;
         shape = new PolygonShape();
-        shape.setAsBox(GAME_WIDTH/ 4, 1);
+        shape.setAsBox(GAME_WIDTH, 1);
         fdef = new FixtureDef();
         fdef.shape = shape;
         fdef.filter.categoryBits = BIT_BORDER;
-        def.position.set(GAME_WIDTH/ 4, GAME_HEIGHT);
+        def.position.set(GAME_WIDTH, GAME_HEIGHT);
         pBody = world.createBody(def);
         pBody.createFixture(fdef).setUserData("borderBottom");
         shape.dispose();
@@ -293,11 +304,11 @@ public class PlayState extends GameState{
         def = new BodyDef();
         def.type = BodyDef.BodyType.StaticBody;
         shape = new PolygonShape();
-        shape.setAsBox(1, GAME_HEIGHT/ 4);
+        shape.setAsBox(1, GAME_HEIGHT);
         fdef = new FixtureDef();
         fdef.shape = shape;
         fdef.filter.categoryBits = BIT_BORDER;
-        def.position.set(1, GAME_HEIGHT/ 4);
+        def.position.set(1, GAME_HEIGHT);
         pBody = world.createBody(def);
         pBody.createFixture(fdef).setUserData("border");
         shape.dispose();
@@ -306,11 +317,11 @@ public class PlayState extends GameState{
         def = new BodyDef();
         def.type = BodyDef.BodyType.StaticBody;
         shape = new PolygonShape();
-        shape.setAsBox(1, GAME_HEIGHT/ 4);
+        shape.setAsBox(1, GAME_HEIGHT);
         fdef = new FixtureDef();
         fdef.shape = shape;
         fdef.filter.categoryBits = BIT_BORDER;
-        def.position.set(GAME_WIDTH/ 2, GAME_HEIGHT/ 4);
+        def.position.set(GAME_WIDTH, GAME_HEIGHT);
         pBody = world.createBody(def);
         pBody.createFixture(fdef).setUserData("border");
         shape.dispose();
@@ -328,16 +339,15 @@ public class PlayState extends GameState{
         FixtureDef fdef = new FixtureDef();
 
         PolygonShape shape = new PolygonShape();
-        shape.setAsBox(width / 2
+        shape.setAsBox(width
               //  / PPM
-                , height / 2
+                , height
               //  / PPM
         );
 
         fdef.shape = shape;
         fdef.filter.categoryBits = BIT_PLAYER;//тут игрок тоже является ящиком, пох, пока без лишних параметров в функцию
-        fdef.filter.maskBits = BIT_ENEMY | BIT_OBJECT;
-
+        fdef.filter.maskBits = BIT_ENEMY | BIT_OBJECT | BIT_BORDER;
 
         def.position.set(x
             //    / PPM

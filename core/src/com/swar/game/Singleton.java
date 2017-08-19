@@ -13,7 +13,8 @@ public class Singleton {
     }
 
     public Player player;
-
+    public int money;
+    public int level;
     private Singleton() {
     }
 

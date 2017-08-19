@@ -9,7 +9,7 @@ import com.swar.game.managers.GameContactListener;
 /**
  * Created by Koma on 17.01.2017.
  */
-public class Player extends Sprite{//все параметры игрока: деньги итд
+public class Player extends Sprite{//все параметры корабля
 
     public int shipIndex = 1;//выбранный корабль
     public Ship ship;
@@ -43,7 +43,6 @@ public class Player extends Sprite{//все параметры игрока: д�
 
     public void init(Body body, GameContactListener cl){
         player_cl = cl;
-
 
         shipTexture = Game.res.getTexture("ship_" + String.valueOf(shipIndex));
 

@@ -3,7 +3,6 @@ package com.swar.game.states;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -15,9 +14,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.swar.game.Game;
-import com.swar.game.entities.GameButton;
-import com.swar.game.managers.Background;
 import com.swar.game.managers.GameStateManagement;
+
+import static com.swar.game.utils.constants.GAME_HEIGHT;
+import static com.swar.game.utils.constants.GAME_WIDTH;
 
 /**
  * Created by Koma on 17.01.2017.
@@ -31,17 +31,17 @@ public class MenuState extends GameState {
 
     public MenuState(GameStateManagement gsm) {
         super(gsm);
-        this.reg = new TextureRegion(Game.res.getTexture("background_menu"), 0, 0, 320, 480);
+        this.reg = new TextureRegion(Game.res.getTexture("background_menu"), 0, 0, GAME_WIDTH/2, GAME_HEIGHT/3);
 
 
         Gdx.input.setInputProcessor(stage);
-        TextureAtlas mainMenuAtlas = new TextureAtlas("data/ui/ui.pack");//если есть менеджер ассетов - загрузите ваш атлас с изображениями
+        TextureAtlas mainMenuAtlas = new TextureAtlas("ui/ui.pack");//если есть менеджер ассетов - загрузите ваш атлас с изображениями
         Skin skin = new Skin(mainMenuAtlas);
         //creating font
-        BitmapFont white = new BitmapFont(Gdx.files.internal("data/fonts/white16.fnt"));
+        BitmapFont white = new BitmapFont(Gdx.files.internal("fonts/white16.fnt"));
 
         table = new Table(skin);
-        table.setBounds(0,0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        table.setBounds(0,0, GAME_WIDTH, GAME_HEIGHT);
 
 
         // creating buttons
@@ -54,19 +54,19 @@ public class MenuState extends GameState {
 
         TextButton buttonExit = new TextButton("EXIT", textButtonStyle);
         TextButton buttonPlay = new TextButton("PLAY", textButtonStyle);
-        buttonExit.pad(20);//отступ
+        buttonExit.pad(GAME_WIDTH/32);//отступ
 
         Label.LabelStyle headingStyle = new Label.LabelStyle(white, Color.WHITE);
 
         Label heading = new Label("Swar", headingStyle);
-        heading.setFontScale(4);
+        heading.setFontScale(GAME_WIDTH/160);
        // putting stuff together
 
-        table.add(heading).pad(100);
+        table.add(heading).pad(GAME_WIDTH/6);
         table.row();
-        table.add(buttonPlay).width(85).height(55).pad(10);;
+        table.add(buttonPlay).width(GAME_WIDTH/6).height(GAME_WIDTH/11).pad(GAME_WIDTH/50);
         table.row();
-        table.add(buttonExit).width(85).height(55);
+        table.add(buttonExit).width(GAME_WIDTH/6).height(GAME_WIDTH/11);
         table.debug();//показывает линии
         stage.addActor(table);
 

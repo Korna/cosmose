@@ -1,13 +1,17 @@
 package com.swar.game.utils;
 
+import com.badlogic.gdx.Gdx;
+
 /**
  * Created by Koma on 15.01.2017.
  */
 public class constants {
 
     public static final float PPM = 32;
-    public static final int GAME_WIDTH = 640;
-    public static final int GAME_HEIGHT = 960;
+
+    public static final int GAME_WIDTH = Gdx.graphics.getWidth();
+
+    public static final int GAME_HEIGHT = Gdx.graphics.getHeight();
 
     public static final float STEP = 1 / 60f;
     public static final int BLOCK_SIZE = 32;

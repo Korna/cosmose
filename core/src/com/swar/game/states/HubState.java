@@ -50,19 +50,19 @@ public class HubState extends GameState {
         player = gsm.player;
         playerBody = gsm.playerBody;
 
-        this.reg = new TextureRegion(Game.res.getTexture("bgs"), 0, 0, 320, 240);
+        this.reg = new TextureRegion(Game.res.getTexture("bgs"), 0, 0, GAME_WIDTH/2, GAME_HEIGHT/2);
 
 
         currentWeapon = new Image(Game.res.getTexture("weapon_" + String.valueOf(currentPositionWeapon)));
         currentShip = new Image(Game.res.getTexture("ship_" + String.valueOf(currentPositionShip)));
 
         //creating font
-        BitmapFont white = new BitmapFont(Gdx.files.internal("data/fonts/white16.fnt"));
+        BitmapFont white = new BitmapFont(Gdx.files.internal("fonts/white16.fnt"));
 
-        TextureAtlas mainMenuAtlas = new TextureAtlas("data/ui/ui.pack");
+        TextureAtlas mainMenuAtlas = new TextureAtlas("ui/ui.pack");
         Skin skin = new Skin(mainMenuAtlas);
         table = new Table(skin);
-        table.setBounds(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        table.setBounds(0, 0, GAME_WIDTH, GAME_HEIGHT);
 
 
         // creating buttons
@@ -75,7 +75,7 @@ public class HubState extends GameState {
 
 
         TextButton buttonBack = new TextButton("BACK", textButtonStyle);
-        buttonBack.pad(20);//отступ
+        buttonBack.pad(GAME_WIDTH/30);//отступ
         TextButton buttonPlay = new TextButton("PLAY", textButtonStyle);
 
         Button.ButtonStyle plus = new Button.ButtonStyle();
@@ -125,35 +125,35 @@ public class HubState extends GameState {
 
         // putting stuff together
         //hangar text
-        table.add(heading).pad(100).padTop(10);
-        table.row().height(100);
+        table.add(heading).pad(GAME_WIDTH/7).padTop(GAME_WIDTH/70);
+        table.row().height(GAME_WIDTH/7);
 
         //minus
-        table.add(buttonMinus).width(55).height(35);
+        table.add(buttonMinus).width(GAME_WIDTH/14).height(GAME_WIDTH/15);
         //plus
-        table.add(buttonPlus).width(55).height(35);
+        table.add(buttonPlus).width(GAME_WIDTH/14).height(GAME_WIDTH/15);
 
 
-        table.row().height(30);
+        table.row().height(GAME_WIDTH/15);
 
-        table.add(buttonArrowLeft_weapon).width(55).height(35);
+        table.add(buttonArrowLeft_weapon).width(GAME_WIDTH/14).height(GAME_WIDTH/15);
         table.add(currentWeapon).fill();
-        table.add(buttonArrowRight_weapon).width(55).height(35);
+        table.add(buttonArrowRight_weapon).width(GAME_WIDTH/14).height(GAME_WIDTH/15);
 
-        table.row().height(30);
+        table.row().height(GAME_WIDTH/15);
 
-        table.add(buttonArrowLeft_ship).width(55).height(35);
+        table.add(buttonArrowLeft_ship).width(GAME_WIDTH/14).height(GAME_WIDTH/15);
         table.add(currentShip).fill();
-        table.add(buttonArrowRight_ship).width(55).height(35);
+        table.add(buttonArrowRight_ship).width(GAME_WIDTH/14).height(GAME_WIDTH/15);
 
-        table.row().height(30);
+        table.row().height(GAME_WIDTH/15);
 
-        table.add(buttonSet).width(55).height(35).center().right();
+        table.add(buttonSet).width(GAME_WIDTH/14).height(GAME_WIDTH/15).center().right();
 
-        table.row().height(30);
+        table.row().height(GAME_WIDTH/15);
 
-        table.add(buttonBack).height(35);
-        table.add(buttonPlay).height(35);
+        table.add(buttonBack).height(GAME_WIDTH/15);
+        table.add(buttonPlay).height(GAME_WIDTH/15);
 
         table.debug();//показывает линии
 
@@ -234,6 +234,8 @@ public class HubState extends GameState {
 
 
 
+
+
     private void setPlay() {
         gsm.setState(GameStateManagement.State.PLAY);
     }
@@ -280,7 +282,7 @@ public class HubState extends GameState {
     }
 
     public void dispose() {
-        playerBody = createPlayer(GAME_WIDTH / 4, 10, 20, 30);
+        playerBody = createPlayer(GAME_WIDTH / 4, 15, GAME_WIDTH/20, GAME_WIDTH/15);
 
         player = new Player(playerBody, cl, chosenShip, null, chosenWeapon);//здесь по индексу передаём корабль из ДБ
         player.initSprite(playerBody);
@@ -294,7 +296,6 @@ public class HubState extends GameState {
     }
 
     private Body createPlayer(int x, int y, int width, int height){
-
         Body pBody;
 
         BodyDef def = new BodyDef();
@@ -303,15 +304,15 @@ public class HubState extends GameState {
         FixtureDef fdef = new FixtureDef();
 
         PolygonShape shape = new PolygonShape();
-        shape.setAsBox(width / 2
+        shape.setAsBox(width
                 //  / PPM
-                , height / 2
+                , height
                 //  / PPM
         );
 
         fdef.shape = shape;
-        fdef.filter.categoryBits = BIT_PLAYER;//тут игрок тоже является ящиком, пох, пока без лишних параметров в функцию
-        fdef.filter.maskBits = BIT_ENEMY | BIT_OBJECT;
+        fdef.filter.categoryBits = BIT_PLAYER;
+        fdef.filter.maskBits = BIT_ENEMY | BIT_OBJECT | BIT_BORDER;
 
 
         def.position.set(x
