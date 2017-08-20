@@ -26,8 +26,6 @@ import static com.swar.game.utils.constants.*;
 public class PlayState extends GameState{
     private final boolean DEBUG_RENDER = true; //отрисовывать ли контуры столкновения объектов
 
-
-
     private Box2DDebugRenderer b2dr;
     private HUD hud;
 
@@ -50,71 +48,87 @@ public class PlayState extends GameState{
 
         Gdx.input.setInputProcessor(new GameInputProcessor());
 
-
         world.setContactListener(cl);
         b2dr = new Box2DDebugRenderer();
         batch = new SpriteBatch();
 
-
         createBorders(world);
 
-        this.listAsteroid = new Array();
-        this.listBulletPlayer = new Array();
-
+        this.listAsteroid = new Array<>();
+        this.listBulletPlayer = new Array<>();
 
         tex_background = Game.res.getTexture("background_1");
 
         hud = new HUD(player);
-
     }
 
 
 
+    private final int bulletSpeed = GAME_WIDTH / 2;
+    private final int asteroidSpeed = -(GAME_WIDTH / 10);
 
     @Override
     public void update(float delta) {
 
-        int bulletSpeed = GAME_WIDTH/2;
-        int asteroidSpeed = -(GAME_WIDTH/10);
 
         player.update(delta);
 
-       // handleInput();
-
         inputUpdate(delta);
 
-        world.step(STEP, 6, 2);
 
-        if(random.nextInt(15) == 1)
+
+        if(random.nextInt(16) == 1)
             createAsteroid();
+
 
 
         //удаление астероидов
         Array<Body> bodies = cl.getBodiesToRemove();
-        for (int i = 0; i < bodies.size; i++){
-            Body b = bodies.get(i);
 
-                listAsteroid.removeValue((Asteroid) b.getUserData(), true);
-                world.destroyBody(b);
-
-               // System.out.printf("Error: unknown contact\n");
+        for(Body body : bodies){
+            listAsteroid.removeValue((Asteroid) body.getUserData(), true);
 
 
+
+            Array<Body> temp = new Array<>();
+            world.getBodies(temp);//TODO заменить систему нахождения уникальных объектов. сейчас происходит перебор всех объектов чтоб понять, не удален ли уже объект(можно ли еще удалить)
+            //потенциально можно заменить на хешмапу, чтоб объекты стакались и реврайтились(надо тщательно проверять)
+            for(Body tBody : temp){
+                if(tBody == body)
+                    world.destroyBody(body);
+            }
+
+            System.out.printf("deleted\n");
         }
-        bodies.clear();//чистим лист
 
-        for(int i = 0; i < listAsteroid.size; i++){
-            listAsteroid.get(i).update(delta);
-            listAsteroid.get(i).getBody().setLinearVelocity(listAsteroid.get(i).getBody().getLinearVelocity().x, asteroidSpeed);
+        cl.clearList();
 
-        }
+        new Thread(new Runnable(){
+            @Override public void run(){
 
-        for(int i = 0; i < listBulletPlayer.size; i++){
-            listBulletPlayer.get(i).update(delta);
-            listBulletPlayer.get(i).getBody().setLinearVelocity(listBulletPlayer.get(i).getBody().getLinearVelocity().x, bulletSpeed);
-        }
+                for(Asteroid asteroid : listAsteroid){
+                    asteroid.update(delta);
+                    asteroid.getBody().setLinearVelocity(asteroid.getBody().getLinearVelocity().x, asteroidSpeed);
+
+                }
+
+        }}).start();
+
+
+
+        new Thread(new Runnable(){
+            @Override public void run(){
+
+                for(Bullet bullet : listBulletPlayer){
+                    bullet.update(delta);
+                    bullet.getBody().setLinearVelocity(bullet.getBody().getLinearVelocity().x, bulletSpeed);
+                }
+
+        }}).start();
 
         batch.setProjectionMatrix(maincamera.combined);
+
+        doWorldStep(delta);
     }
 
     @Override
@@ -124,7 +138,7 @@ public class PlayState extends GameState{
 
 
         batch.begin();
-        batch.draw(tex_background, 0, 0, GAME_WIDTH, GAME_HEIGHT);
+        batch.draw(tex_background, 0, 0, GAME_WIDTH/2, GAME_HEIGHT/2);
 
         batch.end();
 
@@ -173,8 +187,6 @@ public class PlayState extends GameState{
             createBulletPlayer();
             Gdx.input.vibrate(9);
         }
-
-
 
 
 
@@ -255,8 +267,21 @@ public class PlayState extends GameState{
         Bullet b = new Bullet(body, player.bulletIndex);
         this.listBulletPlayer.add(b);
         ++bulletAmount;
+
         System.out.println(bulletAmount);
+
         body.setUserData(b);
+    }
+
+    private float accumulator = 0;
+    private void doWorldStep(float deltaTime){
+        float frameTime = Math.min(deltaTime, 0.25f);
+        accumulator += frameTime;
+        while(accumulator >= STEP){
+            world.step(STEP, 6, 2);
+            accumulator -= STEP;
+        }
+
     }
 
     private void createBorders(World world){

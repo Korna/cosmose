@@ -304,29 +304,20 @@ public class HubState extends GameState {
         FixtureDef fdef = new FixtureDef();
 
         PolygonShape shape = new PolygonShape();
-        shape.setAsBox(width
-                //  / PPM
-                , height
-                //  / PPM
-        );
+        shape.setAsBox(width, height);
 
         fdef.shape = shape;
         fdef.filter.categoryBits = BIT_PLAYER;
         fdef.filter.maskBits = BIT_ENEMY | BIT_OBJECT | BIT_BORDER;
 
 
-        def.position.set(x
-                //    / PPM
-                , y
-                //      / PPM
-        );
+        def.position.set(x, y);
         def.fixedRotation = true;
 
         pBody = world.createBody(def);
 
 
 
-        //pBody.createFixture(shape, 0.8f);
 
         pBody.createFixture(fdef).setUserData("player");
 
