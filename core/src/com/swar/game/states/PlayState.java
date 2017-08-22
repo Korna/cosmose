@@ -17,6 +17,9 @@ import com.swar.game.managers.GameContactListener;
 import com.swar.game.managers.GameInputProcessor;
 import com.swar.game.managers.GameStateManagement;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+
 import static com.badlogic.gdx.math.MathUtils.random;
 import static com.swar.game.utils.constants.*;
 
@@ -38,6 +41,8 @@ public class PlayState extends GameState{
     private Array<Bullet> listBulletPlayer;
 
     public Texture tex_background;
+
+    boolean available = false;
     public PlayState(GameStateManagement gsm) {
         super(gsm);
 
@@ -60,6 +65,8 @@ public class PlayState extends GameState{
         tex_background = Game.res.getTexture("background_1");
 
         hud = new HUD(player);
+        available = Gdx.input.isPeripheralAvailable(Input.Peripheral.Accelerometer);
+
     }
 
 
@@ -69,13 +76,8 @@ public class PlayState extends GameState{
 
     @Override
     public void update(float delta) {
-
-
         player.update(delta);
-
         inputUpdate(delta);
-
-
 
         if(random.nextInt(16) == 1)
             createAsteroid();
@@ -85,46 +87,50 @@ public class PlayState extends GameState{
         //удаление астероидов
         Array<Body> bodies = cl.getBodiesToRemove();
 
-        for(Body body : bodies){
+        //TODO оптимизировать трансформацию AL в A
+        ArrayList<Body> list = new ArrayList<>();
+        for(Body b : bodies){
+            list.add(b);
+
+        }
+
+        HashSet<Body> set = new HashSet<>(list);
+
+        for(Body body : set){
             listAsteroid.removeValue((Asteroid) body.getUserData(), true);
-
-
-
-            Array<Body> temp = new Array<>();
-            world.getBodies(temp);//TODO заменить систему нахождения уникальных объектов. сейчас происходит перебор всех объектов чтоб понять, не удален ли уже объект(можно ли еще удалить)
-            //потенциально можно заменить на хешмапу, чтоб объекты стакались и реврайтились(надо тщательно проверять)
-            for(Body tBody : temp){
-                if(tBody == body)
-                    world.destroyBody(body);
-            }
+            world.destroyBody(body);
 
             System.out.printf("deleted\n");
         }
 
         cl.clearList();
 
-        new Thread(new Runnable(){
+        Thread threadAst = new Thread(new Runnable(){
             @Override public void run(){
 
-                for(Asteroid asteroid : listAsteroid){
+                for(int i = 0; i < listAsteroid.size; ++i){
+                    Asteroid asteroid = listAsteroid.get(i);
                     asteroid.update(delta);
                     asteroid.getBody().setLinearVelocity(asteroid.getBody().getLinearVelocity().x, asteroidSpeed);
 
                 }
 
-        }}).start();
+        }});
+        threadAst.setName("asteroid");
+        threadAst.start();
 
-
-
-        new Thread(new Runnable(){
+        Thread threadBul =new Thread(new Runnable(){
             @Override public void run(){
 
-                for(Bullet bullet : listBulletPlayer){
+                for(int i = 0; i<listBulletPlayer.size; ++i){
+                    Bullet bullet = listBulletPlayer.get(i);
                     bullet.update(delta);
                     bullet.getBody().setLinearVelocity(bullet.getBody().getLinearVelocity().x, bulletSpeed);
                 }
 
-        }}).start();
+        }});
+        threadBul.setName("bullet");
+        threadBul.start();
 
         batch.setProjectionMatrix(maincamera.combined);
 
@@ -176,6 +182,12 @@ public class PlayState extends GameState{
     }
 
 
+    float accelX;
+    float accelY;
+    float accelZ;
+
+    int playerHandle = 5;
+    float playerZone = 0.5f;
     public void inputUpdate(float delta){
         int horizontalForse = 0;
         int verticalForse = 0;
@@ -183,9 +195,33 @@ public class PlayState extends GameState{
 
         player.ship();
 
-        if(Gdx.input.isTouched()){
+        if(available){
+            accelX = Gdx.input.getAccelerometerX();
+            accelY = Gdx.input.getAccelerometerY();
+            accelZ = Gdx.input.getAccelerometerZ();
+            System.out.printf(accelX + " " + accelY + " " +accelZ + "\n");
+            if(accelX > playerZone){
+                --horizontalForse;
+                player.ship_l();
+            }
+            if(accelX < -playerZone){
+                ++horizontalForse;
+                player.ship_r();
+            }
+            if(accelY > (playerZone + playerHandle)){
+                --verticalForse;
+                player.ship_l();
+            }
+            if(accelY < (-playerZone + playerHandle)){
+                ++verticalForse;
+                player.ship_r();
+            }
+
+        }
+
+        if(Gdx.input.justTouched()){
             createBulletPlayer();
-            Gdx.input.vibrate(9);
+            Gdx.input.vibrate(30);
         }
 
 
@@ -213,8 +249,8 @@ public class PlayState extends GameState{
             createBulletPlayer();
         }
 
-        player.getBody().setLinearVelocity(player.getBody().getLinearVelocity().x, verticalForse * shipSpeed);
-        player.getBody().setLinearVelocity(horizontalForse * shipSpeed, player.getBody().getLinearVelocity().y);
+        player.getBody().setLinearVelocity(player.getBody().getLinearVelocity().x*2, verticalForse * shipSpeed*8);
+        player.getBody().setLinearVelocity(horizontalForse * shipSpeed*8, player.getBody().getLinearVelocity().y*2);
 
     }
     private void createAsteroid() {

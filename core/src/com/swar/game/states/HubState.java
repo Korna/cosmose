@@ -282,7 +282,7 @@ public class HubState extends GameState {
     }
 
     public void dispose() {
-        playerBody = createPlayer(GAME_WIDTH / 4, 15, GAME_WIDTH/20, GAME_WIDTH/15);
+        playerBody = createPlayer(GAME_WIDTH / 4, 15, GAME_WIDTH/30, GAME_WIDTH/20);
 
         player = new Player(playerBody, cl, chosenShip, null, chosenWeapon);//здесь по индексу передаём корабль из ДБ
         player.initSprite(playerBody);

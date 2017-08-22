@@ -40,6 +40,7 @@ public class MenuState extends GameState {
         //creating font
         BitmapFont white = new BitmapFont(Gdx.files.internal("fonts/white16.fnt"));
 
+
         table = new Table(skin);
         table.setBounds(0,0, GAME_WIDTH, GAME_HEIGHT);
 
@@ -52,21 +53,25 @@ public class MenuState extends GameState {
         textButtonStyle.pressedOffsetY = -1;
         textButtonStyle.font = white;
 
+
         TextButton buttonExit = new TextButton("EXIT", textButtonStyle);
+       // buttonExit.getLabel().setScale(GAME_WIDTH/240);
         TextButton buttonPlay = new TextButton("PLAY", textButtonStyle);
-        buttonExit.pad(GAME_WIDTH/32);//отступ
+     //   buttonPlay.getLabel().setScale(GAME_WIDTH/240);
+
+        buttonExit.pad(GAME_WIDTH/24);//отступ
 
         Label.LabelStyle headingStyle = new Label.LabelStyle(white, Color.WHITE);
 
         Label heading = new Label("Swar", headingStyle);
-        heading.setFontScale(GAME_WIDTH/160);
+        heading.setFontScale(GAME_WIDTH/120);
        // putting stuff together
 
-        table.add(heading).pad(GAME_WIDTH/6);
+        table.add(heading).pad(GAME_WIDTH/4);
         table.row();
-        table.add(buttonPlay).width(GAME_WIDTH/6).height(GAME_WIDTH/11).pad(GAME_WIDTH/50);
+        table.add(buttonPlay).width(GAME_WIDTH/4).height(GAME_WIDTH/7).pad(GAME_WIDTH/35);
         table.row();
-        table.add(buttonExit).width(GAME_WIDTH/6).height(GAME_WIDTH/11);
+        table.add(buttonExit).width(GAME_WIDTH/4).height(GAME_WIDTH/7);
         table.debug();//показывает линии
         stage.addActor(table);
 

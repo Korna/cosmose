@@ -48,6 +48,8 @@ public class Game extends ApplicationAdapter {
 		maincamera.setToOrtho(false, GAME_WIDTH/2, GAME_HEIGHT/2);
 
 		gsm = new GameStateManagement(this);
+
+
 	}
 
 	private void resLoader(Content res){

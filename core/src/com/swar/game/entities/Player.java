@@ -6,6 +6,8 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.swar.game.Game;
 import com.swar.game.managers.GameContactListener;
 
+import static com.swar.game.utils.constants.GAME_WIDTH;
+
 /**
  * Created by Koma on 17.01.2017.
  */
@@ -20,7 +22,7 @@ public class Player extends Sprite{//все параметры корабля
     private Texture bulletTexture;
 
     private GameContactListener player_cl;
-    private int speed = 300;
+    private int speed = (GAME_WIDTH*12) /3;
     private Weapon listWeapon[];
     private int weaponNumber;
 
