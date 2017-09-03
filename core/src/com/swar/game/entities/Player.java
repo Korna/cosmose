@@ -40,8 +40,8 @@ public class Player extends Sprite{//все параметры корабля
         TextureRegion[] sprites = TextureRegion.split(shipTexture, 32, 32)[0];
         setAnimation(sprites, 1 / 12f);
 
-
     }
+
 
     public void init(Body body, GameContactListener cl){
         player_cl = cl;
@@ -64,10 +64,10 @@ public class Player extends Sprite{//все параметры корабля
     }
 
     public void ship_r(){
-        if(shipTexture == Game.res.getTexture("ship_"+String.valueOf(shipIndex) +"_l"))
+        if(shipTexture == Game.res.getTexture("ship_" + String.valueOf(shipIndex) +"_l"))
             shipTexture = Game.res.getTexture("ship_" + String.valueOf(shipIndex));
         else
-            shipTexture = Game.res.getTexture("ship_"+String.valueOf(shipIndex)+"_r");
+            shipTexture = Game.res.getTexture("ship_" + String.valueOf(shipIndex)+"_r");
 
         TextureRegion[] sprites = TextureRegion.split(shipTexture, 32, 32)[0];
         setAnimation(sprites, 1 / 12f);

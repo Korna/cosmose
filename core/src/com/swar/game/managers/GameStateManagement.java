@@ -35,7 +35,7 @@ public class GameStateManagement {
 
     public GameStateManagement(final Game app){
         this.app = app;
-        this.states = new Stack<GameState>();
+        this.states = new Stack<>();
 
 
         this.setState(State.SPLASH);

@@ -16,6 +16,9 @@ public class constants {
     public static final float STEP = 1 / 60f;
     public static final int BLOCK_SIZE = 32;
 
+    public static final String BULLET_PIERCING = "BulletPiercing";
+    public static final String BULLET_DESTROYABLE = "BulletDestroyable";
+    public static final String BULLET_EXPLOSIVE = "BulletExplosive";
 
 
 

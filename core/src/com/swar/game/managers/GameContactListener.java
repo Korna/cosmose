@@ -3,6 +3,9 @@ package com.swar.game.managers;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
 
+import static com.swar.game.utils.constants.BULLET_DESTROYABLE;
+import static com.swar.game.utils.constants.BULLET_PIERCING;
+
 /**
  * Created by Koma on 15.01.2017.
  */
@@ -45,19 +48,35 @@ public class GameContactListener implements ContactListener {
             }
 
 
-        if(fb.getUserData().equals("asteroid") && fa.getUserData().equals("bulletPlayer")){
+        if(fb.getUserData().equals("asteroid") && fa.getUserData().equals(BULLET_PIERCING)){
             System.out.printf("hit asteroid\n");
             bodiesToRemove.add(fb.getBody());
             credits++;
            // bulletsToRemove.add(fa.getBody());
 
         }else
-            if(fa.getUserData().equals("asteroid") && fb.getUserData().equals("bulletPlayer")){
+            if(fa.getUserData().equals("asteroid") && fb.getUserData().equals(BULLET_PIERCING)){
                 System.out.printf("hit asteroid\n");
                 bodiesToRemove.add(fa.getBody());
                 credits++;
               //  bulletsToRemove.add(fb.getBody());
             }
+
+        if(fb.getUserData().equals("asteroid") && fa.getUserData().equals(BULLET_DESTROYABLE)){
+            System.out.printf("hit asteroid\n");
+            bodiesToRemove.add(fb.getBody());
+            bodiesToRemove.add(fa.getBody());
+            credits++;
+            // bulletsToRemove.add(fa.getBody());
+
+        }else
+        if(fa.getUserData().equals("asteroid") && fb.getUserData().equals(BULLET_DESTROYABLE)){
+            System.out.printf("hit asteroid\n");
+            bodiesToRemove.add(fa.getBody());
+            bodiesToRemove.add(fb.getBody());
+            credits++;
+            //  bulletsToRemove.add(fb.getBody());
+        }
 
 
         //эту часть вставляем в end contact для норм отрисовки

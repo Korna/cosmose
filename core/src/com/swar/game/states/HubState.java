@@ -123,37 +123,40 @@ public class HubState extends GameState {
         heading.setFontScale(4);
 
 
+        final int BUTTON_HEIGHT = GAME_WIDTH/10;
+        final int BUTTON_WIDTH = GAME_WIDTH/10;
+
         // putting stuff together
         //hangar text
-        table.add(heading).pad(GAME_WIDTH/7).padTop(GAME_WIDTH/70);
-        table.row().height(GAME_WIDTH/7);
+        table.add(heading).pad(GAME_WIDTH/5).padTop(GAME_WIDTH/70);
+        table.row().height(GAME_WIDTH/5);
 
         //minus
-        table.add(buttonMinus).width(GAME_WIDTH/14).height(GAME_WIDTH/15);
+        table.add(buttonMinus).width(BUTTON_WIDTH).height(BUTTON_HEIGHT);
         //plus
-        table.add(buttonPlus).width(GAME_WIDTH/14).height(GAME_WIDTH/15);
+        table.add(buttonPlus).width(BUTTON_WIDTH).height(BUTTON_HEIGHT);
 
 
-        table.row().height(GAME_WIDTH/15);
+        table.row().height(GAME_WIDTH/12);
 
-        table.add(buttonArrowLeft_weapon).width(GAME_WIDTH/14).height(GAME_WIDTH/15);
+        table.add(buttonArrowLeft_weapon).width(BUTTON_WIDTH).height(BUTTON_HEIGHT);
         table.add(currentWeapon).fill();
-        table.add(buttonArrowRight_weapon).width(GAME_WIDTH/14).height(GAME_WIDTH/15);
+        table.add(buttonArrowRight_weapon).width(BUTTON_WIDTH).height(BUTTON_HEIGHT);
 
-        table.row().height(GAME_WIDTH/15);
+        table.row().height(GAME_WIDTH/12);
 
-        table.add(buttonArrowLeft_ship).width(GAME_WIDTH/14).height(GAME_WIDTH/15);
+        table.add(buttonArrowLeft_ship).width(BUTTON_WIDTH).height(BUTTON_HEIGHT);
         table.add(currentShip).fill();
-        table.add(buttonArrowRight_ship).width(GAME_WIDTH/14).height(GAME_WIDTH/15);
+        table.add(buttonArrowRight_ship).width(BUTTON_WIDTH).height(BUTTON_HEIGHT);
 
-        table.row().height(GAME_WIDTH/15);
+        table.row().height(GAME_WIDTH/12);
 
-        table.add(buttonSet).width(GAME_WIDTH/14).height(GAME_WIDTH/15).center().right();
+        table.add(buttonSet).width(BUTTON_WIDTH).height(BUTTON_HEIGHT).center().right();
 
-        table.row().height(GAME_WIDTH/15);
+        table.row().height(GAME_WIDTH/12);
 
-        table.add(buttonBack).height(GAME_WIDTH/15);
-        table.add(buttonPlay).height(GAME_WIDTH/15);
+        table.add(buttonBack).width(BUTTON_WIDTH).height(BUTTON_HEIGHT);
+        table.add(buttonPlay).width(BUTTON_WIDTH).height(BUTTON_HEIGHT);
 
         table.debug();//показывает линии
 

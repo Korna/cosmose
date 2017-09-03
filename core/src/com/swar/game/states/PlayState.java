@@ -27,7 +27,7 @@ import static com.swar.game.utils.constants.*;
  * Created by Koma on 17.01.2017.
  */
 public class PlayState extends GameState{
-    private final boolean DEBUG_RENDER = true; //отрисовывать ли контуры столкновения объектов
+    private final boolean DEBUG_RENDER = false; //отрисовывать ли контуры столкновения объектов
 
     private Box2DDebugRenderer b2dr;
     private HUD hud;
@@ -71,13 +71,15 @@ public class PlayState extends GameState{
 
 
 
-    private final int bulletSpeed = GAME_WIDTH / 2;
     private final int asteroidSpeed = -(GAME_WIDTH / 10);
+
+
 
     @Override
     public void update(float delta) {
         player.update(delta);
         inputUpdate(delta);
+
 
         if(random.nextInt(16) == 1)
             createAsteroid();
@@ -97,21 +99,25 @@ public class PlayState extends GameState{
         HashSet<Body> set = new HashSet<>(list);
 
         for(Body body : set){
-            listAsteroid.removeValue((Asteroid) body.getUserData(), true);
+            try{
+                listAsteroid.removeValue((Asteroid) body.getUserData(), true);
+            }catch(Exception e){
+                listBulletPlayer.removeValue((Bullet) body.getUserData(), true);
+            }
             world.destroyBody(body);
 
             System.out.printf("deleted\n");
         }
 
         cl.clearList();
-
+        //TODO сделать потоки безопасными
         Thread threadAst = new Thread(new Runnable(){
             @Override public void run(){
 
                 for(int i = 0; i < listAsteroid.size; ++i){
                     Asteroid asteroid = listAsteroid.get(i);
                     asteroid.update(delta);
-                    asteroid.getBody().setLinearVelocity(asteroid.getBody().getLinearVelocity().x, asteroidSpeed);
+                    asteroid.getBody().setLinearVelocity(0, asteroidSpeed);
 
                 }
 
@@ -119,13 +125,16 @@ public class PlayState extends GameState{
         threadAst.setName("asteroid");
         threadAst.start();
 
+
+
+
         Thread threadBul =new Thread(new Runnable(){
             @Override public void run(){
 
                 for(int i = 0; i<listBulletPlayer.size; ++i){
                     Bullet bullet = listBulletPlayer.get(i);
                     bullet.update(delta);
-                    bullet.getBody().setLinearVelocity(bullet.getBody().getLinearVelocity().x, bulletSpeed);
+                    bullet.getBody().setLinearVelocity(bullet.currentSpeed, bullet.speedY);
                 }
 
         }});
@@ -189,8 +198,8 @@ public class PlayState extends GameState{
     int playerHandle = 5;
     float playerZone = 0.5f;
     public void inputUpdate(float delta){
-        int horizontalForse = 0;
-        int verticalForse = 0;
+        int horizontalForce = 0;
+        int verticalForce = 0;
         int shipSpeed = player.getSpeed();
 
         player.ship();
@@ -201,56 +210,59 @@ public class PlayState extends GameState{
             accelZ = Gdx.input.getAccelerometerZ();
             System.out.printf(accelX + " " + accelY + " " +accelZ + "\n");
             if(accelX > playerZone){
-                --horizontalForse;
+                --horizontalForce;
                 player.ship_l();
             }
             if(accelX < -playerZone){
-                ++horizontalForse;
+                ++horizontalForce;
                 player.ship_r();
             }
+
             if(accelY > (playerZone + playerHandle)){
-                --verticalForse;
-                player.ship_l();
+                --verticalForce;
             }
             if(accelY < (-playerZone + playerHandle)){
-                ++verticalForse;
+                ++verticalForce;
+            }
+
+            if(Gdx.input.justTouched()){
+                createBulletPlayer();
+                Gdx.input.vibrate(30);
+            }
+
+        }else{
+
+
+            if(Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.A)){
+                --horizontalForce;
+                player.ship_l();
+
+            }
+
+            if(Gdx.input.isKeyPressed(Input.Keys.RIGHT) || Gdx.input.isKeyPressed(Input.Keys.D)){
+                ++horizontalForce;
                 player.ship_r();
+            }
+
+            if(Gdx.input.isKeyPressed(Input.Keys.UP) || Gdx.input.isKeyPressed(Input.Keys.W)){
+                ++verticalForce;
+            }
+
+            if(Gdx.input.isKeyPressed(Input.Keys.DOWN) || Gdx.input.isKeyPressed(Input.Keys.S)){
+                --verticalForce;
+            }
+
+            if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)){
+                createBulletPlayer();
             }
 
         }
 
-        if(Gdx.input.justTouched()){
-            createBulletPlayer();
-            Gdx.input.vibrate(30);
-        }
 
 
 
-        if(Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.A)){
-            --horizontalForse;
-            player.ship_l();
+        player.getBody().setLinearVelocity(horizontalForce * shipSpeed, verticalForce * shipSpeed);
 
-        }
-
-        if(Gdx.input.isKeyPressed(Input.Keys.RIGHT) || Gdx.input.isKeyPressed(Input.Keys.D)){
-            ++horizontalForse;
-            player.ship_r();
-        }
-
-        if(Gdx.input.isKeyPressed(Input.Keys.UP) || Gdx.input.isKeyPressed(Input.Keys.W)){
-            ++verticalForse;
-        }
-
-        if(Gdx.input.isKeyPressed(Input.Keys.DOWN) || Gdx.input.isKeyPressed(Input.Keys.S)){
-            --verticalForse;
-        }
-
-        if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)){
-            createBulletPlayer();
-        }
-
-        player.getBody().setLinearVelocity(player.getBody().getLinearVelocity().x*2, verticalForse * shipSpeed*8);
-        player.getBody().setLinearVelocity(horizontalForse * shipSpeed*8, player.getBody().getLinearVelocity().y*2);
 
     }
     private void createAsteroid() {
@@ -299,8 +311,20 @@ public class PlayState extends GameState{
         fdef.filter.maskBits = BIT_ENEMY | BIT_BORDER;
         fdef.isSensor = true;
         Body body = this.world.createBody(bdef);
-        body.createFixture(fdef).setUserData("bulletPlayer");
-        Bullet b = new Bullet(body, player.bulletIndex);
+
+
+        //параметры пули
+        Bullet b;
+        if(player.bulletIndex==1){
+            body.createFixture(fdef).setUserData(BULLET_PIERCING);
+            b = new Bullet(body, player.bulletIndex, true, true);
+        }
+        else{
+            body.createFixture(fdef).setUserData(BULLET_DESTROYABLE);
+            b = new Bullet(body, player.bulletIndex, false, false);
+        }
+
+
         this.listBulletPlayer.add(b);
         ++bulletAmount;
 
