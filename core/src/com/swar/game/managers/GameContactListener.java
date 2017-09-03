@@ -3,8 +3,7 @@ package com.swar.game.managers;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
 
-import static com.swar.game.utils.constants.BULLET_DESTROYABLE;
-import static com.swar.game.utils.constants.BULLET_PIERCING;
+import static com.swar.game.utils.constants.*;
 
 /**
  * Created by Koma on 15.01.2017.
@@ -30,9 +29,17 @@ public class GameContactListener implements ContactListener {
         fa = c.getFixtureA();
         fb = c.getFixtureB();
 
-        if(fa == null || fb == null){
-            System.out.println("null object found");
-        }
+        if( fa.getUserData().equals(BONUS) && fb.getUserData().equals("player")){
+            //remove crystal
+
+            bodiesToRemove.add(fa.getBody());
+            credits+=100;
+
+        }else
+            if(fa.getUserData().equals("player")&& fb.getUserData().equals(BONUS)){
+                bodiesToRemove.add(fb.getBody());
+                credits+=100;
+            }
 
 
         if( fa.getUserData().equals("asteroid") && fb.getUserData().equals("player")){
@@ -123,7 +130,8 @@ public class GameContactListener implements ContactListener {
     public void preSolve(Contact c, Manifold m){}
     public void postSolve(Contact c, ContactImpulse ci){}
 
-    private void minushp(){ hp--;}
+    private void minushp(){ hp-=10;}
+    private void plushp(){ hp+=10;}
 
     public int getHp(){return hp;}
     public int getCredits(){return credits;}

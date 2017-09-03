@@ -68,6 +68,8 @@ public class Game extends ApplicationAdapter {
 		res.loadTexture("sprites/asteroid_2.png", "asteroid_2");
 		res.loadTexture("sprites/asteroid_3.png", "asteroid_3");
 
+		res.loadTexture("sprites/bonus_1.png", "bonus_1");
+
 		res.loadTexture("sprites/bullet_1.png", "bullet_1");
 		res.loadTexture("sprites/bullet_2.png", "bullet_2");
 

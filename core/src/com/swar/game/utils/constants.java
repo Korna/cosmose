@@ -20,6 +20,9 @@ public class constants {
     public static final String BULLET_DESTROYABLE = "BulletDestroyable";
     public static final String BULLET_EXPLOSIVE = "BulletExplosive";
 
+    public static final String BONUS = "Bonus";
+
+    public static final int VIBRATION_LONG = 30;
 
 
     public static final short BIT_OBJECT = 2; // 0000 0000 0000 0001
@@ -27,4 +30,5 @@ public class constants {
     public static final short BIT_PLAYER = 8; // 0000 0000 0000 0100
     public static final short BIT_BULLET = 16; // 0000 0000 0000 1000
     public static final short BIT_BORDER = 32; // 0000 0000 0000 1000
+
 }

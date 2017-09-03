@@ -63,7 +63,7 @@ public class MenuState extends GameState {
 
         Label.LabelStyle headingStyle = new Label.LabelStyle(white, Color.WHITE);
 
-        Label heading = new Label("Swar", headingStyle);
+        Label heading = new Label("Project White", headingStyle);
         heading.setFontScale(GAME_WIDTH/120);
        // putting stuff together
 

@@ -1,5 +1,6 @@
 package com.swar.game.states;
 
+import android.util.Log;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
@@ -9,10 +10,8 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
 import com.swar.game.Game;
-import com.swar.game.entities.Asteroid;
-import com.swar.game.entities.Bullet;
-import com.swar.game.entities.HUD;
-import com.swar.game.entities.Player;
+import com.swar.game.Randomizer;
+import com.swar.game.entities.*;
 import com.swar.game.managers.GameContactListener;
 import com.swar.game.managers.GameInputProcessor;
 import com.swar.game.managers.GameStateManagement;
@@ -20,7 +19,6 @@ import com.swar.game.managers.GameStateManagement;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-import static com.badlogic.gdx.math.MathUtils.random;
 import static com.swar.game.utils.constants.*;
 
 /**
@@ -39,6 +37,7 @@ public class PlayState extends GameState{
 
     private Array<Asteroid> listAsteroid;
     private Array<Bullet> listBulletPlayer;
+    private Array<Bonus> listBonus;
 
     public Texture tex_background;
 
@@ -61,6 +60,7 @@ public class PlayState extends GameState{
 
         this.listAsteroid = new Array<>();
         this.listBulletPlayer = new Array<>();
+        this.listBonus = new Array<>();
 
         tex_background = Game.res.getTexture("background_1");
 
@@ -73,6 +73,7 @@ public class PlayState extends GameState{
 
     private final int asteroidSpeed = -(GAME_WIDTH / 10);
 
+    private Randomizer randomizer = new Randomizer();
 
 
     @Override
@@ -81,8 +82,8 @@ public class PlayState extends GameState{
         inputUpdate(delta);
 
 
-        if(random.nextInt(16) == 1)
-            createAsteroid();
+        if(randomizer.chanceAsteroid())
+            createAsteroid(randomizer.getCoordinateAsteroid(),GAME_HEIGHT/2 - 50);
 
 
 
@@ -101,9 +102,21 @@ public class PlayState extends GameState{
         for(Body body : set){
             try{
                 listAsteroid.removeValue((Asteroid) body.getUserData(), true);
+                try {
+                    if (randomizer.chanceBonus()) {
+                        createBonus(body.getPosition().x, body.getPosition().y);
+                    }
+                }catch(Exception e){
+                    Log.d("update", e.toString());
+                }
             }catch(Exception e){
-                listBulletPlayer.removeValue((Bullet) body.getUserData(), true);
+                try {
+                    listBulletPlayer.removeValue((Bullet) body.getUserData(), true);
+                }catch(Exception bonus){
+                    listBonus.removeValue((Bonus) body.getUserData(), true);
+                }
             }
+
             world.destroyBody(body);
 
             System.out.printf("deleted\n");
@@ -162,15 +175,17 @@ public class PlayState extends GameState{
             b2dr.render(world, maincamera.combined);
 
 
-
         for(Asteroid asteroid : listAsteroid)
             asteroid.render(batch);
+
+        for(Bonus bonus : listBonus)
+            bonus.render(batch);
 
         for(Bullet bullet : listBulletPlayer)
             bullet.render(batch);
 
-
         player.render(batch);
+
         hud.render(batch_hud);
     }
 
@@ -191,12 +206,10 @@ public class PlayState extends GameState{
     }
 
 
-    float accelX;
-    float accelY;
-    float accelZ;
 
-    int playerHandle = 5;
-    float playerZone = 0.5f;
+
+    final int playerHandle = 5;
+    final float playerZone = 0.5f;
     public void inputUpdate(float delta){
         int horizontalForce = 0;
         int verticalForce = 0;
@@ -205,10 +218,9 @@ public class PlayState extends GameState{
         player.ship();
 
         if(available){
-            accelX = Gdx.input.getAccelerometerX();
-            accelY = Gdx.input.getAccelerometerY();
-            accelZ = Gdx.input.getAccelerometerZ();
-            System.out.printf(accelX + " " + accelY + " " +accelZ + "\n");
+            float accelX = Gdx.input.getAccelerometerX();
+            float accelY = Gdx.input.getAccelerometerY();
+
             if(accelX > playerZone){
                 --horizontalForce;
                 player.ship_l();
@@ -227,7 +239,7 @@ public class PlayState extends GameState{
 
             if(Gdx.input.justTouched()){
                 createBulletPlayer();
-                Gdx.input.vibrate(30);
+                Gdx.input.vibrate(VIBRATION_LONG);
             }
 
         }else{
@@ -265,13 +277,12 @@ public class PlayState extends GameState{
 
 
     }
-    private void createAsteroid() {
+    private void createAsteroid(float x, float y) {
         BodyDef bdef = new BodyDef();
         FixtureDef fdef = new FixtureDef();
 
         bdef.type = BodyDef.BodyType.DynamicBody;
-        int x = random.nextInt(GAME_WIDTH/2 + 15) - 15;
-        int y = GAME_HEIGHT/2 - 50;
+
         bdef.position.set(x, y);
 
         CircleShape cshape = new CircleShape();
@@ -288,6 +299,30 @@ public class PlayState extends GameState{
         Asteroid a = new Asteroid(body);
         this.listAsteroid.add(a);
         body.setUserData(a);
+    }
+
+    private void createBonus(float x, float y){
+        BodyDef bdef = new BodyDef();
+        FixtureDef fdef = new FixtureDef();
+
+        bdef.type = BodyDef.BodyType.StaticBody;
+        bdef.position.set(x, y);
+
+        CircleShape cshape = new CircleShape();
+        cshape.setRadius(GAME_WIDTH/80);
+
+        fdef.shape = cshape;
+        fdef.isSensor = true;
+        fdef.filter.categoryBits = BIT_OBJECT;
+        fdef.filter.maskBits = BIT_PLAYER;
+        fdef.isSensor = true;
+
+        Body body = this.world.createBody(bdef);
+        body.createFixture(fdef).setUserData(BONUS);
+        Bonus b = new Bonus(body);
+        this.listBonus.add(b);
+        body.setUserData(b);
+
     }
 
     private int bulletAmount = 0;
@@ -324,13 +359,9 @@ public class PlayState extends GameState{
             b = new Bullet(body, player.bulletIndex, false, false);
         }
 
-
-        this.listBulletPlayer.add(b);
-        ++bulletAmount;
-
-        System.out.println(bulletAmount);
-
         body.setUserData(b);
+        this.listBulletPlayer.add(b);
+        System.out.println(++bulletAmount);
     }
 
     private float accumulator = 0;
