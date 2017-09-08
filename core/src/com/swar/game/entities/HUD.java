@@ -8,8 +8,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.swar.game.Game;
 
-import static com.swar.game.utils.constants.BLOCK_SIZE;
-
 /**
  * Created by Koma on 17.01.2017.
  */
@@ -18,13 +16,18 @@ public class HUD {
     private Player player;
     private TextureRegion[] hearts;
     private Texture credit, hull;
-    private BitmapFont font;
+    private BitmapFont font, fontTime;
     public HUD(Player player) {
 
         this.player = player;
         credit = Game.res.getTexture("hudCredits");
+
         font = new BitmapFont();
         font.setColor(Color.WHITE);
+
+        fontTime = new BitmapFont();
+        fontTime.setColor(Color.FIREBRICK);
+
       //  Texture tex = Game.res.getTexture("hud");
 
      //   hearts = new TextureRegion[3];
@@ -35,12 +38,15 @@ public class HUD {
     }
 
     public void render(SpriteBatch sb){
+
         sb.begin();
-        sb.draw(credit, Gdx.graphics.getWidth() / 6.5f, Gdx.graphics.getHeight() / 2 - (Gdx.graphics.getHeight() / 32));
+        sb.draw(credit, Gdx.graphics.getWidth() / 6.5f, Gdx.graphics.getHeight() - (Gdx.graphics.getHeight() / 32));
 
        // sb.draw(hull, Gdx.graphics.getWidth() / 16, Gdx.graphics.getHeight() / 2 - (Gdx.graphics.getHeight() / 32));
-        font.draw(sb, String.valueOf(player.getHp()) + "%", Gdx.graphics.getWidth() / 16, Gdx.graphics.getHeight() / 2 - (Gdx.graphics.getHeight() / 32));
-        font.draw(sb, String.valueOf(player.getCredits()) + "$", Gdx.graphics.getWidth() / 6, Gdx.graphics.getHeight() / 2 - (Gdx.graphics.getHeight() / 32));
+        font.draw(sb, String.valueOf(player.getHp()) + "%", Gdx.graphics.getWidth() / 16, Gdx.graphics.getHeight()  - (Gdx.graphics.getHeight() / 32));
+        font.draw(sb, String.valueOf(player.getCredits()) + "$", Gdx.graphics.getWidth() / 6, Gdx.graphics.getHeight()  - (Gdx.graphics.getHeight() / 32));
+
+        fontTime.draw(sb, String.valueOf(((int) player.timeInGame) + " / 10"), Gdx.graphics.getWidth() / 4, Gdx.graphics.getHeight() - (Gdx.graphics.getHeight() / 32));
         /*
         if(player.getPlayerhealth() == 2){
             sb.draw(hearts[0], 40, 200);//full hp
@@ -54,6 +60,7 @@ public class HUD {
 */
 
         sb.end();
+
     }
 
 }

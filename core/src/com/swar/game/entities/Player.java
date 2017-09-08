@@ -26,6 +26,8 @@ public class Player extends Sprite{//все параметры корабля
     private Weapon listWeapon[];
     private int weaponNumber;
 
+    public float timeInGame = 0;
+
     public Player(Body body, GameContactListener cl, int shipIndex, Ship ship, int weaponIndex) {
         super(body);
         this.shipIndex = shipIndex;

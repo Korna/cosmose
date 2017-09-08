@@ -66,9 +66,9 @@ public class Bullet extends Sprite {
         }else{
             if(bdt>10){
                 speedY += 3000;
-
             }
         }
+
     }
 
     public void init(float damage, String name, int id, float speedY, float speedX,  boolean wavy){

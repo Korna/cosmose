@@ -31,7 +31,7 @@ public class MenuState extends GameState {
 
     public MenuState(GameStateManagement gsm) {
         super(gsm);
-        this.reg = new TextureRegion(Game.res.getTexture("background_menu"), 0, 0, GAME_WIDTH/2, GAME_HEIGHT/3);
+        this.reg = new TextureRegion(Game.res.getTexture("background_menu"), 0, 0, GAME_WIDTH, GAME_HEIGHT/3);
 
 
         Gdx.input.setInputProcessor(stage);

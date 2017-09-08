@@ -21,6 +21,8 @@ public class constants {
     public static final String BULLET_EXPLOSIVE = "BulletExplosive";
 
     public static final String BONUS = "Bonus";
+    public static final String ASTEROID = "Asteroid";
+    public static final String PLAYER_SHIP = "PlayerShip";
 
     public static final int VIBRATION_LONG = 30;
 

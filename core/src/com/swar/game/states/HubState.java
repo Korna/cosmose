@@ -7,10 +7,12 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.Array;
 import com.swar.game.Game;
 import com.swar.game.entities.Player;
 import com.swar.game.managers.GameContactListener;
@@ -24,7 +26,7 @@ import static com.swar.game.utils.constants.*;
 public class HubState extends GameState {
 
     private Stage stage = new Stage();
-    private Table table;
+
     private TextureRegion reg;
     private int currentPositionShip = 1;
     private int chosenShip = 1;
@@ -56,6 +58,12 @@ public class HubState extends GameState {
         currentWeapon = new Image(Game.res.getTexture("weapon_" + String.valueOf(currentPositionWeapon)));
         currentShip = new Image(Game.res.getTexture("ship_" + String.valueOf(currentPositionShip)));
 
+
+        buildTable();
+    }
+
+    private void buildTable(){
+        Table table;
         //creating font
         BitmapFont white = new BitmapFont(Gdx.files.internal("fonts/white16.fnt"));
 
@@ -187,6 +195,8 @@ public class HubState extends GameState {
                 System.out.printf("%d\n", currentPositionWeapon);
                 currentPositionWeapon++;
                 imageUpdate();
+                clearStage();
+                buildTable();
             }
         });
         buttonArrowLeft_weapon.addListener(new ClickListener() {
@@ -196,7 +206,8 @@ public class HubState extends GameState {
                 System.out.printf("%d\n", currentPositionWeapon);
                 currentPositionWeapon--;
                 imageUpdate();
-
+                clearStage();
+                buildTable();
             }
         });
 
@@ -208,6 +219,8 @@ public class HubState extends GameState {
                 System.out.printf("%d\n", currentPositionShip);
                 currentPositionShip++;
                 imageUpdate();
+                clearStage();
+                buildTable();
             }
         });
         buttonArrowLeft_ship.addListener(new ClickListener() {
@@ -218,6 +231,9 @@ public class HubState extends GameState {
                 currentPositionShip--;
                 imageUpdate();
 
+
+                clearStage();
+                buildTable();
             }
         });
 
@@ -238,7 +254,6 @@ public class HubState extends GameState {
 
 
 
-
     private void setPlay() {
         gsm.setState(GameStateManagement.State.PLAY);
     }
@@ -251,6 +266,7 @@ public class HubState extends GameState {
 
     public void update(float dt) {
         this.handleInput();
+
         stage.act(dt);
 
     }
@@ -259,15 +275,10 @@ public class HubState extends GameState {
         currentWeapon = new Image(Game.res.getTexture("weapon_" + String.valueOf(currentPositionWeapon)));
         currentShip = new Image(Game.res.getTexture("ship_" + String.valueOf(currentPositionShip)));
 
-        currentWeapon.invalidate();
-        currentShip.invalidate();
-
-        currentWeapon.validate();
-        currentShip.validate();
-
-  //      table.reset();
-        table.invalidate();
-        table.validate();
+    }
+    private void clearStage(){
+        Array<Actor> list = stage.getActors();
+        list.get(0).remove();
     }
 
     public void render() {
@@ -322,7 +333,7 @@ public class HubState extends GameState {
 
 
 
-        pBody.createFixture(fdef).setUserData("player");
+        pBody.createFixture(fdef).setUserData(PLAYER_SHIP);
 
         shape.dispose();
 

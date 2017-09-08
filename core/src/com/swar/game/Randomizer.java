@@ -16,11 +16,11 @@ public class Randomizer {
     }
 
     public int getCoordinateAsteroid(){
-        return random.nextInt(GAME_WIDTH/2 + 10) - 10;
+        return random.nextInt(GAME_WIDTH + 10) - 10;
     }
 
     public boolean chanceBonus(){
-        if(random.nextInt(4) == 1)
+        if(random.nextInt(10) == 1)
             return true;
         else
             return false;

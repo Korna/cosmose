@@ -21,7 +21,7 @@ public class GameStateManagement {
     public GameContactListener cl  = new GameContactListener();
     public Body playerBody;
     public Player player;
-    public World world = new World(new Vector2(0, 0), false);;
+    public World world;
 
 
 
@@ -79,8 +79,12 @@ public class GameStateManagement {
 
             case SPLASH: return new SplashState(this);
             case MAINMENU: return new MenuState(this);
-            case PLAY: return new PlayState(this);
-            case HUB: return new HubState(this);
+            case PLAY:
+
+                return new PlayState(this);
+            case HUB:
+                world = new World(new Vector2(0, 0), false);//потому как создается игрок в хабе
+                return new HubState(this);
         }
         return null;
     }

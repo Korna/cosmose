@@ -6,6 +6,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
@@ -41,6 +42,7 @@ public class PlayState extends GameState{
 
     public Texture tex_background;
 
+
     boolean available = false;
     public PlayState(GameStateManagement gsm) {
         super(gsm);
@@ -71,19 +73,28 @@ public class PlayState extends GameState{
 
 
 
-    private final int asteroidSpeed = -(GAME_WIDTH / 10);
+    private final float asteroidSpeed = -(GAME_WIDTH);
 
     private Randomizer randomizer = new Randomizer();
 
 
     @Override
     public void update(float delta) {
+        player.timeInGame += delta;
+        if(player.timeInGame >= 10){
+            player.timeInGame = 0;
+            gsm.setState(GameStateManagement.State.HUB);
+        }
+
+
         player.update(delta);
         inputUpdate(delta);
 
+        if(cl.isPlayerDead())
+            Gdx.app.exit();
 
         if(randomizer.chanceAsteroid())
-            createAsteroid(randomizer.getCoordinateAsteroid(),GAME_HEIGHT/2 - 50);
+            createAsteroid(randomizer.getCoordinateAsteroid(),GAME_HEIGHT - 50);
 
 
 
@@ -100,6 +111,7 @@ public class PlayState extends GameState{
         HashSet<Body> set = new HashSet<>(list);
 
         for(Body body : set){
+
             try{
                 listAsteroid.removeValue((Asteroid) body.getUserData(), true);
                 try {
@@ -129,9 +141,30 @@ public class PlayState extends GameState{
 
                 for(int i = 0; i < listAsteroid.size; ++i){
                     Asteroid asteroid = listAsteroid.get(i);
-                    asteroid.update(delta);
-                    asteroid.getBody().setLinearVelocity(0, asteroidSpeed);
 
+                    float mass = asteroid.getBody().getMass();
+                    float targetVelocity = 1600.6667f; //For 6000kmph simulated
+                    Vector2 targetPosition = new Vector2(0, asteroidSpeed*1000);
+
+
+                    float impulseMag = mass * targetVelocity;
+
+
+                    Vector2 impulse = new Vector2();
+
+
+                    impulse.set(targetPosition).sub(asteroid.getBody().getPosition());
+
+
+                    impulse.nor();
+
+
+                    impulse.scl(impulseMag);
+
+
+
+                    asteroid.getBody().applyForce(impulse, asteroid.getBody().getWorldCenter(), true);
+                    asteroid.update(delta);
                 }
 
         }});
@@ -146,8 +179,8 @@ public class PlayState extends GameState{
 
                 for(int i = 0; i<listBulletPlayer.size; ++i){
                     Bullet bullet = listBulletPlayer.get(i);
-                    bullet.update(delta);
                     bullet.getBody().setLinearVelocity(bullet.currentSpeed, bullet.speedY);
+                    bullet.update(delta);
                 }
 
         }});
@@ -166,7 +199,7 @@ public class PlayState extends GameState{
 
 
         batch.begin();
-        batch.draw(tex_background, 0, 0, GAME_WIDTH/2, GAME_HEIGHT/2);
+        batch.draw(tex_background, 0, 0, GAME_WIDTH, GAME_HEIGHT);
 
         batch.end();
 
@@ -271,8 +304,6 @@ public class PlayState extends GameState{
         }
 
 
-
-
         player.getBody().setLinearVelocity(horizontalForce * shipSpeed, verticalForce * shipSpeed);
 
 
@@ -295,7 +326,8 @@ public class PlayState extends GameState{
         fdef.isSensor = true;
 
         Body body = this.world.createBody(bdef);
-        body.createFixture(fdef).setUserData("asteroid");
+        body.createFixture(fdef).setUserData(ASTEROID);
+
         Asteroid a = new Asteroid(body);
         this.listAsteroid.add(a);
         body.setUserData(a);
@@ -319,6 +351,7 @@ public class PlayState extends GameState{
 
         Body body = this.world.createBody(bdef);
         body.createFixture(fdef).setUserData(BONUS);
+
         Bonus b = new Bonus(body);
         this.listBonus.add(b);
         body.setUserData(b);
@@ -445,45 +478,6 @@ public class PlayState extends GameState{
     }
 
 
-    public Body createPlayer(int x, int y, int width, int height){
-
-        Body pBody;
-
-        BodyDef def = new BodyDef();
-        def.type = BodyDef.BodyType.DynamicBody;
-
-        FixtureDef fdef = new FixtureDef();
-
-        PolygonShape shape = new PolygonShape();
-        shape.setAsBox(width
-              //  / PPM
-                , height
-              //  / PPM
-        );
-
-        fdef.shape = shape;
-        fdef.filter.categoryBits = BIT_PLAYER;//тут игрок тоже является ящиком, пох, пока без лишних параметров в функцию
-        fdef.filter.maskBits = BIT_ENEMY | BIT_OBJECT | BIT_BORDER;
-
-        def.position.set(x
-            //    / PPM
-                , y
-                  //      / PPM
-        );
-        def.fixedRotation = true;
-
-        pBody = world.createBody(def);
-
-
-
-        //pBody.createFixture(shape, 0.8f);
-
-        pBody.createFixture(fdef).setUserData("player");
-
-        shape.dispose();
-
-        return pBody;
-    }
 
     public SpriteBatch getBatch(){
         return batch;

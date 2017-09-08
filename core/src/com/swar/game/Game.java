@@ -45,7 +45,7 @@ public class Game extends ApplicationAdapter {
 
 		batch = new SpriteBatch();
 		maincamera = new OrthographicCamera();
-		maincamera.setToOrtho(false, GAME_WIDTH/2, GAME_HEIGHT/2);
+		maincamera.setToOrtho(false, GAME_WIDTH, GAME_HEIGHT);
 
 		gsm = new GameStateManagement(this);
 
@@ -101,7 +101,7 @@ public class Game extends ApplicationAdapter {
 
 	@Override
 	public void resize (int width, int height) {
-		gsm.resize((int)(width / 2), (int)(height / 2));//ресайзит всё. важный элемент
+		gsm.resize(width, height);//ресайзит всё. важный элемент
 	}
 
 
