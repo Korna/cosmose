@@ -54,24 +54,22 @@ public class DeathState extends GameState {
 
 
         TextButton buttonExit = new TextButton("EXIT", textButtonStyle);
-        // buttonExit.getLabel().setScale(GAME_WIDTH/240);
         TextButton buttonPlay = new TextButton("PLAY", textButtonStyle);
-        //   buttonPlay.getLabel().setScale(GAME_WIDTH/240);
+
 
         buttonExit.pad(GAME_WIDTH/24);//отступ
 
         Label.LabelStyle headingStyle = new Label.LabelStyle(white, Color.FIREBRICK);
 
-        Label heading = new Label("You Are Dead", headingStyle);
-        heading.setFontScale(GAME_WIDTH/150);
-        // putting stuff together
+        Label heading = new Label("Defeat", headingStyle);
+        heading.setFontScale(GAME_WIDTH/160);
 
         table.add(heading).pad(GAME_WIDTH/4);
         table.row();
         table.add(buttonPlay).width(GAME_WIDTH/4).height(GAME_WIDTH/7).pad(GAME_WIDTH/35);
         table.row();
         table.add(buttonExit).width(GAME_WIDTH/4).height(GAME_WIDTH/7);
-        table.debug();//показывает линии
+
         stage.addActor(table);
 
         buttonExit.addListener(new ClickListener(){
@@ -92,7 +90,7 @@ public class DeathState extends GameState {
     }
 
     private void setPlay(){
-        gsm.setState(GameStateManagement.State.HUB);
+        gsm.setState(GameStateManagement.State.MAINMENU);
     }
 
 
@@ -101,7 +99,7 @@ public class DeathState extends GameState {
     }
 
     public void render() {
-        Gdx.gl.glClearColor(0.1f, 0.1f, 0.2f, 1f);
+        Gdx.gl.glClearColor(0.1f, 0.1f, 0.1f, 1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 

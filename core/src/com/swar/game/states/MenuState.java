@@ -17,6 +17,8 @@ import com.swar.game.Game;
 import com.swar.game.managers.GameStateManagement;
 import com.swar.game.utils.constants;
 
+import static com.swar.game.utils.constants.GAME_NAME;
+
 /**
  * Created by Koma on 17.01.2017.
  */
@@ -55,26 +57,6 @@ public class MenuState extends GameState {
 
 
         TextButton buttonExit = new TextButton("EXIT", textButtonStyle);
-       // buttonExit.getLabel().setScale(GAME_WIDTH/240);
-        TextButton buttonPlay = new TextButton("PLAY", textButtonStyle);
-     //   buttonPlay.getLabel().setScale(GAME_WIDTH/240);
-
-        buttonExit.pad(GAME_WIDTH/24);//отступ
-
-        Label.LabelStyle headingStyle = new Label.LabelStyle(white, Color.WHITE);
-
-        Label heading = new Label("Project White", headingStyle);
-        heading.setFontScale(GAME_WIDTH/120);
-       // putting stuff together
-
-        table.add(heading).pad(GAME_WIDTH/4);
-        table.row();
-        table.add(buttonPlay).width(GAME_WIDTH/4).height(GAME_WIDTH/7).pad(GAME_WIDTH/35);
-        table.row();
-        table.add(buttonExit).width(GAME_WIDTH/4).height(GAME_WIDTH/7);
-        table.debug();//показывает линии
-        stage.addActor(table);
-
         buttonExit.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -83,6 +65,7 @@ public class MenuState extends GameState {
             }
         });
 
+        TextButton buttonPlay = new TextButton("Classic", textButtonStyle);
         buttonPlay.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -90,11 +73,50 @@ public class MenuState extends GameState {
                 setPlay();
             }
         });
+        TextButton buttonPlaySurvival = new TextButton("Survival", textButtonStyle);
+        buttonPlaySurvival.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                super.clicked(event, x, y);
+                setPlaySurvival();
+            }
+        });
+
+
+        buttonExit.pad(GAME_WIDTH/24);//отступ
+
+        Label.LabelStyle headingStyle = new Label.LabelStyle(white, Color.WHITE);
+
+        Label heading = new Label(GAME_NAME, headingStyle);
+        heading.setFontScale(GAME_WIDTH/160);
+
+       // putting stuff together
+
+        table.add(heading).pad(GAME_WIDTH/5);
+
+        table.row();
+        table.add(buttonPlay).width(GAME_WIDTH/5).height(GAME_WIDTH/7).pad(GAME_WIDTH/35);
+
+        table.row();
+        table.add(buttonPlaySurvival).width(GAME_WIDTH/5).height(GAME_WIDTH/7).pad(GAME_WIDTH/35);
+
+        table.row();
+        table.add(buttonExit).width(GAME_WIDTH/5).height(GAME_WIDTH/7);
+        stage.addActor(table);
+
+
+
+
     }
 
     private void setPlay(){
         gsm.dispose();
         gsm.setState(GameStateManagement.State.HUB);
+    }
+
+    private void setPlaySurvival(){
+        gsm.dispose();
+        gsm.setState(GameStateManagement.State.PLAYSURVIVAL);
     }
 
 

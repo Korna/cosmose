@@ -23,6 +23,7 @@ public class Singleton {
     public ArrayList<float[]> moveHistoryList = new ArrayList<>();
 
     public ArrayList<RecordModel> recordModels = new ArrayList<RecordModel>();
+    public RecordModel recordModel = new RecordModel();
 
     private Singleton() {
     }

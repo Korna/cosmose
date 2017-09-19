@@ -73,7 +73,7 @@ public class GameContactListener implements ContactListener {
         }
         if(isAAFirst(ASTEROID, BULLET_DESTROYABLE)){
             bodiesToRemove.add(ba);
-            bodiesToRemove.add(fb.getBody());
+            bodiesToRemove.add(bb);
             credits++;
             return;
         }

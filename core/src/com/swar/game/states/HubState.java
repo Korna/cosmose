@@ -246,14 +246,8 @@ public class HubState extends GameState {
         table.add(buttonBack).width(BUTTON_WIDTH).height(BUTTON_HEIGHT);
         table.add(buttonPlay).width(BUTTON_WIDTH).height(BUTTON_HEIGHT);
 
-        table.debug();//показывает линии
 
         stage.addActor(table);
-
-
-
-
-
     }
 
 
@@ -265,14 +259,12 @@ public class HubState extends GameState {
 
 
 
-
     private void setPlay() {
-        gsm.dispose();
+
         gsm.setState(GameStateManagement.State.PLAY);
     }
 
     private void setBack() {
-        gsm.dispose();
         gsm.setState(GameStateManagement.State.MAINMENU);
     }
     public void handleInput() {

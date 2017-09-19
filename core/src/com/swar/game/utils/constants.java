@@ -6,6 +6,8 @@ import com.badlogic.gdx.Gdx;
  * Created by Koma on 15.01.2017.
  */
 public class constants {
+    public static final boolean DEBUG_RENDER = false; //отрисовывать ли контуры столкновения объектов
+
     public static final String GAME_NAME = "Looper";
 
     public static final float PPM = 32;

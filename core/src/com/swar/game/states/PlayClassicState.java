@@ -25,8 +25,7 @@ import static com.swar.game.utils.constants.*;
 /**
  * Created by Koma on 17.01.2017.
  */
-public class PlayState extends GameState{
-    private final boolean DEBUG_RENDER = false; //отрисовывать ли контуры столкновения объектов
+public class PlayClassicState extends GameState{
 
     private Box2DDebugRenderer b2dr;
     private HUD hud;
@@ -35,7 +34,6 @@ public class PlayState extends GameState{
     private World world;
     private Player player;
     private Player shadowPlayer;
-    private Body playerBody;
 
     private Array<Asteroid> listAsteroid;
     private Array<Bullet> listBulletPlayer;
@@ -45,14 +43,14 @@ public class PlayState extends GameState{
     final static int GAME_TIME = 15;
 
     boolean available = false;
-    public PlayState(GameStateManagement gsm) {
+    public PlayClassicState(GameStateManagement gsm) {
         super(gsm);
         cl = new GameContactListener();
 
         world = gsm.world;
         player = gsm.player;
 
-        playerBody = gsm.playerBody;
+
 
         Body body = createShadow(GAME_WIDTH / 2, 15, GAME_WIDTH/15, GAME_WIDTH/10);
         shadowPlayer = new Player(body, null, 2, null, 1);//здесь по индексу передаём корабль из ДБ

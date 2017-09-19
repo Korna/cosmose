@@ -15,6 +15,16 @@ public class Randomizer {
             return false;
     }
 
+    public boolean chanceAsteroid(float time){
+        float cfg = time /1000;
+
+        if(random.nextFloat() < (0.05+cfg)){
+            return true;
+        }
+            return false;
+    }
+
+
     public int getCoordinateAsteroid(){
         return random.nextInt(GAME_WIDTH + 10) - 10;
     }
