@@ -18,8 +18,6 @@ public class Game extends ApplicationAdapter {
 
 	private SpriteBatch batch;
 	private OrthographicCamera maincamera;
-	private OrthographicCamera camera_hud;
-
 
 	private boolean DEBUG = false;
 
@@ -45,7 +43,7 @@ public class Game extends ApplicationAdapter {
 
 		batch = new SpriteBatch();
 		maincamera = new OrthographicCamera();
-		maincamera.setToOrtho(false, GAME_WIDTH, GAME_HEIGHT);
+		maincamera.setToOrtho(false, GAME_WIDTH/SCALE, GAME_HEIGHT/SCALE);
 
 		gsm = new GameStateManagement(this);
 
@@ -101,15 +99,12 @@ public class Game extends ApplicationAdapter {
 
 	@Override
 	public void resize (int width, int height) {
-		gsm.resize(width, height);//ресайзит всё. важный элемент
+		gsm.resize(width/2, height/2);//ресайзит всё. важный элемент
 	}
 
 
 	public OrthographicCamera getCamera(){
 		return maincamera;
-	}
-	public OrthographicCamera getCameraHud(){
-		return camera_hud;
 	}
 	public SpriteBatch getBatch(){
 		return batch;

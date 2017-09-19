@@ -1,12 +1,14 @@
 package com.swar.game.entities;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.swar.game.Game;
+
+import static com.swar.game.utils.constants.GAME_HEIGHT;
+import static com.swar.game.utils.constants.GAME_WIDTH;
 
 /**
  * Created by Koma on 17.01.2017.
@@ -40,13 +42,13 @@ public class HUD {
     public void render(SpriteBatch sb){
 
         sb.begin();
-        sb.draw(credit, Gdx.graphics.getWidth() / 6.5f, Gdx.graphics.getHeight() - (Gdx.graphics.getHeight() / 32));
+        sb.draw(credit, GAME_WIDTH / 6.5f, GAME_HEIGHT - (GAME_HEIGHT  / 32));
 
        // sb.draw(hull, Gdx.graphics.getWidth() / 16, Gdx.graphics.getHeight() / 2 - (Gdx.graphics.getHeight() / 32));
-        font.draw(sb, String.valueOf(player.getHp()) + "%", Gdx.graphics.getWidth() / 16, Gdx.graphics.getHeight()  - (Gdx.graphics.getHeight() / 32));
-        font.draw(sb, String.valueOf(player.getCredits()) + "$", Gdx.graphics.getWidth() / 6, Gdx.graphics.getHeight()  - (Gdx.graphics.getHeight() / 32));
+        font.draw(sb, String.valueOf(player.ship.getHp()) + "%", GAME_WIDTH / 16, GAME_HEIGHT - (GAME_HEIGHT  / 32));
+        font.draw(sb, String.valueOf(player.getCredits()) + "$", GAME_WIDTH / 6, GAME_HEIGHT - (GAME_HEIGHT  / 32));
 
-        fontTime.draw(sb, String.valueOf(((int) player.timeInGame) + " / 10"), Gdx.graphics.getWidth() / 4, Gdx.graphics.getHeight() - (Gdx.graphics.getHeight() / 32));
+        fontTime.draw(sb, String.valueOf(((int) player.timeInGame) + " / 10"), GAME_WIDTH / 4, GAME_HEIGHT - (GAME_HEIGHT  / 32));
         /*
         if(player.getPlayerhealth() == 2){
             sb.draw(hearts[0], 40, 200);//full hp

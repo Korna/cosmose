@@ -30,7 +30,8 @@ public class GameStateManagement {
         SPLASH,
         MAINMENU,
         PLAY,
-        HUB
+        HUB,
+        DEATH
     }
 
     public GameStateManagement(final Game app){
@@ -80,8 +81,10 @@ public class GameStateManagement {
             case SPLASH: return new SplashState(this);
             case MAINMENU: return new MenuState(this);
             case PLAY:
-
                 return new PlayState(this);
+            case DEATH:
+                System.out.println("death state");
+                return new DeathState(this);
             case HUB:
                 world = new World(new Vector2(0, 0), false);//потому как создается игрок в хабе
                 return new HubState(this);

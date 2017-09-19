@@ -6,8 +6,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.swar.game.managers.Animation;
 
-import static com.swar.game.utils.constants.GAME_WIDTH;
-
 /**
  * Created by Koma on 17.01.2017.
  */
@@ -23,8 +21,8 @@ public class Sprite {
         this.body = body;
         animation = new Animation();
 
-        this.scale = GAME_WIDTH/(GAME_WIDTH*0.4f);
-        this.scale *= 2f;
+        this.scale = 1.2f/0.4f;
+
     }
     public void initSprite(Body body){
         this.body = body;

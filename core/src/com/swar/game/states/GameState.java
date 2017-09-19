@@ -15,19 +15,21 @@ public abstract class GameState {
 
     protected SpriteBatch batch, batch_hud;
     protected OrthographicCamera maincamera;
-    protected OrthographicCamera camera_hud;
+
 
 
     protected GameState(GameStateManagement gsm){
+        System.out.println("loaded");
         this.gsm = gsm;
+        System.out.println("loaded2");
         this.app = gsm.application();
-
+        System.out.println("loaded3");
 
         batch = app.getBatch();
         batch_hud = app.getBatch();
 
         maincamera = app.getCamera();
-        camera_hud = app.getCameraHud();
+
     }
 
     public void resize(int w, int h){

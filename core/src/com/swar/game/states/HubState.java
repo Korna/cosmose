@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -15,8 +16,11 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
 import com.swar.game.Game;
 import com.swar.game.entities.Player;
+import com.swar.game.entities.Ship;
+import com.swar.game.entities.Weapon;
 import com.swar.game.managers.GameContactListener;
 import com.swar.game.managers.GameStateManagement;
+import com.swar.game.utils.constants;
 
 import static com.swar.game.utils.constants.*;
 
@@ -42,13 +46,18 @@ public class HubState extends GameState {
     private Image currentWeapon;
     private Image currentShip;
 
+    int GAME_WIDTH;
+    int GAME_HEIGHT;
+
     public HubState(GameStateManagement gsm) {
         super(gsm);
-
+        this.GAME_WIDTH = constants.GAME_WIDTH *2;
+        this.GAME_HEIGHT = constants.GAME_HEIGHT*2;
         Gdx.input.setInputProcessor(stage);
 
         cl = gsm.cl;
-        world = gsm.world;
+        world = new World(new Vector2(0, 0), false);//потому как создается игрок в хабе
+
         player = gsm.player;
         playerBody = gsm.playerBody;
 
@@ -62,13 +71,13 @@ public class HubState extends GameState {
         buildTable();
     }
 
+    Skin skin = new Skin(new TextureAtlas("ui/ui.pack"));
     private void buildTable(){
         Table table;
         //creating font
         BitmapFont white = new BitmapFont(Gdx.files.internal("fonts/white16.fnt"));
 
-        TextureAtlas mainMenuAtlas = new TextureAtlas("ui/ui.pack");
-        Skin skin = new Skin(mainMenuAtlas);
+
         table = new Table(skin);
         table.setBounds(0, 0, GAME_WIDTH, GAME_HEIGHT);
 
@@ -83,44 +92,115 @@ public class HubState extends GameState {
 
 
         TextButton buttonBack = new TextButton("BACK", textButtonStyle);
+        buttonBack.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                super.clicked(event, x, y);
+                setBack();
+            }
+        });
         buttonBack.pad(GAME_WIDTH/30);//отступ
+
         TextButton buttonPlay = new TextButton("PLAY", textButtonStyle);
+        buttonPlay.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                super.clicked(event, x, y);
+                setPlay();
+            }
+        });
 
-        Button.ButtonStyle plus = new Button.ButtonStyle();
-        plus.up = skin.getDrawable("button.plus");
+
         Button buttonPlus= new Button();
-        buttonPlus.setStyle(plus);
+        buttonPlus.setStyle(setUpButtonStyle("button.plus"));
 
-        Button.ButtonStyle minus = new Button.ButtonStyle();
-        minus.up = skin.getDrawable("button.minus");
+
         Button buttonMinus = new Button();
-        buttonMinus.setStyle(minus);
+        buttonMinus.setStyle(setUpButtonStyle("button.minus"));
 
         Button.ButtonStyle set = new Button.ButtonStyle();
         set.up = skin.getDrawable("button.ok.up");
         set.down = skin.getDrawable("button.ok.down");
         Button buttonSet = new Button();
         buttonSet.setStyle(set);
+        buttonSet.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                super.clicked(event, x, y);
+                chosenShip = currentPositionShip;
+                chosenWeapon = currentPositionWeapon;
+                System.out.printf("Ship now is%d\n", chosenShip);
+                System.out.printf("Weapon now is%d\n", chosenWeapon);
+
+            }
+        });
+
 
         Button.ButtonStyle arrowLeft_ship = new Button.ButtonStyle();
         arrowLeft_ship.up = skin.getDrawable("button.left");
         Button buttonArrowLeft_ship = new Button();
         buttonArrowLeft_ship.setStyle(arrowLeft_ship);
+        buttonArrowLeft_ship.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                super.clicked(event, x, y);
+                System.out.printf("%d\n", currentPositionShip);
+                --currentPositionShip;
+                imageUpdate();
 
-        Button.ButtonStyle arrowRight_ship = new Button.ButtonStyle();
-        arrowRight_ship.up = skin.getDrawable("button.right");
+
+                clearStage();
+                buildTable();
+            }
+        });
+
         Button buttonArrowRight_ship = new Button();
-        buttonArrowRight_ship.setStyle(arrowRight_ship);
+        buttonArrowRight_ship.setStyle(setUpButtonStyle("button.right"));
+        buttonArrowRight_ship.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                super.clicked(event, x, y);
+                System.out.printf("%d\n", currentPositionShip);
 
-        Button.ButtonStyle arrowLeft_weapon = new Button.ButtonStyle();
-        arrowLeft_weapon.up = skin.getDrawable("button.left");
+                ++currentPositionShip;
+                imageUpdate();
+
+                clearStage();
+                buildTable();
+            }
+        });
+
         Button buttonArrowLeft_weapon = new Button();
-        buttonArrowLeft_weapon.setStyle(arrowLeft_weapon);
+        buttonArrowLeft_weapon.setStyle(setUpButtonStyle("button.left"));
+        buttonArrowLeft_weapon.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                super.clicked(event, x, y);
+                System.out.printf("%d\n", currentPositionWeapon);
 
-        Button.ButtonStyle arrowRight_weapon = new Button.ButtonStyle();
-        arrowRight_weapon.up = skin.getDrawable("button.right");
+                --currentPositionWeapon;
+                imageUpdate();
+
+                clearStage();
+                buildTable();
+            }
+        });
+
         Button buttonArrowRight_weapon = new Button();
-        buttonArrowRight_weapon.setStyle(arrowRight_weapon);
+        buttonArrowRight_weapon.setStyle(setUpButtonStyle("button.right"));
+        buttonArrowRight_weapon.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                super.clicked(event, x, y);
+                System.out.printf("%d\n", currentPositionWeapon);
+
+                ++currentPositionWeapon;
+                imageUpdate();
+
+                clearStage();
+                buildTable();
+            }
+        });
 
         TextButton.TextButtonStyle textBoardStyle = new TextButton.TextButtonStyle();
         Button board = new Button(textBoardStyle);
@@ -170,95 +250,29 @@ public class HubState extends GameState {
 
         stage.addActor(table);
 
-        buttonBack.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                super.clicked(event, x, y);
-                setBack();
-            }
-        });
-
-        buttonPlay.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                super.clicked(event, x, y);
-                setPlay();
-            }
-        });
 
 
-        //WEAPON
-        buttonArrowRight_weapon.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                super.clicked(event, x, y);
-                System.out.printf("%d\n", currentPositionWeapon);
-                currentPositionWeapon++;
-                imageUpdate();
-                clearStage();
-                buildTable();
-            }
-        });
-        buttonArrowLeft_weapon.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                super.clicked(event, x, y);
-                System.out.printf("%d\n", currentPositionWeapon);
-                currentPositionWeapon--;
-                imageUpdate();
-                clearStage();
-                buildTable();
-            }
-        });
-
-        //SHIP
-        buttonArrowRight_ship.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                super.clicked(event, x, y);
-                System.out.printf("%d\n", currentPositionShip);
-                currentPositionShip++;
-                imageUpdate();
-                clearStage();
-                buildTable();
-            }
-        });
-        buttonArrowLeft_ship.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                super.clicked(event, x, y);
-                System.out.printf("%d\n", currentPositionShip);
-                currentPositionShip--;
-                imageUpdate();
 
 
-                clearStage();
-                buildTable();
-            }
-        });
+    }
 
-        buttonSet.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                super.clicked(event, x, y);
-                chosenShip = currentPositionShip;
-                chosenWeapon = currentPositionWeapon;
-                System.out.printf("Ship now is%d\n", chosenShip);
-                System.out.printf("Weapon now is%d\n", chosenWeapon);
 
-            }
-        });
-
+    private Button.ButtonStyle setUpButtonStyle(String name){
+        Button.ButtonStyle plus = new Button.ButtonStyle();
+        plus.up = skin.getDrawable(name);
+        return plus;
     }
 
 
 
 
     private void setPlay() {
+        gsm.dispose();
         gsm.setState(GameStateManagement.State.PLAY);
     }
 
     private void setBack() {
+        gsm.dispose();
         gsm.setState(GameStateManagement.State.MAINMENU);
     }
     public void handleInput() {
@@ -298,7 +312,9 @@ public class HubState extends GameState {
     public void dispose() {
         playerBody = createPlayer(GAME_WIDTH / 4, 15, GAME_WIDTH/30, GAME_WIDTH/20);
 
-        player = new Player(playerBody, cl, chosenShip, null, chosenWeapon);//здесь по индексу передаём корабль из ДБ
+        player = new Player(playerBody, cl, chosenShip,
+                new Ship(200.0f, 100, 5, "", "", new float[]{1,2}, new float[]{1,2}, 1, 2, new Weapon[]{null}, 1, 2),
+                chosenWeapon);//здесь по индексу передаём корабль из ДБ
         player.initSprite(playerBody);
 
         gsm.cl = cl;
@@ -310,10 +326,11 @@ public class HubState extends GameState {
     }
 
     private Body createPlayer(int x, int y, int width, int height){
-        Body pBody;
-
         BodyDef def = new BodyDef();
         def.type = BodyDef.BodyType.DynamicBody;
+        def.position.set(x, y);
+        def.fixedRotation = true;
+
 
         FixtureDef fdef = new FixtureDef();
 
@@ -325,12 +342,7 @@ public class HubState extends GameState {
         fdef.filter.maskBits = BIT_ENEMY | BIT_OBJECT | BIT_BORDER;
 
 
-        def.position.set(x, y);
-        def.fixedRotation = true;
-
-        pBody = world.createBody(def);
-
-
+        Body pBody = world.createBody(def);
 
 
         pBody.createFixture(fdef).setUserData(PLAYER_SHIP);

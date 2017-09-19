@@ -28,6 +28,7 @@ public class Player extends Sprite{//все параметры корабля
 
     public float timeInGame = 0;
 
+    private boolean dead = false;
     public Player(Body body, GameContactListener cl, int shipIndex, Ship ship, int weaponIndex) {
         super(body);
         this.shipIndex = shipIndex;
@@ -82,8 +83,18 @@ public class Player extends Sprite{//все параметры корабля
         setAnimation(sprites, 1 / 12f);
 
     }
-    public int getHp(){return player_cl.getHp();}
-    public int getCredits(){return player_cl.getCredits(); }
+    private int credits = 0;
+    public int getCredits() {
+        credits += player_cl.getCredits();
+
+        return credits; }
     public int getSpeed(){return speed;}
 
+    public boolean isDead() {
+        return dead;
+    }
+
+    public void setDead(boolean dead) {
+        this.dead = dead;
+    }
 }

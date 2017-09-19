@@ -4,14 +4,13 @@ import android.util.Log;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
-import com.swar.game.Game;
 import com.swar.game.Randomizer;
+import com.swar.game.Singleton;
 import com.swar.game.entities.*;
 import com.swar.game.managers.GameContactListener;
 import com.swar.game.managers.GameInputProcessor;
@@ -20,6 +19,7 @@ import com.swar.game.managers.GameStateManagement;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+import static com.badlogic.gdx.math.MathUtils.random;
 import static com.swar.game.utils.constants.*;
 
 /**
@@ -34,23 +34,29 @@ public class PlayState extends GameState{
     private GameContactListener cl;
     private World world;
     private Player player;
+    private Player shadowPlayer;
     private Body playerBody;
 
     private Array<Asteroid> listAsteroid;
     private Array<Bullet> listBulletPlayer;
     private Array<Bonus> listBonus;
 
-    public Texture tex_background;
 
+    final static int GAME_TIME = 15;
 
     boolean available = false;
     public PlayState(GameStateManagement gsm) {
         super(gsm);
+        cl = new GameContactListener();
 
-        cl = gsm.cl;
         world = gsm.world;
         player = gsm.player;
+
         playerBody = gsm.playerBody;
+
+        Body body = createShadow(GAME_WIDTH / 2, 15, GAME_WIDTH/15, GAME_WIDTH/10);
+        shadowPlayer = new Player(body, null, 2, null, 1);//здесь по индексу передаём корабль из ДБ
+
 
         Gdx.input.setInputProcessor(new GameInputProcessor());
 
@@ -64,7 +70,7 @@ public class PlayState extends GameState{
         this.listBulletPlayer = new Array<>();
         this.listBonus = new Array<>();
 
-        tex_background = Game.res.getTexture("background_1");
+
 
         hud = new HUD(player);
         available = Gdx.input.isPeripheralAvailable(Input.Peripheral.Accelerometer);
@@ -77,29 +83,107 @@ public class PlayState extends GameState{
 
     private Randomizer randomizer = new Randomizer();
 
+    int index = 0;
+
+
 
     @Override
     public void update(float delta) {
         player.timeInGame += delta;
-        if(player.timeInGame >= 10){
+        if(player.timeInGame >= GAME_TIME){
             player.timeInGame = 0;
+            instance.firstRun = false;
+
+            for(Asteroid asteroid : listAsteroid)
+                world.destroyBody(asteroid.getBody());
+            for(Bullet bullet : listBulletPlayer)
+                world.destroyBody(bullet.getBody());
+            for(Bonus bonus : listBonus)
+                world.destroyBody(bonus.getBody());
+
+            listBonus.clear();
+            listBulletPlayer.clear();
+            listAsteroid.clear();
+
             gsm.setState(GameStateManagement.State.HUB);
+
+            return;
+        }
+
+        player.ship.setHp(player.ship.getHp() + cl.getHp());
+
+        if(player.ship.getHp() <= 0){
+            player.setDead(true);
+
+            for(Asteroid asteroid : listAsteroid)
+                world.destroyBody(asteroid.getBody());
+
+            for(Bullet bullet : listBulletPlayer)
+                world.destroyBody(bullet.getBody());
+            for(Bonus bonus : listBonus)
+                world.destroyBody(bonus.getBody());
+
+            listBonus.clear();
+            listBulletPlayer.clear();
+            listAsteroid.clear();
+
+            gsm.setState(GameStateManagement.State.DEATH);
+
+            return;
         }
 
 
-        player.update(delta);
         inputUpdate(delta);
+        player.update(delta);
 
-        if(cl.isPlayerDead())
-            Gdx.app.exit();
+
+
+        if(!instance.firstRun){
+            float[] move = {0,0};
+            try {
+                move = instance.moveHistoryList.get(index);
+                shadowPlayer.getBody().setLinearVelocity(move[0], move[1]);
+
+            }catch(IndexOutOfBoundsException e){
+                shadowPlayer.getBody().setLinearVelocity(0, 0);
+                try {
+                    Log.e("shadow:", "indexOutOfBOunds");
+                }catch(RuntimeException re){
+                    System.out.println("indexOutOfBOunds");
+                }
+            }finally{
+                if(move[0] > 0)
+                    shadowPlayer.ship_r();
+                else
+                if(move[0] < 0)
+                    shadowPlayer.ship_l();
+                else
+                if(move[0] == 0)
+                    shadowPlayer.ship();
+
+                index++;
+            }
+        }
+        if(!instance.firstRun)
+            shadowPlayer.update(delta);
+
+
+
+
 
         if(randomizer.chanceAsteroid())
-            createAsteroid(randomizer.getCoordinateAsteroid(),GAME_HEIGHT - 50);
+            createAsteroid(randomizer.getCoordinateAsteroid(),GAME_HEIGHT-45);
 
 
 
         //удаление астероидов
         Array<Body> bodies = cl.getBodiesToRemove();
+        cl.clearList();
+        if(cl.shadowToRemove!=null){
+            world.destroyBody(cl.shadowToRemove);
+            cl.shadowToRemove = null;
+            shadowPlayer.setDead(true);
+        }
 
         //TODO оптимизировать трансформацию AL в A
         ArrayList<Body> list = new ArrayList<>();
@@ -119,7 +203,7 @@ public class PlayState extends GameState{
                         createBonus(body.getPosition().x, body.getPosition().y);
                     }
                 }catch(Exception e){
-                    Log.d("update", e.toString());
+                    System.out.printf(e.toString() + "\n");
                 }
             }catch(Exception e){
                 try {
@@ -136,46 +220,18 @@ public class PlayState extends GameState{
 
         cl.clearList();
         //TODO сделать потоки безопасными
-        Thread threadAst = new Thread(new Runnable(){
-            @Override public void run(){
 
-                for(int i = 0; i < listAsteroid.size; ++i){
+                for(int i = 0; i < listAsteroid.size; ++i) {
                     Asteroid asteroid = listAsteroid.get(i);
-
-                    float mass = asteroid.getBody().getMass();
-                    float targetVelocity = 1600.6667f; //For 6000kmph simulated
-                    Vector2 targetPosition = new Vector2(0, asteroidSpeed*1000);
+                    Vector2 targetPosition = new Vector2(0, asteroidSpeed * 100000);
 
 
-                    float impulseMag = mass * targetVelocity;
-
-
-                    Vector2 impulse = new Vector2();
-
-
-                    impulse.set(targetPosition).sub(asteroid.getBody().getPosition());
-
-
-                    impulse.nor();
-
-
-                    impulse.scl(impulseMag);
-
-
-
-                    asteroid.getBody().applyForce(impulse, asteroid.getBody().getWorldCenter(), true);
+                    asteroid.getBody().applyForce(targetPosition, asteroid.getBody().getWorldCenter(), true);
                     asteroid.update(delta);
                 }
 
-        }});
-        threadAst.setName("asteroid");
-        threadAst.start();
 
 
-
-
-        Thread threadBul =new Thread(new Runnable(){
-            @Override public void run(){
 
                 for(int i = 0; i<listBulletPlayer.size; ++i){
                     Bullet bullet = listBulletPlayer.get(i);
@@ -183,25 +239,21 @@ public class PlayState extends GameState{
                     bullet.update(delta);
                 }
 
-        }});
-        threadBul.setName("bullet");
-        threadBul.start();
+
 
         batch.setProjectionMatrix(maincamera.combined);
 
         doWorldStep(delta);
     }
 
+    float f1 = random.nextFloat()+0.3f;
+    float f2 = random.nextFloat()+0.3f;
+    float f3 = random.nextFloat()+0.3f;
     @Override
     public void render() {
-        Gdx.gl.glClearColor(0.2f, 0.2f, 0.2f, 1f);
+        Gdx.gl.glClearColor(f1, f2, f3, 1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-
-        batch.begin();
-        batch.draw(tex_background, 0, 0, GAME_WIDTH, GAME_HEIGHT);
-
-        batch.end();
 
 
         if(DEBUG_RENDER)
@@ -218,13 +270,15 @@ public class PlayState extends GameState{
             bullet.render(batch);
 
         player.render(batch);
+        if(!instance.firstRun && !shadowPlayer.isDead())
+            shadowPlayer.render(batch);
 
         hud.render(batch_hud);
     }
 
     @Override
     public void dispose() {
-        tex_background.dispose();
+        //tex_background.dispose();
         b2dr.dispose();
         world.dispose();
 
@@ -258,6 +312,7 @@ public class PlayState extends GameState{
                 --horizontalForce;
                 player.ship_l();
             }
+            else
             if(accelX < -playerZone){
                 ++horizontalForce;
                 player.ship_r();
@@ -266,6 +321,7 @@ public class PlayState extends GameState{
             if(accelY > (playerZone + playerHandle)){
                 --verticalForce;
             }
+            else
             if(accelY < (-playerZone + playerHandle)){
                 ++verticalForce;
             }
@@ -281,9 +337,8 @@ public class PlayState extends GameState{
             if(Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.A)){
                 --horizontalForce;
                 player.ship_l();
-
             }
-
+            else
             if(Gdx.input.isKeyPressed(Input.Keys.RIGHT) || Gdx.input.isKeyPressed(Input.Keys.D)){
                 ++horizontalForce;
                 player.ship_r();
@@ -292,7 +347,7 @@ public class PlayState extends GameState{
             if(Gdx.input.isKeyPressed(Input.Keys.UP) || Gdx.input.isKeyPressed(Input.Keys.W)){
                 ++verticalForce;
             }
-
+            else
             if(Gdx.input.isKeyPressed(Input.Keys.DOWN) || Gdx.input.isKeyPressed(Input.Keys.S)){
                 --verticalForce;
             }
@@ -305,9 +360,23 @@ public class PlayState extends GameState{
 
 
         player.getBody().setLinearVelocity(horizontalForce * shipSpeed, verticalForce * shipSpeed);
+        if(instance.firstRun)
+            instance.moveHistoryList.add(new float[] {horizontalForce * shipSpeed, verticalForce * shipSpeed});
+        else{
+            if(index - 1 >= 0){
+                try {
+                    instance.moveHistoryList.get(index - 1)[0] = horizontalForce * shipSpeed;
+                    instance.moveHistoryList.get(index - 1)[1] = verticalForce * shipSpeed;
+                }catch(IndexOutOfBoundsException e){
+                    instance.moveHistoryList.add(new float[] {horizontalForce * shipSpeed, verticalForce * shipSpeed});
+                    System.out.println(e.toString() + "\n");
+                }
+            }
 
-
+        }
     }
+    Singleton instance = Singleton.getInstance();
+
     private void createAsteroid(float x, float y) {
         BodyDef bdef = new BodyDef();
         FixtureDef fdef = new FixtureDef();
@@ -320,7 +389,6 @@ public class PlayState extends GameState{
         cshape.setRadius(GAME_WIDTH/40);
 
         fdef.shape = cshape;
-        fdef.isSensor = true;
         fdef.filter.categoryBits = BIT_ENEMY;
         fdef.filter.maskBits = BIT_PLAYER | BIT_BULLET | BIT_BORDER;
         fdef.isSensor = true;
@@ -344,7 +412,6 @@ public class PlayState extends GameState{
         cshape.setRadius(GAME_WIDTH/80);
 
         fdef.shape = cshape;
-        fdef.isSensor = true;
         fdef.filter.categoryBits = BIT_OBJECT;
         fdef.filter.maskBits = BIT_PLAYER;
         fdef.isSensor = true;
@@ -360,8 +427,6 @@ public class PlayState extends GameState{
 
     private int bulletAmount = 0;
     private void createBulletPlayer() {
-
-
         BodyDef bdef = new BodyDef();
         bdef.type = BodyDef.BodyType.DynamicBody;
         FixtureDef fdef = new FixtureDef();
@@ -376,8 +441,8 @@ public class PlayState extends GameState{
         fdef.shape = cshape;
         fdef.isSensor = true;
         fdef.filter.categoryBits = BIT_BULLET;
-        fdef.filter.maskBits = BIT_ENEMY | BIT_BORDER;
-        fdef.isSensor = true;
+        fdef.filter.maskBits = BIT_ENEMY | BIT_BORDER | BIT_SHADOW;
+
         Body body = this.world.createBody(bdef);
 
 
@@ -478,6 +543,36 @@ public class PlayState extends GameState{
     }
 
 
+    private Body createShadow(int x, int y, float width, float height){
+        Body pBody;
+
+        BodyDef def = new BodyDef();
+        def.type = BodyDef.BodyType.DynamicBody;
+
+        FixtureDef fdef = new FixtureDef();
+
+        PolygonShape shape = new PolygonShape();
+        shape.setAsBox(width, height);
+
+        fdef.shape = shape;
+        fdef.filter.categoryBits = BIT_SHADOW;
+        fdef.filter.maskBits =  BIT_BULLET | BIT_BORDER;
+
+
+        def.position.set(x, y);
+        def.fixedRotation = true;
+
+        pBody = world.createBody(def);
+
+
+
+
+        pBody.createFixture(fdef).setUserData(SHADOW);
+
+        shape.dispose();
+
+        return pBody;
+    }
 
     public SpriteBatch getBatch(){
         return batch;

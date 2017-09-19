@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -13,25 +12,25 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.swar.game.Game;
 import com.swar.game.managers.GameStateManagement;
 import com.swar.game.utils.constants;
 
 /**
- * Created by Koma on 17.01.2017.
+ * Created by Koma on 08.09.2017.
  */
-public class MenuState extends GameState {
+public class DeathState extends GameState {
 
     private Stage stage = new Stage();
     private Table table;
-    private TextureRegion reg;
+
     int GAME_WIDTH;
     int GAME_HEIGHT;
-    public MenuState(GameStateManagement gsm) {
+
+    public DeathState(GameStateManagement gsm) {
         super(gsm);
+
         this.GAME_WIDTH = constants.GAME_WIDTH *2;
         this.GAME_HEIGHT = constants.GAME_HEIGHT*2;
-        this.reg = new TextureRegion(Game.res.getTexture("background_menu"), 0, 0, GAME_WIDTH, GAME_HEIGHT/3);
 
 
         Gdx.input.setInputProcessor(stage);
@@ -55,17 +54,17 @@ public class MenuState extends GameState {
 
 
         TextButton buttonExit = new TextButton("EXIT", textButtonStyle);
-       // buttonExit.getLabel().setScale(GAME_WIDTH/240);
+        // buttonExit.getLabel().setScale(GAME_WIDTH/240);
         TextButton buttonPlay = new TextButton("PLAY", textButtonStyle);
-     //   buttonPlay.getLabel().setScale(GAME_WIDTH/240);
+        //   buttonPlay.getLabel().setScale(GAME_WIDTH/240);
 
         buttonExit.pad(GAME_WIDTH/24);//отступ
 
-        Label.LabelStyle headingStyle = new Label.LabelStyle(white, Color.WHITE);
+        Label.LabelStyle headingStyle = new Label.LabelStyle(white, Color.FIREBRICK);
 
-        Label heading = new Label("Project White", headingStyle);
-        heading.setFontScale(GAME_WIDTH/120);
-       // putting stuff together
+        Label heading = new Label("You Are Dead", headingStyle);
+        heading.setFontScale(GAME_WIDTH/150);
+        // putting stuff together
 
         table.add(heading).pad(GAME_WIDTH/4);
         table.row();
@@ -93,7 +92,6 @@ public class MenuState extends GameState {
     }
 
     private void setPlay(){
-        gsm.dispose();
         gsm.setState(GameStateManagement.State.HUB);
     }
 
@@ -103,14 +101,11 @@ public class MenuState extends GameState {
     }
 
     public void render() {
-        Gdx.gl.glClearColor(0.0f, 0.0f, 0.1f, 1f);
+        Gdx.gl.glClearColor(0.1f, 0.1f, 0.2f, 1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 
         this.batch.setProjectionMatrix(this.maincamera.combined);
-        this.batch.begin();
-        this.batch.draw(this.reg, 0.0F, 0.0F);
-        this.batch.end();
 
         stage.draw();
     }

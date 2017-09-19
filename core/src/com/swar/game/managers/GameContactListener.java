@@ -12,8 +12,9 @@ public class GameContactListener implements ContactListener {
 
     private Array<Body> bodiesToRemove;
     private Array<Body> bulletsToRemove;
+    public Body shadowToRemove = null;
 
-    private int hp = 100;
+    private int hp = 0;
     private int credits = 0;
     public GameContactListener(){
         super();
@@ -25,88 +26,120 @@ public class GameContactListener implements ContactListener {
     //when 2 fixtures start to collide
     Fixture fa;
     Fixture fb;
+
+    private void fixtureSolver(Fixture A, Fixture B, String A_name, String B_name, Runnable A_action, Runnable B_action){
+        if(A.getUserData().equals(A_name) && B.getUserData().equals(B_name))
+            A_action.run();
+
+        if(A.getUserData().equals(B_name) && B.getUserData().equals(A_name))
+            B_action.run();
+    }
+
+    Runnable SHIP_AND_BONUS = new Runnable() {
+        @Override
+        public void run() {
+
+        }
+    };
+
     public void beginContact(Contact c){
         fa = c.getFixtureA();
         fb = c.getFixtureB();
-
-        if( fa.getUserData().equals(BONUS) && fb.getUserData().equals(PLAYER_SHIP)){
-            //remove crystal
-
-            bodiesToRemove.add(fa.getBody());
-            credits+=100;
-
-        }else
-            if(fa.getUserData().equals(PLAYER_SHIP)&& fb.getUserData().equals(BONUS)){
-                bodiesToRemove.add(fb.getBody());
-                credits+=100;
-            }
+        Body ba = fa.getBody();
+        Body bb = fb.getBody();
 
 
-        if( fa.getUserData().equals(ASTEROID) && fb.getUserData().equals(PLAYER_SHIP)){
-            //remove crystal
 
-            bodiesToRemove.add(fa.getBody());
+        if (isAAFirst(ASTEROID, PLAYER_SHIP)) {
+            bodiesToRemove.add(ba);
             minushp();
+            return;
+        }
+        if (isABFirst(ASTEROID, PLAYER_SHIP)) {
+            bodiesToRemove.add(bb);
+            minushp();
+            return;
+        }
 
-        }else
-            if(fa.getUserData().equals(PLAYER_SHIP)&& fb.getUserData().equals(ASTEROID)){
-                bodiesToRemove.add(fb.getBody());
-                minushp();
-            }
-
-
-        if(fb.getUserData().equals(ASTEROID) && fa.getUserData().equals(BULLET_PIERCING)){
-            System.out.printf("hit asteroid\n");
+        if(isAAFirst(ASTEROID, BULLET_PIERCING)){
+            bodiesToRemove.add(ba);
+            credits++;
+            return;
+        }
+        if(isABFirst(ASTEROID, BULLET_PIERCING)){
+            bodiesToRemove.add(bb);
+            credits++;
+            return;
+        }
+        if(isAAFirst(ASTEROID, BULLET_DESTROYABLE)){
+            bodiesToRemove.add(ba);
             bodiesToRemove.add(fb.getBody());
             credits++;
-           // bulletsToRemove.add(fa.getBody());
-
-        }else
-            if(fa.getUserData().equals(ASTEROID) && fb.getUserData().equals(BULLET_PIERCING)){
-                System.out.printf("hit asteroid\n");
-                bodiesToRemove.add(fa.getBody());
-                credits++;
-              //  bulletsToRemove.add(fb.getBody());
-            }
-
-        if(fb.getUserData().equals(ASTEROID) && fa.getUserData().equals(BULLET_DESTROYABLE)){
-            System.out.printf("hit asteroid\n");
-            bodiesToRemove.add(fb.getBody());
-            bodiesToRemove.add(fa.getBody());
+            return;
+        }
+        if(isABFirst(ASTEROID, BULLET_DESTROYABLE)){
+            bodiesToRemove.add(ba);
+            bodiesToRemove.add(ba);
             credits++;
-            // bulletsToRemove.add(fa.getBody());
+            return;
+        }
 
-        }else
-            if(fa.getUserData().equals(ASTEROID) && fb.getUserData().equals(BULLET_DESTROYABLE)){
-                System.out.printf("hit asteroid\n");
-                bodiesToRemove.add(fa.getBody());
-                bodiesToRemove.add(fb.getBody());
-                credits++;
-                //  bulletsToRemove.add(fb.getBody());
-            }
+        if(isAAFirst(BONUS, PLAYER_SHIP)){
+            bodiesToRemove.add(ba);
+            credits+=100;
+        }
+        if(isABFirst(BONUS, PLAYER_SHIP)){
+            bodiesToRemove.add(bb);
+            credits+=100;
+        }
+
+        /*
+        if(isAAFirst(SHADOW, BULLET_DESTROYABLE)){
+            shadowToRemove = ba;
+        }
+        if(isABFirst(SHADOW, BULLET_DESTROYABLE)){
+            shadowToRemove = bb;
+        }
+
+        if(isAAFirst(SHADOW, BULLET_PIERCING)){
+            shadowToRemove = ba;
+        }
+        if(isABFirst(SHADOW, BULLET_PIERCING)){
+            shadowToRemove = bb;
+        }*/
+
 
 
         //эту часть вставляем в end contact для норм отрисовки
         if(!fb.getUserData().equals(PLAYER_SHIP) && fa.getUserData().equals("borderBottom")){
-            if (fb.getUserData().equals(ASTEROID))
+            if (fb.getUserData().equals(ASTEROID)){
                 bodiesToRemove.add(fb.getBody());
-
+                return;
+            }
 
         }else
             if(!fa.getUserData().equals(PLAYER_SHIP) && fb.getUserData().equals("borderBottom")) {
-                  if (fa.getUserData().equals(ASTEROID))
-                      bodiesToRemove.add(fa.getBody());
-
+                  if (fa.getUserData().equals(ASTEROID)){
+                      bodiesToRemove.add(ba);
+                      return;
+                  }
             }
+
+
 
     }
 
-    private boolean bodiesCollide(String a, String b){
+    private boolean isAAFirst(String a, String b){
         if(fa.getUserData().equals(a) && fb.getUserData().equals(b))
             return true;
         else
-            if(fb.getUserData().equals(a) && fa.getUserData().equals(b))
-                return true;
+            return false;
+    }
+
+
+    private boolean isABFirst(String a, String b){
+        if(fa.getUserData().equals(b) && fb.getUserData().equals(a))
+            return true;
         else
             return false;
     }
@@ -126,19 +159,23 @@ public class GameContactListener implements ContactListener {
     public Array<Body> getBodiesToRemove() { return bodiesToRemove; }
 
     public void clearList(){
-        bodiesToRemove.clear();
+       // bodiesToRemove.clear();
+        bodiesToRemove = new Array<>();
+
     }
     public void preSolve(Contact c, Manifold m){}
     public void postSolve(Contact c, ContactImpulse ci){}
 
     private void minushp(){ hp-=10;}
-    private void plushp(){ hp+=10;}
 
-    public int getHp(){return hp;}
-    public int getCredits(){return credits;}
+    public int getHp(){
+        int savedHp = hp;
+        hp = 0;
+        return savedHp;}
+    public int getCredits(){
+        int savedCr = credits;
+        credits = 0;
+        return savedCr;}
 
-    public boolean isPlayerDead(){
-        return hp <=0;
-    }
 
 }
