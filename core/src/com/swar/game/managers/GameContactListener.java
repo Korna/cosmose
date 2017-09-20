@@ -16,6 +16,7 @@ public class GameContactListener implements ContactListener {
 
     private int hp = 0;
     private int credits = 0;
+    private int score = 0;
     public GameContactListener(){
         super();
 
@@ -64,33 +65,43 @@ public class GameContactListener implements ContactListener {
         if(isAAFirst(ASTEROID, BULLET_PIERCING)){
             bodiesToRemove.add(ba);
             credits++;
+            score +=5;
+            System.out.println("Got hit");
             return;
         }
         if(isABFirst(ASTEROID, BULLET_PIERCING)){
             bodiesToRemove.add(bb);
             credits++;
+            score +=5;
+            System.out.println("Got hit");
             return;
         }
         if(isAAFirst(ASTEROID, BULLET_DESTROYABLE)){
             bodiesToRemove.add(ba);
             bodiesToRemove.add(bb);
+            System.out.println("Got hit");
             credits++;
+            score +=5;
             return;
         }
         if(isABFirst(ASTEROID, BULLET_DESTROYABLE)){
             bodiesToRemove.add(ba);
-            bodiesToRemove.add(ba);
+            bodiesToRemove.add(bb);
+            System.out.println("Got hit");
             credits++;
+            score +=5;
             return;
         }
 
         if(isAAFirst(BONUS, PLAYER_SHIP)){
             bodiesToRemove.add(ba);
             credits+=100;
+            score += 50;
         }
         if(isABFirst(BONUS, PLAYER_SHIP)){
             bodiesToRemove.add(bb);
             credits+=100;
+            score += 50;
         }
 
         /*
@@ -113,7 +124,7 @@ public class GameContactListener implements ContactListener {
         //эту часть вставляем в end contact для норм отрисовки
         if(!fb.getUserData().equals(PLAYER_SHIP) && fa.getUserData().equals("borderBottom")){
             if (fb.getUserData().equals(ASTEROID)){
-                bodiesToRemove.add(fb.getBody());
+                bodiesToRemove.add(bb);
                 return;
             }
 
@@ -157,7 +168,12 @@ public class GameContactListener implements ContactListener {
     }
 
     public Array<Body> getBodiesToRemove() { return bodiesToRemove; }
+    public int getScoreAndClear(){
+        int scoreToReturn = this.score;
+        this.score = 0;
 
+        return scoreToReturn;
+    }
     public void clearList(){
        // bodiesToRemove.clear();
         bodiesToRemove = new Array<>();

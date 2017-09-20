@@ -12,8 +12,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.swar.game.Singleton;
+import com.swar.game.entities.RecordModel;
 import com.swar.game.managers.GameStateManagement;
 import com.swar.game.utils.constants;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 /**
  * Created by Koma on 08.09.2017.
@@ -106,10 +112,44 @@ public class DeathState extends GameState {
         this.batch.setProjectionMatrix(this.maincamera.combined);
 
         stage.draw();
+
+        BitmapFont font;
+
+        font = new BitmapFont();
+        font.setColor(Color.WHITE);
+
+        batch.begin();
+        float x = GAME_WIDTH/4 - GAME_WIDTH/10;
+        float y = GAME_HEIGHT/4;
+        Singleton instance = Singleton.getInstance();
+        ArrayList<RecordModel> list = instance.recordModels;
+
+        Collections.sort(list, new MyComparator());
+
+        for(int i = 0; i < 5 && i < list.size(); ++i){
+            font.draw(batch, (i+1) + ") " + list.get(i).toString(), x, y - (20*i));
+        }
+        
+
+        batch.end();
+
+
+
     }
 
     public void dispose() {
 
     }
+
+
+    class MyComparator implements Comparator<RecordModel> {
+
+        @Override
+        public int compare(RecordModel o1, RecordModel o2) {
+            return Float.compare(o1.getScore() + o1.getTime(), o2.getScore() + o2.getTime());
+        }
+
+    }
+
 
 }

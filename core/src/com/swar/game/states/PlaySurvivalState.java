@@ -88,8 +88,16 @@ public class PlaySurvivalState extends GameState{
 
         player.ship.setHp(player.ship.getHp() + cl.getHp());
 
+
         if(player.ship.getHp() <= 0){
             player.setDead(true);
+
+            RecordModel model = new RecordModel();
+            model.setScore(cl.getScoreAndClear());
+            model.setTime(player.timeInGame);
+            model.setGameType("Survival");
+            instance.recordModels.add(model);
+
             gsm.setState(GameStateManagement.State.DEATH);
 
             return;
@@ -136,7 +144,7 @@ public class PlaySurvivalState extends GameState{
 
             world.destroyBody(body);
 
-            System.out.printf("deleted\n");
+
         }
 
         cl.clearList();

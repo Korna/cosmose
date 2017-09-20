@@ -176,7 +176,7 @@ public class PlayClassicState extends GameState{
 
         //удаление астероидов
         Array<Body> bodies = cl.getBodiesToRemove();
-        cl.clearList();
+
         if(cl.shadowToRemove!=null){
             world.destroyBody(cl.shadowToRemove);
             cl.shadowToRemove = null;
@@ -194,6 +194,7 @@ public class PlayClassicState extends GameState{
 
         for(Body body : set){
 
+            world.destroyBody(body);
             try{
                 listAsteroid.removeValue((Asteroid) body.getUserData(), true);
                 try {
@@ -211,9 +212,9 @@ public class PlayClassicState extends GameState{
                 }
             }
 
-            world.destroyBody(body);
 
-            System.out.printf("deleted\n");
+
+
         }
 
         cl.clearList();
@@ -395,8 +396,9 @@ public class PlayClassicState extends GameState{
         body.createFixture(fdef).setUserData(ASTEROID);
 
         Asteroid a = new Asteroid(body);
-        this.listAsteroid.add(a);
         body.setUserData(a);
+        this.listAsteroid.add(a);
+
     }
 
     private void createBonus(float x, float y){
@@ -418,8 +420,9 @@ public class PlayClassicState extends GameState{
         body.createFixture(fdef).setUserData(BONUS);
 
         Bonus b = new Bonus(body);
-        this.listBonus.add(b);
         body.setUserData(b);
+        this.listBonus.add(b);
+
 
     }
 
