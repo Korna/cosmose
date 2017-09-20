@@ -79,6 +79,14 @@ public class Game extends ApplicationAdapter {
 		res.loadTexture("sprites/ship_2_left.png", "ship_2_l");
 		res.loadTexture("sprites/ship_2_right.png", "ship_2_r");
 
+		res.loadTexture("sprites/ship_3.png", "ship_3");
+		res.loadTexture("sprites/ship_3_left.png", "ship_3_l");
+		res.loadTexture("sprites/ship_3_right.png", "ship_3_r");
+
+		res.loadTexture("sprites/ship_4.png", "ship_4");
+		res.loadTexture("sprites/ship_4_left.png", "ship_4_l");
+		res.loadTexture("sprites/ship_4_right.png", "ship_4_r");
+
 	}
 
 	@Override
