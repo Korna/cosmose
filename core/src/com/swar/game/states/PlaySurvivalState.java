@@ -110,7 +110,7 @@ public class PlaySurvivalState extends GameState{
 
 
         if(randomizer.chanceAsteroid(player.timeInGame))
-            createAsteroid(randomizer.getCoordinateAsteroid(),GAME_HEIGHT-45);
+            createAsteroid(randomizer.getCoordinateAsteroid(),GAME_HEIGHT-30);
 
 
 
@@ -118,11 +118,11 @@ public class PlaySurvivalState extends GameState{
         Array<Body> bodies = cl.getBodiesToRemove();
 
         //TODO оптимизировать трансформацию AL в A
-        ArrayList<Body> list = new ArrayList<>();
+        final ArrayList<Body> list = new ArrayList<>();
         for(Body b : bodies){
             list.add(b);
         }
-        HashSet<Body> set = new HashSet<>(list);
+        final HashSet<Body> set = new HashSet<>(list);
 
         for(Body body : set){
             try{
@@ -152,13 +152,13 @@ public class PlaySurvivalState extends GameState{
 
         for(int i = 0; i < listAsteroid.size; ++i) {
             Asteroid asteroid = listAsteroid.get(i);
-            Vector2 targetPosition = new Vector2(0, asteroidSpeed * 100000);
+            final float cfg = 0.2f + player.timeInGame/500f;
 
+            Vector2 targetPosition = new Vector2(0, asteroidSpeed*cfg);
+            asteroid.getBody().setLinearVelocity(targetPosition);
 
-            asteroid.getBody().applyForce(targetPosition, asteroid.getBody().getWorldCenter(), true);
             asteroid.update(delta);
         }
-
 
 
 
@@ -175,9 +175,9 @@ public class PlaySurvivalState extends GameState{
         doWorldStep(delta);
     }
 
-    float f1 = random.nextFloat()+0.3f;
+    float f1 = random.nextFloat();
     float f2 = random.nextFloat();
-    float f3 = random.nextFloat();
+    float f3 = random.nextFloat() + 0.2f;
     @Override
     public void render() {
         Gdx.gl.glClearColor(f1, f2, f3, 1f);
@@ -213,8 +213,8 @@ public class PlaySurvivalState extends GameState{
 
     public void cameraUpdate(float delta){
         Vector3 position = maincamera.position;
-        position.x = maincamera.position.x + (player.getPosition().x * PPM - maincamera.position.x) * .4f;
-        position.y = maincamera.position.y + (player.getPosition().y * PPM - maincamera.position.y) * .4f;
+        position.x = maincamera.position.x + (player.getPosition().x - maincamera.position.x) * .0004f;
+        position.y = maincamera.position.y + (player.getPosition().y - maincamera.position.y) * .0004f;
         maincamera.position.set(position);
         maincamera.update();
     }
@@ -427,7 +427,7 @@ public class PlaySurvivalState extends GameState{
         );
 
         Body pBody = world.createBody(def);
-        pBody.createFixture(fdef).setUserData("borderBottom");
+        pBody.createFixture(fdef).setUserData(BORDER_HORIZONTAL);
         shape.dispose();
 
         def = new BodyDef();
@@ -439,7 +439,7 @@ public class PlaySurvivalState extends GameState{
         fdef.filter.categoryBits = BIT_BORDER;
         def.position.set(GAME_WIDTH, GAME_HEIGHT);
         pBody = world.createBody(def);
-        pBody.createFixture(fdef).setUserData("borderBottom");
+        pBody.createFixture(fdef).setUserData(BORDER_HORIZONTAL);
         shape.dispose();
 
 

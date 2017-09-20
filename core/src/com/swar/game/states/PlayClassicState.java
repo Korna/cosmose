@@ -54,7 +54,7 @@ public class PlayClassicState extends GameState{
 
         Body body = createShadow(GAME_WIDTH / 2, 15, GAME_WIDTH/15, GAME_WIDTH/10);
         shadowPlayer = new Player(body, null, 2, null, 1);//здесь по индексу передаём корабль из ДБ
-
+       // body.setUserData(shadowPlayer);
 
         Gdx.input.setInputProcessor(new GameInputProcessor());
 
@@ -194,7 +194,7 @@ public class PlayClassicState extends GameState{
 
         for(Body body : set){
 
-            world.destroyBody(body);
+
             try{
                 listAsteroid.removeValue((Asteroid) body.getUserData(), true);
                 try {
@@ -213,7 +213,7 @@ public class PlayClassicState extends GameState{
             }
 
 
-
+            world.destroyBody(body);
 
         }
 
@@ -222,10 +222,11 @@ public class PlayClassicState extends GameState{
 
                 for(int i = 0; i < listAsteroid.size; ++i) {
                     Asteroid asteroid = listAsteroid.get(i);
-                    Vector2 targetPosition = new Vector2(0, asteroidSpeed * 100000);
+                    Vector2 targetPosition = new Vector2(0, asteroidSpeed *1.1f);
 
 
-                    asteroid.getBody().applyForce(targetPosition, asteroid.getBody().getWorldCenter(), true);
+                   // asteroid.getBody().applyForce(targetPosition, asteroid.getBody().getWorldCenter(), true);
+                    asteroid.getBody().setLinearVelocity(targetPosition);
                     asteroid.update(delta);
                 }
 
@@ -484,23 +485,15 @@ public class PlayClassicState extends GameState{
 
 
         PolygonShape shape = new PolygonShape();
-        shape.setAsBox(GAME_WIDTH
-                //  / PPM
-                , 1
-                //  / PPM
-        );
+        shape.setAsBox(GAME_WIDTH, 1);
         FixtureDef fdef = new FixtureDef();
         fdef.shape = shape;
         fdef.filter.categoryBits = BIT_BORDER;
 
-        def.position.set(GAME_WIDTH
-                //    / PPM
-                , 0
-                //      / PPM
-        );
+        def.position.set(GAME_WIDTH, 0);
 
         Body pBody = world.createBody(def);
-        pBody.createFixture(fdef).setUserData("borderBottom");
+        pBody.createFixture(fdef).setUserData(BORDER_HORIZONTAL);
         shape.dispose();
 
         def = new BodyDef();
@@ -512,7 +505,7 @@ public class PlayClassicState extends GameState{
         fdef.filter.categoryBits = BIT_BORDER;
         def.position.set(GAME_WIDTH, GAME_HEIGHT);
         pBody = world.createBody(def);
-        pBody.createFixture(fdef).setUserData("borderBottom");
+        pBody.createFixture(fdef).setUserData(BORDER_HORIZONTAL);
         shape.dispose();
 
 

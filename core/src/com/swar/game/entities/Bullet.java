@@ -46,17 +46,17 @@ public class Bullet extends Sprite {
             bdt %= 5;
             switch (bdt) {
                 case 0:
-                    currentSpeed = 1000;
+                    currentSpeed = 500;
                 case 1:
-                    currentSpeed = 3000;
+                    currentSpeed = 1500;
                     break;
                 case 2:
                     currentSpeed = 0;
                     break;
                 case 3:
-                    currentSpeed = -1000;
+                    currentSpeed = -500;
                 case 4:
-                    currentSpeed = -3000;
+                    currentSpeed = -1500;
                     break;
                 case 5:
                 default:
@@ -65,7 +65,7 @@ public class Bullet extends Sprite {
             }
         }else{
             if(bdt>10){
-                speedY += 3000;
+                speedY = 3000;
             }
         }
 

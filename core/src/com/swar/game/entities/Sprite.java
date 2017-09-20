@@ -21,8 +21,8 @@ public class Sprite {
         this.body = body;
         animation = new Animation();
 
-        this.scale = 1.2f/0.4f;
-
+        //this.scale = 1.2f/0.4f;
+        this.scale = 1.2f/0.8f;
     }
     public void initSprite(Body body){
         this.body = body;

@@ -32,11 +32,13 @@ public class DeathState extends GameState {
     int GAME_WIDTH;
     int GAME_HEIGHT;
 
+    Singleton instance = Singleton.getInstance();
+    ArrayList<RecordModel> list = instance.recordModels;
+    int SCALE = 4;
     public DeathState(GameStateManagement gsm) {
         super(gsm);
-
-        this.GAME_WIDTH = constants.GAME_WIDTH *2;
-        this.GAME_HEIGHT = constants.GAME_HEIGHT*2;
+        this.GAME_WIDTH = constants.GAME_WIDTH * SCALE;
+        this.GAME_HEIGHT = constants.GAME_HEIGHT * SCALE;
 
 
         Gdx.input.setInputProcessor(stage);
@@ -118,22 +120,17 @@ public class DeathState extends GameState {
         font = new BitmapFont();
         font.setColor(Color.WHITE);
 
+        float x = GAME_WIDTH/(SCALE*2) - GAME_WIDTH/(SCALE*2);
+        float y = GAME_HEIGHT/(SCALE*2);
+
         batch.begin();
-        float x = GAME_WIDTH/4 - GAME_WIDTH/10;
-        float y = GAME_HEIGHT/4;
-        Singleton instance = Singleton.getInstance();
-        ArrayList<RecordModel> list = instance.recordModels;
 
         Collections.sort(list, new MyComparator());
+        for(int i = 0; i < 5 && i < list.size(); ++i)
+            font.draw(batch, (i+1) + ") " + list.get(i).toString(), x, y - (15*i));
 
-        for(int i = 0; i < 5 && i < list.size(); ++i){
-            font.draw(batch, (i+1) + ") " + list.get(i).toString(), x, y - (20*i));
-        }
-        
 
         batch.end();
-
-
 
     }
 

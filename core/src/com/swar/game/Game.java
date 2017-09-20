@@ -21,7 +21,7 @@ public class Game extends ApplicationAdapter {
 
 	private boolean DEBUG = false;
 
-	private final float SCALE = 2.0f;// раньше было 2f
+	private final float SCALE = 4.0f;// раньше было 2f
 	private GameStateManagement gsm;
 
 	//DB
@@ -99,7 +99,7 @@ public class Game extends ApplicationAdapter {
 
 	@Override
 	public void resize (int width, int height) {
-		gsm.resize(width/2, height/2);//ресайзит всё. важный элемент
+		gsm.resize(width/4, height/4);//ресайзит всё. важный элемент
 	}
 
 

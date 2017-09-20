@@ -48,11 +48,11 @@ public class HubState extends GameState {
 
     int GAME_WIDTH;
     int GAME_HEIGHT;
-
+    int SCALE = 4;
     public HubState(GameStateManagement gsm) {
         super(gsm);
-        this.GAME_WIDTH = constants.GAME_WIDTH *2;
-        this.GAME_HEIGHT = constants.GAME_HEIGHT*2;
+        this.GAME_WIDTH = constants.GAME_WIDTH * SCALE;
+        this.GAME_HEIGHT = constants.GAME_HEIGHT * SCALE;
         Gdx.input.setInputProcessor(stage);
 
         cl = gsm.cl;
@@ -302,7 +302,7 @@ public class HubState extends GameState {
     }
 
     public void dispose() {
-        playerBody = createPlayer(GAME_WIDTH / 4, 15, GAME_WIDTH/30, GAME_WIDTH/20);
+        playerBody = createPlayer(constants.GAME_WIDTH / 2, 15, constants.GAME_WIDTH/30, constants.GAME_WIDTH/20);
 
         player = new Player(playerBody, cl, chosenShip,
                 new Ship(200.0f, 100, 5, "", "", new float[]{1,2}, new float[]{1,2}, 1, 2, new Weapon[]{null}, 1, 2),

@@ -93,6 +93,25 @@ public class GameContactListener implements ContactListener {
             return;
         }
 
+        if(isAAFirst(BULLET_DESTROYABLE, BORDER_HORIZONTAL)){
+            bodiesToRemove.add(ba);
+            return;
+        }
+        if(isABFirst(BULLET_DESTROYABLE, BORDER_HORIZONTAL)){
+            bodiesToRemove.add(bb);
+            return;
+        }
+
+        if(isAAFirst(BULLET_PIERCING, BORDER_HORIZONTAL)){
+            bodiesToRemove.add(ba);
+            return;
+        }
+        if(isABFirst(BULLET_PIERCING, BORDER_HORIZONTAL)){
+            bodiesToRemove.add(bb);
+            return;
+        }
+
+
         if(isAAFirst(BONUS, PLAYER_SHIP)){
             bodiesToRemove.add(ba);
             credits+=100;
@@ -122,14 +141,14 @@ public class GameContactListener implements ContactListener {
 
 
         //эту часть вставляем в end contact для норм отрисовки
-        if(!fb.getUserData().equals(PLAYER_SHIP) && fa.getUserData().equals("borderBottom")){
+        if(!fb.getUserData().equals(PLAYER_SHIP) && fa.getUserData().equals(BORDER_HORIZONTAL)){
             if (fb.getUserData().equals(ASTEROID)){
                 bodiesToRemove.add(bb);
                 return;
             }
 
         }else
-            if(!fa.getUserData().equals(PLAYER_SHIP) && fb.getUserData().equals("borderBottom")) {
+            if(!fa.getUserData().equals(PLAYER_SHIP) && fb.getUserData().equals(BORDER_HORIZONTAL)) {
                   if (fa.getUserData().equals(ASTEROID)){
                       bodiesToRemove.add(ba);
                       return;

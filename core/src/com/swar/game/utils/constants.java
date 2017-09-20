@@ -6,15 +6,15 @@ import com.badlogic.gdx.Gdx;
  * Created by Koma on 15.01.2017.
  */
 public class constants {
-    public static final boolean DEBUG_RENDER = false; //отрисовывать ли контуры столкновения объектов
+    public static final boolean DEBUG_RENDER = true; //отрисовывать ли контуры столкновения объектов
 
     public static final String GAME_NAME = "Looper";
 
     public static final float PPM = 32;
 
-    public static final int GAME_WIDTH = Gdx.graphics.getWidth() / 2;
+    public static final int GAME_WIDTH = Gdx.graphics.getWidth() / 4;
 
-    public static final int GAME_HEIGHT = Gdx.graphics.getHeight()/ 2;
+    public static final int GAME_HEIGHT = Gdx.graphics.getHeight()/ 4;
 
     public static final float STEP = 1 / 60f;
     public static final int BLOCK_SIZE = 32;
@@ -27,6 +27,8 @@ public class constants {
     public static final String SHADOW = "Shadow";
     public static final String ASTEROID = "Asteroid";
     public static final String PLAYER_SHIP = "PlayerShip";
+
+    public static final String BORDER_HORIZONTAL = "BorderHorizontal";
 
     public static final int VIBRATION_LONG = 30;
 

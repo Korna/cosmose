@@ -29,10 +29,11 @@ public class MenuState extends GameState {
     private TextureRegion reg;
     int GAME_WIDTH;
     int GAME_HEIGHT;
+    int SCALE = 4;
     public MenuState(GameStateManagement gsm) {
         super(gsm);
-        this.GAME_WIDTH = constants.GAME_WIDTH *2;
-        this.GAME_HEIGHT = constants.GAME_HEIGHT*2;
+        this.GAME_WIDTH = constants.GAME_WIDTH * SCALE;
+        this.GAME_HEIGHT = constants.GAME_HEIGHT * SCALE;
         this.reg = new TextureRegion(Game.res.getTexture("background_menu"), 0, 0, GAME_WIDTH, GAME_HEIGHT/3);
 
 
