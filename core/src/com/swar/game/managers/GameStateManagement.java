@@ -6,13 +6,16 @@ package com.swar.game.managers;
 
 
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.*;
 import com.swar.game.Game;
 import com.swar.game.entities.Player;
+import com.swar.game.entities.Ship;
+import com.swar.game.entities.Weapon;
 import com.swar.game.states.*;
 
 import java.util.Stack;
+
+import static com.swar.game.utils.constants.*;
 
 
 public class GameStateManagement {
@@ -21,7 +24,7 @@ public class GameStateManagement {
     public GameContactListener cl  = new GameContactListener();
     public Body playerBody;
     public Player player;
-    public World world = new World(new Vector2(0, 0), false);;
+    public World world;
 
 
 
@@ -30,12 +33,14 @@ public class GameStateManagement {
         SPLASH,
         MAINMENU,
         PLAY,
-        HUB
+        HUB,
+        DEATH,
+        PLAYSURVIVAL
     }
 
     public GameStateManagement(final Game app){
         this.app = app;
-        this.states = new Stack<GameState>();
+        this.states = new Stack<>();
 
 
         this.setState(State.SPLASH);
@@ -76,13 +81,57 @@ public class GameStateManagement {
 
     private GameState getState(State state){
         switch(state){
+            case SPLASH:
+                return new SplashState(this);
+            case MAINMENU:
+                return new MenuState(this);
+            case PLAY:
+                return new PlayClassicState(this);
+            case DEATH:
+                return new DeathState(this);
+            case HUB:
+                world = new World(new Vector2(0, 0), false);//потому как создается игрок в хабе
+                return new HubState(this);
+            case PLAYSURVIVAL:
+                world = new World(new Vector2(0, 0), false);//потому как создается игрок в хабе
 
-            case SPLASH: return new SplashState(this);
-            case MAINMENU: return new MenuState(this);
-            case PLAY: return new PlayState(this);
-            case HUB: return new HubState(this);
+                playerBody = createPlayer(GAME_WIDTH / 4, 15, GAME_WIDTH/30, GAME_WIDTH/20);
+
+                player = new Player(playerBody, cl, 1,
+                        new Ship(200.0f, 100, 5, "", "", new float[]{1,2}, new float[]{1,2}, 1, 2, new Weapon[]{null}, 1, 2),
+                        2);//здесь по индексу передаём корабль из ДБ
+                player.initSprite(playerBody);
+
+
+                return new PlaySurvivalState(this);
         }
         return null;
+    }
+    private Body createPlayer(int x, int y, int width, int height){
+        BodyDef def = new BodyDef();
+        def.type = BodyDef.BodyType.DynamicBody;
+        def.position.set(x, y);
+        def.fixedRotation = true;
+
+
+        FixtureDef fdef = new FixtureDef();
+
+        PolygonShape shape = new PolygonShape();
+        shape.setAsBox(width, height);
+
+        fdef.shape = shape;
+        fdef.filter.categoryBits = BIT_PLAYER;
+        fdef.filter.maskBits = BIT_ENEMY | BIT_OBJECT | BIT_BORDER;
+
+
+        Body pBody = world.createBody(def);
+
+
+        pBody.createFixture(fdef).setUserData(PLAYER_SHIP);
+
+        shape.dispose();
+
+        return pBody;
     }
 
 }

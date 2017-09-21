@@ -6,6 +6,9 @@ import com.badlogic.gdx.graphics.Texture;
 import com.swar.game.Game;
 import com.swar.game.managers.GameStateManagement;
 
+import static com.swar.game.utils.constants.GAME_HEIGHT;
+import static com.swar.game.utils.constants.GAME_WIDTH;
+
 /**
  * Created by Koma on 17.01.2017.
  */
@@ -40,7 +43,7 @@ public class SplashState  extends GameState{
         batch.setProjectionMatrix(maincamera.combined);
         batch.begin();
 
-        batch.draw(tex_splash, Gdx.graphics.getWidth() / 4 - tex_splash.getWidth() / 2, Gdx.graphics.getHeight() / 4 - tex_splash.getHeight() / 2);
+        batch.draw(tex_splash, GAME_WIDTH / 4 - tex_splash.getWidth() / 2, GAME_HEIGHT / 4 - tex_splash.getHeight() / 2);
         batch.end();
     }
 
