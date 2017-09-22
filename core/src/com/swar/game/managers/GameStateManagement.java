@@ -8,9 +8,8 @@ package com.swar.game.managers;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.swar.game.Game;
+import com.swar.game.ShipType;
 import com.swar.game.entities.Player;
-import com.swar.game.entities.Ship;
-import com.swar.game.entities.Weapon;
 import com.swar.game.states.*;
 
 import java.util.Stack;
@@ -97,9 +96,8 @@ public class GameStateManagement {
 
                 playerBody = createPlayer(GAME_WIDTH / 4, 15, GAME_WIDTH/30, GAME_WIDTH/20);
 
-                player = new Player(playerBody, cl, 1,
-                        new Ship(200.0f, 100, 5, "", "", new float[]{1,2}, new float[]{1,2}, 1, 2, new Weapon[]{null}, 1, 2),
-                        2);//здесь по индексу передаём корабль из ДБ
+                player = new Player(playerBody, cl, 1, ShipType.getShip(ShipType.valueOf("ship_1")), 2);//здесь по индексу передаём корабль из ДБ
+
                 player.initSprite(playerBody);
 
 

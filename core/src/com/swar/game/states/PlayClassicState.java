@@ -10,6 +10,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
 import com.swar.game.Randomizer;
+import com.swar.game.ShipType;
 import com.swar.game.Singleton;
 import com.swar.game.entities.*;
 import com.swar.game.managers.GameContactListener;
@@ -53,7 +54,7 @@ public class PlayClassicState extends GameState{
 
 
         Body body = createShadow(GAME_WIDTH / 2, 15, GAME_WIDTH/15, GAME_WIDTH/10);
-        shadowPlayer = new Player(body, null, 2, null, 1);//здесь по индексу передаём корабль из ДБ
+        shadowPlayer = new Player(body, null, 2, ShipType.getShip(ShipType.valueOf("ship_2")), 1);//здесь по индексу передаём корабль из ДБ
        // body.setUserData(shadowPlayer);
 
         Gdx.input.setInputProcessor(new GameInputProcessor());
@@ -77,11 +78,9 @@ public class PlayClassicState extends GameState{
 
 
 
-    private final float asteroidSpeed = -(GAME_WIDTH);
-
     private Randomizer randomizer = new Randomizer();
 
-    int index = 0;
+    int index = 0;//переменная для сохранения индекса кадра
 
 
 
@@ -222,7 +221,7 @@ public class PlayClassicState extends GameState{
 
                 for(int i = 0; i < listAsteroid.size; ++i) {
                     Asteroid asteroid = listAsteroid.get(i);
-                    Vector2 targetPosition = new Vector2(0, asteroidSpeed *1.1f);
+                    Vector2 targetPosition = new Vector2(0, asteroid.speed *1.1f);
 
 
                    // asteroid.getBody().applyForce(targetPosition, asteroid.getBody().getWorldCenter(), true);
@@ -239,6 +238,19 @@ public class PlayClassicState extends GameState{
                     bullet.update(delta);
                 }
 
+
+
+        for(int i = 0; i < listBonus.size; ++i){
+            Bonus bonus = listBonus.get(i);
+            bonus.setExistTime(bonus.getExistTime() + delta);
+            if(bonus.getExistTime() > 30){
+                world.destroyBody(bonus.getBody());
+
+                listBonus.removeIndex(i);
+                --i;
+            }
+
+        }
 
 
         batch.setProjectionMatrix(maincamera.combined);
@@ -327,7 +339,14 @@ public class PlayClassicState extends GameState{
             }
 
             if(Gdx.input.justTouched()){
-                createBulletPlayer();
+                float x = player.getBody().getPosition().x;
+                float y = player.getBody().getPosition().y;
+
+                if(player.shipIndex==4){
+                    createBulletPlayer(x-12, y);
+                    createBulletPlayer(x+12, y);
+                }else
+                    createBulletPlayer(x, y+5);
                 Gdx.input.vibrate(VIBRATION_LONG);
             }
 
@@ -353,7 +372,9 @@ public class PlayClassicState extends GameState{
             }
 
             if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)){
-                createBulletPlayer();
+                float x = player.getBody().getPosition().x;
+                float y = player.getBody().getPosition().y + 5;
+                createBulletPlayer(x, y);
             }
 
         }
@@ -386,7 +407,7 @@ public class PlayClassicState extends GameState{
         bdef.position.set(x, y);
 
         CircleShape cshape = new CircleShape();
-        cshape.setRadius(GAME_WIDTH/40);
+        cshape.setRadius(GAME_WIDTH/35);
 
         fdef.shape = cshape;
         fdef.filter.categoryBits = BIT_ENEMY;
@@ -410,7 +431,7 @@ public class PlayClassicState extends GameState{
         bdef.position.set(x, y);
 
         CircleShape cshape = new CircleShape();
-        cshape.setRadius(GAME_WIDTH/80);
+        cshape.setRadius(GAME_WIDTH/70);
 
         fdef.shape = cshape;
         fdef.filter.categoryBits = BIT_OBJECT;
@@ -428,14 +449,13 @@ public class PlayClassicState extends GameState{
     }
 
     private int bulletAmount = 0;
-    private void createBulletPlayer() {
+    private void createBulletPlayer(float x, float y) {
         BodyDef bdef = new BodyDef();
         bdef.type = BodyDef.BodyType.DynamicBody;
         FixtureDef fdef = new FixtureDef();
 
         //позиционирование выстрела
-        float x = player.getBody().getPosition().x;
-        float y = player.getBody().getPosition().y + 5;
+
 
         bdef.position.set(x, y);
         CircleShape cshape = new CircleShape();

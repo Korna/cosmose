@@ -74,7 +74,6 @@ public class PlaySurvivalState extends GameState{
 
 
 
-    private final float asteroidSpeed = -(GAME_WIDTH);
 
     private Randomizer randomizer = new Randomizer();
 
@@ -92,6 +91,8 @@ public class PlaySurvivalState extends GameState{
         if(player.ship.getHp() <= 0){
             player.setDead(true);
 
+
+
             RecordModel model = new RecordModel();
             model.setScore(cl.getScoreAndClear());
             model.setTime(player.timeInGame);
@@ -107,6 +108,8 @@ public class PlaySurvivalState extends GameState{
         inputUpdate(delta);
         player.update(delta);
 
+        int energy = cl.getEnergyAndClear();
+        player.ship.setEnergy(player.ship.getEnergy() + energy);
 
 
         if(randomizer.chanceAsteroid(player.timeInGame))
@@ -150,11 +153,11 @@ public class PlaySurvivalState extends GameState{
         cl.clearList();
         //TODO сделать потоки безопасными
 
-        for(int i = 0; i < listAsteroid.size; ++i) {
+        for(int i = 0; i < listAsteroid.size; ++i) {//можно мб просто отмечать для удаления объекты? ставить маркер. а не ждать пока итератор пройдет по новой КОЛЛЕКЦИИ
             Asteroid asteroid = listAsteroid.get(i);
             final float cfg = 0.2f + player.timeInGame/500f;
 
-            Vector2 targetPosition = new Vector2(0, asteroidSpeed*cfg);
+            Vector2 targetPosition = new Vector2(0, asteroid.speed *cfg);
             asteroid.getBody().setLinearVelocity(targetPosition);
 
             asteroid.update(delta);
@@ -162,10 +165,24 @@ public class PlaySurvivalState extends GameState{
 
 
 
-        for(int i = 0; i<listBulletPlayer.size; ++i){
+        for(int i = 0; i<listBulletPlayer.size; ++i){//можно мб просто отмечать для удаления объекты? ставить маркер. а не ждать пока итератор пройдет по новой КОЛЛЕКЦИИ
             Bullet bullet = listBulletPlayer.get(i);
             bullet.getBody().setLinearVelocity(bullet.currentSpeed, bullet.speedY);
             bullet.update(delta);
+        }
+
+
+        //удаление бонусов спустя время
+        for(int i = 0; i < listBonus.size; ++i){
+            Bonus bonus = listBonus.get(i);
+            bonus.setExistTime(bonus.getExistTime() + delta);
+            if(bonus.getExistTime() > 30){
+                world.destroyBody(bonus.getBody());
+
+                listBonus.removeIndex(i);
+                --i;
+            }
+
         }
 
 
@@ -254,8 +271,12 @@ public class PlaySurvivalState extends GameState{
             }
 
             if(Gdx.input.justTouched()){
-                createBulletPlayer();
-                Gdx.input.vibrate(VIBRATION_LONG);
+                if(player.ship.getEnergy() > 0){
+                    createBulletPlayer();
+                    Gdx.input.vibrate(VIBRATION_LONG);
+                    player.ship.setEnergy(player.ship.getEnergy() - 1);
+                }
+
             }
 
 

@@ -15,9 +15,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
 import com.swar.game.Game;
+import com.swar.game.ShipType;
 import com.swar.game.entities.Player;
-import com.swar.game.entities.Ship;
-import com.swar.game.entities.Weapon;
 import com.swar.game.managers.GameContactListener;
 import com.swar.game.managers.GameStateManagement;
 import com.swar.game.utils.constants;
@@ -79,7 +78,7 @@ public class HubState extends GameState {
 
 
         table = new Table(skin);
-        table.setBounds(0, 0, GAME_WIDTH, GAME_HEIGHT);
+        table.setBounds(0, 0, GAME_WIDTH-GAME_WIDTH/5, GAME_HEIGHT-GAME_HEIGHT/5);
 
 
         // creating buttons
@@ -267,14 +266,10 @@ public class HubState extends GameState {
     private void setBack() {
         gsm.setState(GameStateManagement.State.MAINMENU);
     }
-    public void handleInput() {
-    }
+
 
     public void update(float dt) {
-        this.handleInput();
-
         stage.act(dt);
-
     }
 
     public void imageUpdate(){
@@ -304,9 +299,7 @@ public class HubState extends GameState {
     public void dispose() {
         playerBody = createPlayer(constants.GAME_WIDTH / 2, 15, constants.GAME_WIDTH/30, constants.GAME_WIDTH/20);
 
-        player = new Player(playerBody, cl, chosenShip,
-                new Ship(200.0f, 100, 5, "", "", new float[]{1,2}, new float[]{1,2}, 1, 2, new Weapon[]{null}, 1, 2),
-                chosenWeapon);//здесь по индексу передаём корабль из ДБ
+        player = new Player(playerBody, cl, chosenShip, ShipType.getShip(ShipType.valueOf("ship_" + chosenShip)), chosenWeapon);//здесь по индексу передаём корабль из ДБ
         player.initSprite(playerBody);
 
         gsm.cl = cl;

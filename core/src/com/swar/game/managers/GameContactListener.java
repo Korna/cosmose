@@ -17,6 +17,8 @@ public class GameContactListener implements ContactListener {
     private int hp = 0;
     private int credits = 0;
     private int score = 0;
+    private int energy = 0;
+
     public GameContactListener(){
         super();
 
@@ -116,11 +118,13 @@ public class GameContactListener implements ContactListener {
             bodiesToRemove.add(ba);
             credits+=100;
             score += 50;
+            energy += 10;
         }
         if(isABFirst(BONUS, PLAYER_SHIP)){
             bodiesToRemove.add(bb);
             credits+=100;
             score += 50;
+            energy += 10;
         }
 
         /*
@@ -187,12 +191,21 @@ public class GameContactListener implements ContactListener {
     }
 
     public Array<Body> getBodiesToRemove() { return bodiesToRemove; }
+
     public int getScoreAndClear(){
         int scoreToReturn = this.score;
         this.score = 0;
 
         return scoreToReturn;
     }
+
+    public int getEnergyAndClear(){
+        int energyToReturn = this.energy;
+        this.energy = 0;
+
+        return energyToReturn;
+    }
+
     public void clearList(){
        // bodiesToRemove.clear();
         bodiesToRemove = new Array<>();

@@ -142,7 +142,7 @@ public class DeathState extends GameState {
     class MyComparator implements Comparator<RecordModel> {
 
         @Override
-        public int compare(RecordModel o1, RecordModel o2) {
+        public int compare(RecordModel o2, RecordModel o1) {
             return Float.compare(o1.getScore() + o1.getTime(), o2.getScore() + o2.getTime());
         }
 

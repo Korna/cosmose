@@ -15,6 +15,8 @@ public class Singleton {
         return ourInstance;
     }
 
+    public ArrayList<Integer> shipsWhichAreBought = new ArrayList<>();
+
     public Player player;
     public int money;
     public int level;

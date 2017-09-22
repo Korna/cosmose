@@ -6,6 +6,7 @@ package com.swar.game.entities;
 public class Ship {
     private float speed;
     private int hp;
+    private int energy = 50;
     private int armor;
     private String shipSprite;
     private String Sprite;
@@ -28,18 +29,19 @@ public class Ship {
         this.armor = armor;
         this.shipSprite = shipSprite;
         this.Sprite = Sprite;
-
+/*
         for (int i = 0; i < carryWeapons; i++)
             this.weaponPositionX[i] = weaponPositionX[i];
 
         for (int i = 0; i < carryWeapons; i++)
             this.weaponPositionY[i] = weaponPositionY[i];
-
+*/
         this.carryWeapons = carryWeapons;
         this.carryEquipment = carryEquipment;
-
+/*
         for (int i = 0; i < carryWeapons; i++)
             this.weaponList[i] = weaponList[i];
+*/
 
         this.height = height;
         this.width = width;
@@ -51,5 +53,40 @@ public class Ship {
 
     public void setHp(int hp) {
         this.hp = hp;
+    }
+    public float getSpeed(){
+        return this.speed;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public String getShipSprite() {
+        return shipSprite;
+    }
+
+    public void setShipSprite(String shipSprite) {
+        this.shipSprite = shipSprite;
+    }
+
+    public int getEnergy() {
+        return energy;
+    }
+
+    public void setEnergy(int energy) {
+        this.energy = energy;
     }
 }
