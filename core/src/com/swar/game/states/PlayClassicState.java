@@ -13,6 +13,7 @@ import com.swar.game.Randomizer;
 import com.swar.game.ShipType;
 import com.swar.game.Singleton;
 import com.swar.game.entities.*;
+import com.swar.game.managers.GameConfig;
 import com.swar.game.managers.GameContactListener;
 import com.swar.game.managers.GameInputProcessor;
 import com.swar.game.managers.GameStateManagement;
@@ -40,7 +41,7 @@ public class PlayClassicState extends GameState{
     private Array<Bullet> listBulletPlayer;
     private Array<Bonus> listBonus;
 
-
+    boolean CONFIG_VIBRATION;
     final static int GAME_TIME = 15;
 
     boolean available = false;
@@ -50,7 +51,8 @@ public class PlayClassicState extends GameState{
 
         world = gsm.world;
         player = gsm.player;
-
+        GameConfig gameConfig = new GameConfig();
+        CONFIG_VIBRATION = gameConfig.isVibraion();
 
 
         Body body = createShadow(GAME_WIDTH / 2, 15, GAME_WIDTH/15, GAME_WIDTH/10);
@@ -347,7 +349,8 @@ public class PlayClassicState extends GameState{
                     createBulletPlayer(x+12, y);
                 }else
                     createBulletPlayer(x, y+5);
-                Gdx.input.vibrate(VIBRATION_LONG);
+                if(CONFIG_VIBRATION)
+                    Gdx.input.vibrate(VIBRATION_LONG);
             }
 
         }else{
@@ -375,6 +378,7 @@ public class PlayClassicState extends GameState{
                 float x = player.getBody().getPosition().x;
                 float y = player.getBody().getPosition().y + 5;
                 createBulletPlayer(x, y);
+
             }
 
         }
@@ -407,7 +411,7 @@ public class PlayClassicState extends GameState{
         bdef.position.set(x, y);
 
         CircleShape cshape = new CircleShape();
-        cshape.setRadius(GAME_WIDTH/35);
+        cshape.setRadius(GAME_WIDTH/20);
 
         fdef.shape = cshape;
         fdef.filter.categoryBits = BIT_ENEMY;
@@ -420,8 +424,8 @@ public class PlayClassicState extends GameState{
         Asteroid a = new Asteroid(body);
         body.setUserData(a);
         this.listAsteroid.add(a);
-
     }
+
 
     private void createBonus(float x, float y){
         BodyDef bdef = new BodyDef();

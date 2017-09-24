@@ -34,7 +34,8 @@ public class GameStateManagement {
         PLAY,
         HUB,
         DEATH,
-        PLAYSURVIVAL
+        PLAYSURVIVAL,
+        SETTINGS
     }
 
     public GameStateManagement(final Game app){
@@ -80,6 +81,8 @@ public class GameStateManagement {
 
     private GameState getState(State state){
         switch(state){
+            case SETTINGS:
+                return new SettingsState(this);
             case SPLASH:
                 return new SplashState(this);
             case MAINMENU:

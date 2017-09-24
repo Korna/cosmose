@@ -335,7 +335,7 @@ public class PlaySurvivalState extends GameState{
         bdef.position.set(x, y);
 
         CircleShape cshape = new CircleShape();
-        cshape.setRadius(GAME_WIDTH/40);
+        cshape.setRadius(GAME_WIDTH/20);
 
         fdef.shape = cshape;
         fdef.filter.categoryBits = BIT_ENEMY;

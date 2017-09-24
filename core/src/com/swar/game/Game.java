@@ -6,15 +6,14 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.swar.game.managers.Content;
+import com.swar.game.managers.GameConfig;
 import com.swar.game.managers.GameStateManagement;
-import com.swar.game.resources.bulletData.bulletDB;
-import com.swar.game.resources.shipData.shipDB;
-import com.swar.game.resources.weaponData.weaponDB;
 
 import static com.swar.game.utils.constants.GAME_HEIGHT;
 import static com.swar.game.utils.constants.GAME_WIDTH;
 
 public class Game extends ApplicationAdapter {
+	private GameConfig gameConfig;
 
 	private SpriteBatch batch;
 	private OrthographicCamera maincamera;
@@ -24,18 +23,16 @@ public class Game extends ApplicationAdapter {
 	private final float SCALE = 4.0f;// раньше было 2f
 	private GameStateManagement gsm;
 
-	//DB
-	public static weaponDB gameWeapons;
-	public static bulletDB gameBullets;
-	public static shipDB gameShips;
-
 	public static Content res;
+
+	public Game(boolean vButtons, boolean vibration){
+		gameConfig = new GameConfig(vibration, vButtons);
+	}
+
 
 	@Override
 	public void create () {
-		gameBullets = new bulletDB();//создаем экземпляры даз банных
-		gameWeapons = new weaponDB();
-		gameShips = new shipDB();
+
 
 		res = new Content();
 		resLoader(res);
@@ -117,5 +114,6 @@ public class Game extends ApplicationAdapter {
 	public SpriteBatch getBatch(){
 		return batch;
 	}
+
 
 }
