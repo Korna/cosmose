@@ -15,9 +15,10 @@ import com.badlogic.gdx.utils.Array;
 import com.swar.game.Randomizer;
 import com.swar.game.Singleton;
 import com.swar.game.entities.*;
+import com.swar.game.managers.GameConfig;
 import com.swar.game.managers.GameContactListener;
-import com.swar.game.managers.GameInputProcessor;
 import com.swar.game.managers.GameStateManagement;
+import com.swar.game.managers.State;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -43,8 +44,9 @@ public class PlaySurvivalState extends GameState{
     private Array<Bonus> listBonus;
 
 
-
+    boolean CONFIG_VIBRATION;
     boolean available = false;
+
     public PlaySurvivalState(GameStateManagement gsm) {
         super(gsm);
         cl = new GameContactListener();
@@ -52,8 +54,10 @@ public class PlaySurvivalState extends GameState{
         world = gsm.world;
         player = gsm.player;
 
+        GameConfig gameConfig = new GameConfig();
+        CONFIG_VIBRATION = gameConfig.isVibraion();
 
-        Gdx.input.setInputProcessor(new GameInputProcessor());
+       // Gdx.input.setInputProcessor(new GameInputProcessor());
 
         world.setContactListener(cl);
         b2dr = new Box2DDebugRenderer();
@@ -67,7 +71,7 @@ public class PlaySurvivalState extends GameState{
 
 
 
-        hud = new HUD(player);
+        hud = new HUD(player, State.PLAYSURVIVAL);
         available = Gdx.input.isPeripheralAvailable(Input.Peripheral.Accelerometer);
 
     }
@@ -99,13 +103,14 @@ public class PlaySurvivalState extends GameState{
             model.setGameType("Survival");
             instance.recordModels.add(model);
 
-            gsm.setState(GameStateManagement.State.DEATH);
+            gsm.setState(State.DEATH);
 
             return;
         }
 
 
         inputUpdate(delta);
+        shadowMovement();
         player.update(delta);
 
         int energy = cl.getEnergyAndClear();
@@ -272,8 +277,8 @@ public class PlaySurvivalState extends GameState{
 
             if(Gdx.input.justTouched()){
                 if(player.ship.getEnergy() > 0){
-                    createBulletPlayer();
-                    Gdx.input.vibrate(VIBRATION_LONG);
+                    playerShot(CONFIG_VIBRATION);
+
                     player.ship.setEnergy(player.ship.getEnergy() - 1);
                 }
 
@@ -302,13 +307,23 @@ public class PlaySurvivalState extends GameState{
             }
 
             if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)){
-                createBulletPlayer();
+                playerShot(false);
             }
 
         }
 
 
         player.getBody().setLinearVelocity(horizontalForce * shipSpeed, verticalForce * shipSpeed);
+
+    }
+
+    private void shadowMovement(){
+
+        int horizontalForce = 0;
+        int verticalForce = 0;
+        int shipSpeed = player.getSpeed();
+
+
         if(instance.firstRun)
             instance.moveHistoryList.add(new float[] {horizontalForce * shipSpeed, verticalForce * shipSpeed});
         else{
@@ -324,6 +339,20 @@ public class PlaySurvivalState extends GameState{
 
         }
     }
+
+    private void playerShot(boolean vibrate){
+        float x = player.getBody().getPosition().x;
+        float y = player.getBody().getPosition().y;
+
+        if(player.shipIndex==4){
+            createBulletPlayer(x-12, y);
+            createBulletPlayer(x+12, y);
+        }else
+            createBulletPlayer(x, y+5);
+        if(vibrate)
+            Gdx.input.vibrate(VIBRATION_LONG);
+    }
+
     Singleton instance = Singleton.getInstance();
 
     private void createAsteroid(float x, float y) {
@@ -375,14 +404,13 @@ public class PlaySurvivalState extends GameState{
     }
 
     private int bulletAmount = 0;
-    private void createBulletPlayer() {
+    private void createBulletPlayer(float x, float y) {
         BodyDef bdef = new BodyDef();
         bdef.type = BodyDef.BodyType.DynamicBody;
         FixtureDef fdef = new FixtureDef();
 
         //позиционирование выстрела
-        float x = player.getBody().getPosition().x;
-        float y = player.getBody().getPosition().y + 5;
+
 
         bdef.position.set(x, y);
         CircleShape cshape = new CircleShape();

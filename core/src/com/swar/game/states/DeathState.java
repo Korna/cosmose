@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
+import static com.swar.game.managers.State.MAINMENU;
+
 /**
  * Created by Koma on 08.09.2017.
  */
@@ -98,7 +100,8 @@ public class DeathState extends GameState {
     }
 
     private void setPlay(){
-        gsm.setState(GameStateManagement.State.MAINMENU);
+        stage.dispose();
+        gsm.setState(MAINMENU);
     }
 
 

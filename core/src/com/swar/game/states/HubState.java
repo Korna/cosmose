@@ -19,6 +19,7 @@ import com.swar.game.ShipType;
 import com.swar.game.entities.Player;
 import com.swar.game.managers.GameContactListener;
 import com.swar.game.managers.GameStateManagement;
+import com.swar.game.managers.State;
 import com.swar.game.utils.constants;
 
 import static com.swar.game.utils.constants.*;
@@ -259,12 +260,13 @@ public class HubState extends GameState {
 
 
     private void setPlay() {
-
-        gsm.setState(GameStateManagement.State.PLAY);
+        stage.dispose();
+        gsm.setState(State.PLAY);
     }
 
     private void setBack() {
-        gsm.setState(GameStateManagement.State.MAINMENU);
+        stage.dispose();
+        gsm.setState(State.MAINMENU);
     }
 
 

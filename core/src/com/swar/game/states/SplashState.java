@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.swar.game.Game;
 import com.swar.game.managers.GameStateManagement;
+import com.swar.game.managers.State;
 
 import static com.swar.game.utils.constants.GAME_HEIGHT;
 import static com.swar.game.utils.constants.GAME_WIDTH;
@@ -30,7 +31,7 @@ public class SplashState  extends GameState{
     public void update(float delta) {
         acc += delta;
         if(acc >= time){
-            gsm.setState(GameStateManagement.State.MAINMENU);
+            gsm.setState(State.MAINMENU);
         }
     }
 

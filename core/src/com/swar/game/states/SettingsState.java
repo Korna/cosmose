@@ -21,6 +21,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
 import com.swar.game.managers.GameConfig;
 import com.swar.game.managers.GameStateManagement;
+import com.swar.game.managers.State;
 import com.swar.game.utils.constants;
 
 /**
@@ -67,7 +68,7 @@ public class SettingsState extends GameState {
         textButtonStyle.font = white;
 
 
-        TextButton buttonExit = new TextButton("EXIT", textButtonStyle);
+        TextButton buttonExit = new TextButton("BACK", textButtonStyle);
         TextButton buttonVButtons = new TextButton("VIRTUAL BUTTONS:" + gameConfig.isvButtons(), textButtonStyle);
         TextButton buttonVibration = new TextButton("VIBRATION:" + gameConfig.isVibraion(), textButtonStyle);
 
@@ -97,7 +98,8 @@ public class SettingsState extends GameState {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 super.clicked(event, x, y);
-                gsm.setState(GameStateManagement.State.MAINMENU);
+                stage.dispose();
+                gsm.setState(State.MAINMENU);
             }
         });
 

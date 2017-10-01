@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.swar.game.Game;
 import com.swar.game.managers.GameStateManagement;
+import com.swar.game.managers.State;
 import com.swar.game.utils.constants;
 
 import static com.swar.game.utils.constants.GAME_NAME;
@@ -124,18 +125,19 @@ public class MenuState extends GameState {
     }
 
     private void setPlay(){
-        gsm.dispose();
-        gsm.setState(GameStateManagement.State.HUB);
+        stage.dispose();
+        gsm.setState(State.HUB);
     }
     private void setSettings(){
-        gsm.dispose();
-        gsm.setState(GameStateManagement.State.SETTINGS);
+        stage.dispose();
+        gsm.setState(State.SETTINGS);
     }
 
     private void setPlaySurvival(){
-        gsm.dispose();
-        gsm.setState(GameStateManagement.State.PLAYSURVIVAL);
+        stage.dispose();
+        gsm.setState(State.PLAYSURVIVAL);
     }
+
 
 
     public void update(float dt) {

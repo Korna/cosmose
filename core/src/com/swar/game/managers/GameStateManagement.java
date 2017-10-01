@@ -28,15 +28,7 @@ public class GameStateManagement {
 
 
     private Stack<GameState> states;
-    public enum State{
-        SPLASH,
-        MAINMENU,
-        PLAY,
-        HUB,
-        DEATH,
-        PLAYSURVIVAL,
-        SETTINGS
-    }
+
 
     public GameStateManagement(final Game app){
         this.app = app;

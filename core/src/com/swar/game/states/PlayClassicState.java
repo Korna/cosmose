@@ -15,8 +15,8 @@ import com.swar.game.Singleton;
 import com.swar.game.entities.*;
 import com.swar.game.managers.GameConfig;
 import com.swar.game.managers.GameContactListener;
-import com.swar.game.managers.GameInputProcessor;
 import com.swar.game.managers.GameStateManagement;
+import com.swar.game.managers.State;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -42,7 +42,7 @@ public class PlayClassicState extends GameState{
     private Array<Bonus> listBonus;
 
     boolean CONFIG_VIBRATION;
-    final static int GAME_TIME = 15;
+    final static int GAME_TIME = 30;
 
     boolean available = false;
     public PlayClassicState(GameStateManagement gsm) {
@@ -59,7 +59,7 @@ public class PlayClassicState extends GameState{
         shadowPlayer = new Player(body, null, 2, ShipType.getShip(ShipType.valueOf("ship_2")), 1);//здесь по индексу передаём корабль из ДБ
        // body.setUserData(shadowPlayer);
 
-        Gdx.input.setInputProcessor(new GameInputProcessor());
+       // Gdx.input.setInputProcessor(new GameInputProcessor());
 
         world.setContactListener(cl);
         b2dr = new Box2DDebugRenderer();
@@ -73,7 +73,7 @@ public class PlayClassicState extends GameState{
 
 
 
-        hud = new HUD(player);
+        hud = new HUD(player, State.PLAY);
         available = Gdx.input.isPeripheralAvailable(Input.Peripheral.Accelerometer);
 
     }
@@ -104,7 +104,7 @@ public class PlayClassicState extends GameState{
             listBulletPlayer.clear();
             listAsteroid.clear();
 
-            gsm.setState(GameStateManagement.State.HUB);
+            gsm.setState(State.HUB);
 
             return;
         }
@@ -126,7 +126,7 @@ public class PlayClassicState extends GameState{
             listBulletPlayer.clear();
             listAsteroid.clear();
 
-            gsm.setState(GameStateManagement.State.DEATH);
+            gsm.setState(State.DEATH);
 
             return;
         }
@@ -341,16 +341,11 @@ public class PlayClassicState extends GameState{
             }
 
             if(Gdx.input.justTouched()){
-                float x = player.getBody().getPosition().x;
-                float y = player.getBody().getPosition().y;
+                if(player.ship.getEnergy() > 0){
+                    playerShot(CONFIG_VIBRATION);
 
-                if(player.shipIndex==4){
-                    createBulletPlayer(x-12, y);
-                    createBulletPlayer(x+12, y);
-                }else
-                    createBulletPlayer(x, y+5);
-                if(CONFIG_VIBRATION)
-                    Gdx.input.vibrate(VIBRATION_LONG);
+                    player.ship.setEnergy(player.ship.getEnergy() - 1);
+                }
             }
 
         }else{
@@ -400,6 +395,20 @@ public class PlayClassicState extends GameState{
 
         }
     }
+
+    private void playerShot(boolean vibrate){
+        float x = player.getBody().getPosition().x;
+        float y = player.getBody().getPosition().y;
+
+        if(player.shipIndex==4){
+            createBulletPlayer(x-12, y);
+            createBulletPlayer(x+12, y);
+        }else
+            createBulletPlayer(x, y+5);
+        if(vibrate)
+            Gdx.input.vibrate(VIBRATION_LONG);
+    }
+
     Singleton instance = Singleton.getInstance();
 
     private void createAsteroid(float x, float y) {
