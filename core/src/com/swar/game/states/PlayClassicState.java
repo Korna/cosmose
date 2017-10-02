@@ -88,7 +88,7 @@ public class PlayClassicState extends GameState{
 
 
         objectHandler = new ObjectHandler(new Array<>(), new Array<>(), new Array<>(), world);
-        interfaceManager = new InterfaceManager(player, bodyBuilder, objectHandler, available);
+        interfaceManager = new InterfaceManager(available, 0.5f, 4.5f);
 
     }
 
@@ -132,6 +132,8 @@ public class PlayClassicState extends GameState{
 
 
         interfaceManager.inputUpdate();
+        inputAction(interfaceManager.shot, interfaceManager.horizontalForce, interfaceManager.verticalForce);
+
         shadowMovement();
 
         player.update(delta);
@@ -163,9 +165,10 @@ public class PlayClassicState extends GameState{
 
                 index++;
             }
-        }
-        if(!instance.firstRun)
             shadowPlayer.update(delta);
+
+        }
+
 
 
 
@@ -293,6 +296,61 @@ public class PlayClassicState extends GameState{
             shadowPlayer.render(batch);
 
         hud.render(batch_hud);
+    }
+
+    private void inputAction(boolean shot, int horizontal, int vertical){
+        if(horizontal < 0)
+            player.ship_l();
+        if(horizontal > 0)
+            player.ship_r();
+        if(horizontal == 0)
+            player.ship();
+        if(shot){
+            if(player.ship.getEnergy() > 0){
+                playerShot(available);
+
+                player.ship.setEnergy(player.ship.getEnergy() - 1);
+            }
+        }
+
+        player.getBody().setLinearVelocity(horizontal * player.getSpeed(), vertical * player.getSpeed());
+    }
+
+    private void playerShot(boolean vibrate){
+        float x = player.getBody().getPosition().x;
+        float y = player.getBody().getPosition().y;
+
+        String type;
+        if(player.bulletIndex==1)
+            type = BULLET_PIERCING;
+        else
+            type = BULLET_DESTROYABLE;
+
+        Body bulletBody;
+        Bullet b;
+
+        if(player.shipIndex==4){
+
+            bulletBody = bodyBuilder.createBulletPlayer(x-12, y, type);
+            b = new Bullet(bulletBody, player.bulletIndex, false, false);
+            bulletBody.setUserData(b);
+            objectHandler.add(b);
+
+            bulletBody = bodyBuilder.createBulletPlayer(x+12, y, type);
+            b = new Bullet(bulletBody, player.bulletIndex, false, false);
+            bulletBody.setUserData(b);
+            objectHandler.add(b);
+
+        }else{
+
+            bulletBody = bodyBuilder.createBulletPlayer(x, y+5, type);
+            b = new Bullet(bulletBody, player.bulletIndex, false, false);
+            bulletBody.setUserData(b);
+            objectHandler.add(b);
+        }
+
+        if(vibrate)
+            Gdx.input.vibrate(VIBRATION_LONG);
     }
 
     @Override

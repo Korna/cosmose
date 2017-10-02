@@ -81,7 +81,7 @@ public class PlaySurvivalState extends GameState{
         available = Gdx.input.isPeripheralAvailable(Input.Peripheral.Accelerometer);
 
         objectHandler = new ObjectHandler(new Array<>(), new Array<>(), new Array<>(), world);
-        interfaceManager = new InterfaceManager(player, bodyBuilder, objectHandler, available);
+        interfaceManager = new InterfaceManager(available, 0.5f, 4.5f);
     }
 
 
@@ -118,7 +118,8 @@ public class PlaySurvivalState extends GameState{
 
 
         interfaceManager.inputUpdate();
-        shadowMovement();
+        inputAction(interfaceManager.shot, interfaceManager.horizontalForce, interfaceManager.verticalForce);
+
         player.update(delta);
 
         int energy = cl.getEnergyAndClear();
@@ -255,33 +256,63 @@ public class PlaySurvivalState extends GameState{
         maincamera.update();
     }
 
+    private void inputAction(boolean shot, int horizontal, int vertical){
+        if(horizontal < 0)
+            player.ship_l();
+        if(horizontal > 0)
+            player.ship_r();
+        if(horizontal == 0)
+            player.ship();
+        if(shot){
+            if(player.ship.getEnergy() > 0){
+                playerShot(available);
 
-
-
-
-
-    private void shadowMovement(){
-
-        int horizontalForce = 0;
-        int verticalForce = 0;
-        int shipSpeed = player.getSpeed();
-
-
-        if(instance.firstRun)
-            instance.moveHistoryList.add(new float[] {horizontalForce * shipSpeed, verticalForce * shipSpeed});
-        else{
-            if(index - 1 >= 0){
-                try {
-                    instance.moveHistoryList.get(index - 1)[0] = horizontalForce * shipSpeed;
-                    instance.moveHistoryList.get(index - 1)[1] = verticalForce * shipSpeed;
-                }catch(IndexOutOfBoundsException e){
-                    instance.moveHistoryList.add(new float[] {horizontalForce * shipSpeed, verticalForce * shipSpeed});
-                    System.out.println(e.toString() + "\n");
-                }
+                player.ship.setEnergy(player.ship.getEnergy() - 1);
             }
-
         }
+
+        player.getBody().setLinearVelocity(horizontal * player.getSpeed(), vertical * player.getSpeed());
     }
+
+    private void playerShot(boolean vibrate){
+        float x = player.getBody().getPosition().x;
+        float y = player.getBody().getPosition().y;
+
+        String type;
+        if(player.bulletIndex==1)
+            type = BULLET_PIERCING;
+        else
+            type = BULLET_DESTROYABLE;
+
+        Body bulletBody;
+        Bullet b;
+
+        if(player.shipIndex==4){
+
+            bulletBody = bodyBuilder.createBulletPlayer(x-12, y, type);
+            b = new Bullet(bulletBody, player.bulletIndex, false, false);
+            bulletBody.setUserData(b);
+            objectHandler.add(b);
+
+            bulletBody = bodyBuilder.createBulletPlayer(x+12, y, type);
+            b = new Bullet(bulletBody, player.bulletIndex, false, false);
+            bulletBody.setUserData(b);
+            objectHandler.add(b);
+
+        }else{
+
+            bulletBody = bodyBuilder.createBulletPlayer(x, y+5, type);
+            b = new Bullet(bulletBody, player.bulletIndex, false, false);
+            bulletBody.setUserData(b);
+            objectHandler.add(b);
+        }
+
+        if(vibrate)
+            Gdx.input.vibrate(VIBRATION_LONG);
+    }
+
+
+
 
 
     Singleton instance = Singleton.getInstance();
