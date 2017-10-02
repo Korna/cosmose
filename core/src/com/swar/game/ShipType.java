@@ -1,7 +1,7 @@
 package com.swar.game;
 
-import com.swar.game.entities.Ship;
-import com.swar.game.entities.Weapon;
+import com.swar.game.Models.Ship;
+import com.swar.game.Models.Weapon;
 
 /**
  * Created by Koma on 20.09.2017.

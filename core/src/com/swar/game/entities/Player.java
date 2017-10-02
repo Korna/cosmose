@@ -4,6 +4,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.swar.game.Game;
+import com.swar.game.Models.Ship;
+import com.swar.game.Models.Weapon;
 import com.swar.game.managers.GameContactListener;
 
 /**

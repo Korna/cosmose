@@ -1,4 +1,4 @@
-package com.swar.game.managers;
+package com.swar.game.entities;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 

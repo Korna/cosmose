@@ -1,9 +1,10 @@
-package com.swar.game.entities;
+package com.swar.game.Models;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.swar.game.Game;
+import com.swar.game.entities.Sprite;
 
 import static com.swar.game.utils.constants.GAME_WIDTH;
 

@@ -1,4 +1,4 @@
-package com.swar.game;
+package com.swar.game.utils;
 
 import static com.badlogic.gdx.math.MathUtils.random;
 import static com.swar.game.utils.constants.GAME_WIDTH;

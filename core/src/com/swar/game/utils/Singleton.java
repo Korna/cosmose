@@ -1,7 +1,7 @@
-package com.swar.game;
+package com.swar.game.utils;
 
+import com.swar.game.Models.RecordModel;
 import com.swar.game.entities.Player;
-import com.swar.game.entities.RecordModel;
 
 import java.util.ArrayList;
 

@@ -12,9 +12,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.swar.game.Singleton;
-import com.swar.game.entities.RecordModel;
+import com.swar.game.Models.RecordModel;
 import com.swar.game.managers.GameStateManagement;
+import com.swar.game.utils.Singleton;
 import com.swar.game.utils.constants;
 
 import java.util.ArrayList;

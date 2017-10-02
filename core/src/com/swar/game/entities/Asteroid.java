@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.swar.game.Game;
-import com.swar.game.Randomizer;
+import com.swar.game.utils.Randomizer;
 
 import static com.swar.game.utils.constants.GAME_WIDTH;
 

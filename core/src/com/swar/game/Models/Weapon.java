@@ -1,6 +1,6 @@
-package com.swar.game.entities;
+package com.swar.game.Models;
 
-import com.swar.game.resources.bulletData.bullet;
+
 
 /**
  * Created by Koma on 29.01.2017.
@@ -13,27 +13,27 @@ public class Weapon {
     private String projectileSprite;
     private String Sprite;
     private int tier;
-    private bullet projectile;
 
-    public Weapon(float projectileSpeed, boolean pierces, int pierceNumber, String projectileSprite, String Sprite, int tier, bullet projectile){
+
+    public Weapon(float projectileSpeed, boolean pierces, int pierceNumber, String projectileSprite, String Sprite, int tier){
         this.projectileSpeed = projectileSpeed;
         this.pierces = pierces;
         this.pierceNumber = pierceNumber;
         this.projectileSprite = projectileSprite;
         this.Sprite = Sprite;
         this.tier = tier;
-        this.projectile = projectile;
+
 
     }
 
-    public Weapon getNewWeapon(float projectileSpeed, boolean pierces, int pierceNumber, String projectileSprite, String Sprite, int tier, bullet projectil){
+    public Weapon getNewWeapon(float projectileSpeed, boolean pierces, int pierceNumber, String projectileSprite, String Sprite, int tier){
         this.projectileSpeed = projectileSpeed;
         this.pierces = pierces;
         this.pierceNumber = pierceNumber;
         this.projectileSprite = projectileSprite;
         this.Sprite = Sprite;
         this.tier = tier;
-        this.projectile = projectile;
+
         return this;
     }
 

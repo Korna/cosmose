@@ -1,4 +1,4 @@
-package com.swar.game.entities;
+package com.swar.game.Models;
 
 /**
  * Created by Koma on 19.09.2017.
