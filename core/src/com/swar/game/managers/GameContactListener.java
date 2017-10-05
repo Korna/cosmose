@@ -2,6 +2,8 @@ package com.swar.game.managers;
 
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
+import com.swar.game.entities.Asteroid;
+import com.swar.game.entities.Bullet;
 
 import static com.swar.game.utils.constants.*;
 
@@ -65,33 +67,66 @@ public class GameContactListener implements ContactListener {
         }
 
         if(isAAFirst(ASTEROID, BULLET_PIERCING)){
-            bodiesToRemove.add(ba);
-            credits++;
-            score +=5;
+
+            Asteroid asteroid = (Asteroid) ba.getUserData();
+            Bullet bullet = (Bullet) bb.getUserData();
+            asteroid.setHp(asteroid.getHp() - (int) bullet.getBulletModel().getDamage());
+
+            if(asteroid.getHp() < 0){
+                bodiesToRemove.add(ba);
+                credits++;
+                score +=5;
+            }
+
             System.out.println("Got hit");
             return;
         }
         if(isABFirst(ASTEROID, BULLET_PIERCING)){
-            bodiesToRemove.add(bb);
-            credits++;
-            score +=5;
+            Bullet bullet = (Bullet) ba.getUserData();
+
+            Asteroid asteroid = (Asteroid) bb.getUserData();
+            asteroid.setHp(asteroid.getHp() - bullet.getBulletModel().getDamage());
+
+            if(asteroid.getHp() < 0){
+                bodiesToRemove.add(bb);
+                credits++;
+                score +=5;
+            }
+
             System.out.println("Got hit");
             return;
         }
         if(isAAFirst(ASTEROID, BULLET_DESTROYABLE)){
-            bodiesToRemove.add(ba);
             bodiesToRemove.add(bb);
+
+
+            Asteroid asteroid = (Asteroid) ba.getUserData();
+            Bullet bullet = (Bullet) bb.getUserData();
+            asteroid.setHp(asteroid.getHp() - (int) bullet.getBulletModel().getDamage());
+
+            if(asteroid.getHp() < 0){
+                bodiesToRemove.add(ba);
+                 credits++;
+                score +=5;
+            }
+
             System.out.println("Got hit");
-            credits++;
-            score +=5;
             return;
         }
         if(isABFirst(ASTEROID, BULLET_DESTROYABLE)){
             bodiesToRemove.add(ba);
-            bodiesToRemove.add(bb);
+            Bullet bullet = (Bullet) ba.getUserData();
+
+            Asteroid asteroid = (Asteroid) bb.getUserData();
+            asteroid.setHp(asteroid.getHp() - bullet.getBulletModel().getDamage());
+
+            if(asteroid.getHp() < 0){
+                bodiesToRemove.add(bb);
+                credits++;
+                score +=5;
+            }
+
             System.out.println("Got hit");
-            credits++;
-            score +=5;
             return;
         }
 
@@ -128,17 +163,17 @@ public class GameContactListener implements ContactListener {
         }
 
         /*
-        if(isAAFirst(SHADOW, BULLET_DESTROYABLE)){
+        if(isAAFirst(SHADOW, BulletDestroyable)){
             shadowToRemove = ba;
         }
-        if(isABFirst(SHADOW, BULLET_DESTROYABLE)){
+        if(isABFirst(SHADOW, BulletDestroyable)){
             shadowToRemove = bb;
         }
 
-        if(isAAFirst(SHADOW, BULLET_PIERCING)){
+        if(isAAFirst(SHADOW, BulletPiercing)){
             shadowToRemove = ba;
         }
-        if(isABFirst(SHADOW, BULLET_PIERCING)){
+        if(isABFirst(SHADOW, BulletPiercing)){
             shadowToRemove = bb;
         }*/
 

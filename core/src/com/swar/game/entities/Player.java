@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.swar.game.Game;
 import com.swar.game.Models.Ship;
-import com.swar.game.Models.Weapon;
 import com.swar.game.managers.GameContactListener;
 
 /**
@@ -13,33 +12,31 @@ import com.swar.game.managers.GameContactListener;
  */
 public class Player extends Sprite{//все параметры корабля
 
-    public int shipIndex = 1;//выбранный корабль
+
     public Ship ship;
 
     private Texture shipTexture;//текстура корабля
 
-    public int bulletIndex = 1;//выбранная текстура пули
-    private Texture bulletTexture;
+
+
 
     private GameContactListener player_cl;
 
-    private Weapon listWeapon[];
-    private int weaponNumber;
+
 
     public float timeInGame = 0;
 
     private boolean dead = false;
-    public Player(Body body, GameContactListener cl, int shipIndex, Ship ship, int weaponIndex) {
+    public Player(Body body, GameContactListener cl, Ship ship) {
         super(body);
-        this.shipIndex = shipIndex;
+
 
         this.ship = ship;
         player_cl = cl;
 
 
         shipTexture = Game.res.getTexture(ship.getShipSprite());
-        bulletIndex = weaponIndex;
-        bulletTexture = Game.res.getTexture("bullet_" + String.valueOf(weaponIndex));
+
 
         setUpAnimation();
     }

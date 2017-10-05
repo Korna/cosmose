@@ -3,9 +3,9 @@ package com.swar.game.managers;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
-import com.swar.game.Models.Bullet;
 import com.swar.game.entities.Asteroid;
 import com.swar.game.entities.Bonus;
+import com.swar.game.entities.Bullet;
 
 /**
  * Created by Koma on 02.10.2017.

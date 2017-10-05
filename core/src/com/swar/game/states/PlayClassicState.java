@@ -11,12 +11,8 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
-import com.swar.game.Models.Bullet;
 import com.swar.game.ShipType;
-import com.swar.game.entities.Asteroid;
-import com.swar.game.entities.Bonus;
-import com.swar.game.entities.HUD;
-import com.swar.game.entities.Player;
+import com.swar.game.entities.*;
 import com.swar.game.managers.*;
 import com.swar.game.utils.Randomizer;
 import com.swar.game.utils.Singleton;
@@ -40,18 +36,20 @@ public class PlayClassicState extends GameState{
     private Player player;
     private Player shadowPlayer;
 
-   // private Array<Asteroid> listAsteroid;
-   // private Array<Bullet> listBulletPlayer;
-   // private Array<Bonus> listBonus;
+
 
     private ObjectHandler objectHandler;
 
     private BodyBuilder bodyBuilder;
     InterfaceManager interfaceManager;
     boolean CONFIG_VIBRATION;
-    final static int GAME_TIME = 30;
+    final static int GAME_TIME = 60;
 
     private boolean available = false;
+
+    private Randomizer randomizer = new Randomizer();
+
+    int index = 0;//переменная для сохранения индекса кадра
 
     public PlayClassicState(GameStateManagement gsm) {
         super(gsm);
@@ -66,7 +64,8 @@ public class PlayClassicState extends GameState{
 
 
         Body body = bodyBuilder.createShadow(GAME_WIDTH / 2, 15, GAME_WIDTH/15, GAME_WIDTH/10);
-        shadowPlayer = new Player(body, null, 2, ShipType.getShip(ShipType.valueOf("ship_2")), 1);//здесь по индексу передаём корабль из ДБ
+        //здесь по индексу передаём корабль из ДБ
+        shadowPlayer = new Player(body, null, ShipType.getShip(ShipType.ship_2));
        // body.setUserData(shadowPlayer);
 
        // Gdx.input.setInputProcessor(new GameInputProcessor());
@@ -95,9 +94,7 @@ public class PlayClassicState extends GameState{
 
 
 
-    private Randomizer randomizer = new Randomizer();
 
-    int index = 0;//переменная для сохранения индекса кадра
 
 
 
@@ -138,7 +135,8 @@ public class PlayClassicState extends GameState{
 
         player.update(delta);
 
-
+        int energy = cl.getEnergyAndClear();
+        player.ship.setEnergy(player.ship.getEnergy() + energy);
 
         if(!instance.firstRun){
             float[] move = {0,0};
@@ -208,7 +206,8 @@ public class PlayClassicState extends GameState{
 
 
             try{
-                objectHandler.remove((Asteroid) body.getUserData());
+                Asteroid asteroid = (Asteroid) body.getUserData();
+                objectHandler.remove(asteroid);
                 try {
                     if (randomizer.chanceBonus()) {
                         Body bonusBody = bodyBuilder.createBonus(body.getPosition().x, body.getPosition().y);
@@ -320,31 +319,28 @@ public class PlayClassicState extends GameState{
         float x = player.getBody().getPosition().x;
         float y = player.getBody().getPosition().y;
 
-        String type;
-        if(player.bulletIndex==1)
-            type = BULLET_PIERCING;
-        else
-            type = BULLET_DESTROYABLE;
+        String type = player.ship.weapons.get(0).bulletModel.pierceType.name();
+
 
         Body bulletBody;
         Bullet b;
 
-        if(player.shipIndex==4){
+        if(player.ship.weapons.size() > 1){
 
-            bulletBody = bodyBuilder.createBulletPlayer(x-12, y, type);
-            b = new Bullet(bulletBody, player.bulletIndex, false, false);
+            bulletBody = bodyBuilder.createBulletPlayer(x - 12, y, type);
+            b = new Bullet(bulletBody, player.ship.weapons.get(0).bulletModel.bulletType, player.ship.weapons.get(0).bulletModel);
             bulletBody.setUserData(b);
             objectHandler.add(b);
 
-            bulletBody = bodyBuilder.createBulletPlayer(x+12, y, type);
-            b = new Bullet(bulletBody, player.bulletIndex, false, false);
+            bulletBody = bodyBuilder.createBulletPlayer(x + 12, y, type);
+            b = new Bullet(bulletBody, player.ship.weapons.get(1).bulletModel.bulletType, player.ship.weapons.get(0).bulletModel);
             bulletBody.setUserData(b);
             objectHandler.add(b);
 
         }else{
 
-            bulletBody = bodyBuilder.createBulletPlayer(x, y+5, type);
-            b = new Bullet(bulletBody, player.bulletIndex, false, false);
+            bulletBody = bodyBuilder.createBulletPlayer(x, y + 5, type);
+            b = new Bullet(bulletBody, player.ship.weapons.get(0).bulletModel.bulletType, player.ship.weapons.get(0).bulletModel);
             bulletBody.setUserData(b);
             objectHandler.add(b);
         }

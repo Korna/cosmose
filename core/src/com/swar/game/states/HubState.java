@@ -15,7 +15,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
 import com.swar.game.Game;
+import com.swar.game.Models.Ship;
+import com.swar.game.Models.Weapon;
 import com.swar.game.ShipType;
+import com.swar.game.WeaponType;
 import com.swar.game.entities.Player;
 import com.swar.game.managers.GameContactListener;
 import com.swar.game.managers.GameStateManagement;
@@ -32,11 +35,12 @@ public class HubState extends GameState {
     private Stage stage = new Stage();
 
     private TextureRegion reg;
-    private int currentPositionShip = 1;
-    private int chosenShip = 1;
-    private int currentPositionWeapon = 1;
-    private int chosenWeapon = 1;
+    private int currentPositionShip = 0;
 
+    private int currentPositionWeapon = 0;
+
+    private WeaponType chosenWeapon;
+    private ShipType chosenShip;
 
     private GameContactListener cl;
     private World world;
@@ -64,8 +68,8 @@ public class HubState extends GameState {
         this.reg = new TextureRegion(Game.res.getTexture("bgs"), 0, 0, GAME_WIDTH/2, GAME_HEIGHT/2);
 
 
-        currentWeapon = new Image(Game.res.getTexture("weapon_" + String.valueOf(currentPositionWeapon)));
-        currentShip = new Image(Game.res.getTexture("ship_" + String.valueOf(currentPositionShip)));
+        currentWeapon = new Image(Game.res.getTexture("weapon_" + String.valueOf(currentPositionWeapon + 1)));
+        currentShip = new Image(Game.res.getTexture("ship_" + String.valueOf(currentPositionShip + 1)));
 
 
         buildTable();
@@ -127,10 +131,10 @@ public class HubState extends GameState {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 super.clicked(event, x, y);
-                chosenShip = currentPositionShip;
-                chosenWeapon = currentPositionWeapon;
-                System.out.printf("Ship now is%d\n", chosenShip);
-                System.out.printf("Weapon now is%d\n", chosenWeapon);
+
+                chosenShip = ShipType.values()[currentPositionShip];
+                chosenWeapon = WeaponType.values()[currentPositionWeapon];
+
 
             }
         });
@@ -275,8 +279,9 @@ public class HubState extends GameState {
     }
 
     public void imageUpdate(){
-        currentWeapon = new Image(Game.res.getTexture("weapon_" + String.valueOf(currentPositionWeapon)));
-        currentShip = new Image(Game.res.getTexture("ship_" + String.valueOf(currentPositionShip)));
+        currentWeapon = new Image(Game.res.getTexture("weapon_" + String.valueOf(currentPositionWeapon + 1)));
+        String nameOfShip = ShipType.values()[currentPositionShip].name();
+        currentShip = new Image(Game.res.getTexture(nameOfShip));
 
     }
     private void clearStage(){
@@ -301,7 +306,21 @@ public class HubState extends GameState {
     public void dispose() {
         playerBody = createPlayer(constants.GAME_WIDTH / 2, 15, constants.GAME_WIDTH/30, constants.GAME_WIDTH/20);
 
-        player = new Player(playerBody, cl, chosenShip, ShipType.getShip(ShipType.valueOf("ship_" + chosenShip)), chosenWeapon);//здесь по индексу передаём корабль из ДБ
+
+        chosenShip = ShipType.values()[currentPositionShip];
+        chosenWeapon = WeaponType.values()[currentPositionWeapon];
+
+        Ship ship = ShipType.getShip(chosenShip);
+        Weapon weapon = WeaponType.getWeapon(chosenWeapon);
+        ship.weapons.add(weapon);
+
+
+
+
+        if(chosenShip.equals(ShipType.ship_4))
+            ship.weapons.add(weapon);
+
+        player = new Player(playerBody, cl, ship);//здесь по индексу передаём корабль из ДБ
         player.initSprite(playerBody);
 
         gsm.cl = cl;

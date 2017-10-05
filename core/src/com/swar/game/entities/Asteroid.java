@@ -12,7 +12,7 @@ import static com.swar.game.utils.constants.GAME_WIDTH;
  * Created by Koma on 19.01.2017.
  */
 public class Asteroid extends Sprite {
-    public int hp = 100;
+    public float hp = 100;
     public float speed = -(GAME_WIDTH);
 
     public Asteroid (Body body) {
@@ -23,6 +23,14 @@ public class Asteroid extends Sprite {
         TextureRegion[] sprites = TextureRegion.split(tex, 32, 32)[0];
 
         setAnimation(sprites, 1 / 12f);
+    }
+
+    public void setHp(float hp) {
+        this.hp = hp;
+    }
+
+    public float getHp() {
+        return hp;
     }
 }
 

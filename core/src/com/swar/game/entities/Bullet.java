@@ -1,10 +1,11 @@
-package com.swar.game.Models;
+package com.swar.game.entities;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.Body;
+import com.swar.game.BulletType;
 import com.swar.game.Game;
-import com.swar.game.entities.Sprite;
+import com.swar.game.Models.BulletModel;
 
 import static com.swar.game.utils.constants.GAME_WIDTH;
 
@@ -14,26 +15,23 @@ import static com.swar.game.utils.constants.GAME_WIDTH;
 
 public class Bullet extends Sprite {
 
-    private float damage;
-    public String name;
-    private int id;
-    public float speedY = GAME_WIDTH;
 
+    public float speedY = GAME_WIDTH;
     public float speedX;
-    private boolean wavy;
     private int bdt = 0;
     public float currentSpeed = 0;
 
+    private BulletModel bulletModel;
 
-    private boolean pierce;
 
-    public Bullet (Body body, int bulletIndex, boolean wavy, boolean pierce) {
+
+
+    public Bullet (Body body, BulletType bulletType, BulletModel bulletModel) {
         super(body);
-        this.wavy = wavy;
-        this.pierce = pierce;
+        this.bulletModel = bulletModel;
 
         Texture tex;
-        tex = Game.res.getTexture("bullet_" + String.valueOf(bulletIndex));
+        tex = Game.res.getTexture(bulletType.name());
         TextureRegion[] sprites = TextureRegion.split(tex, 32, 32)[0];
 
         setAnimation(sprites, 1 / 12f);
@@ -43,7 +41,7 @@ public class Bullet extends Sprite {
     public void update(float delta){
         animation.update(delta);
         ++bdt;
-        if(wavy) {
+        if(bulletModel.wavy) {
             bdt %= 5;
             switch (bdt) {
                 case 0:
@@ -72,17 +70,7 @@ public class Bullet extends Sprite {
 
     }
 
-    public void init(float damage, String name, int id, float speedY, float speedX,  boolean wavy){
-        this.damage = damage;
-        this.name = name;
-        this.id = id;
-        this.speedY = speedY;
-        this.speedX = speedX;
-        this.wavy = wavy;
+    public BulletModel getBulletModel() {
+        return bulletModel;
     }
-
-
-
-
-
 }

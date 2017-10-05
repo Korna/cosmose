@@ -8,7 +8,9 @@ package com.swar.game.managers;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.swar.game.Game;
+import com.swar.game.Models.Ship;
 import com.swar.game.ShipType;
+import com.swar.game.WeaponType;
 import com.swar.game.entities.Player;
 import com.swar.game.states.*;
 
@@ -90,8 +92,9 @@ public class GameStateManagement {
                 world = new World(new Vector2(0, 0), false);//потому как создается игрок в хабе
 
                 playerBody = createPlayer(GAME_WIDTH / 4, 15, GAME_WIDTH/30, GAME_WIDTH/20);
-
-                player = new Player(playerBody, cl, 1, ShipType.getShip(ShipType.valueOf("ship_1")), 2);//здесь по индексу передаём корабль из ДБ
+                Ship ship = ShipType.getShip(ShipType.ship_2);
+                ship.weapons.add(WeaponType.getWeapon(WeaponType.weapon_2));
+                player = new Player(playerBody, cl, ship);//здесь по индексу передаём корабль из ДБ
 
                 player.initSprite(playerBody);
 

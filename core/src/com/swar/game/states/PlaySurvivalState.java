@@ -12,12 +12,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
-import com.swar.game.Models.Bullet;
 import com.swar.game.Models.RecordModel;
-import com.swar.game.entities.Asteroid;
-import com.swar.game.entities.Bonus;
-import com.swar.game.entities.HUD;
-import com.swar.game.entities.Player;
+import com.swar.game.entities.*;
 import com.swar.game.managers.*;
 import com.swar.game.utils.Randomizer;
 import com.swar.game.utils.Singleton;
@@ -278,31 +274,28 @@ public class PlaySurvivalState extends GameState{
         float x = player.getBody().getPosition().x;
         float y = player.getBody().getPosition().y;
 
-        String type;
-        if(player.bulletIndex==1)
-            type = BULLET_PIERCING;
-        else
-            type = BULLET_DESTROYABLE;
+        String type = player.ship.weapons.get(0).bulletModel.pierceType.name();
+
 
         Body bulletBody;
         Bullet b;
 
-        if(player.shipIndex==4){
+        if(player.ship.weapons.size() > 1){
 
-            bulletBody = bodyBuilder.createBulletPlayer(x-12, y, type);
-            b = new Bullet(bulletBody, player.bulletIndex, false, false);
+            bulletBody = bodyBuilder.createBulletPlayer(x - 12, y, type);
+            b = new Bullet(bulletBody, player.ship.weapons.get(0).bulletModel.bulletType, player.ship.weapons.get(0).bulletModel);
             bulletBody.setUserData(b);
             objectHandler.add(b);
 
-            bulletBody = bodyBuilder.createBulletPlayer(x+12, y, type);
-            b = new Bullet(bulletBody, player.bulletIndex, false, false);
+            bulletBody = bodyBuilder.createBulletPlayer(x + 12, y, type);
+            b = new Bullet(bulletBody, player.ship.weapons.get(1).bulletModel.bulletType, player.ship.weapons.get(0).bulletModel);
             bulletBody.setUserData(b);
             objectHandler.add(b);
 
         }else{
 
-            bulletBody = bodyBuilder.createBulletPlayer(x, y+5, type);
-            b = new Bullet(bulletBody, player.bulletIndex, false, false);
+            bulletBody = bodyBuilder.createBulletPlayer(x, y + 5, type);
+            b = new Bullet(bulletBody, player.ship.weapons.get(0).bulletModel.bulletType, player.ship.weapons.get(0).bulletModel);
             bulletBody.setUserData(b);
             objectHandler.add(b);
         }

@@ -1,5 +1,7 @@
 package com.swar.game.Models;
 
+import java.util.ArrayList;
+
 /**
  * Created by Koma on 27.01.2017.
  */
@@ -13,7 +15,7 @@ public class Ship {
 
     private float weaponPositionX[] = new float[10];//пусть будет 10 оружек - максимум
     private float weaponPositionY[] = new float[10];
-    private Weapon weaponList[] = new Weapon[10];
+    public ArrayList<Weapon> weapons = new ArrayList<>();
 
     private int carryWeapons;
     private int carryEquipment;
@@ -22,13 +24,20 @@ public class Ship {
     private int height;
     private int width;
 
-    public Ship(float speed, int hp, int armor, String shipSprite, String Sprite, float weaponPositionX[], float weaponPositionY[], int carryWeapons, int carryEquipment, Weapon weaponList[],
+    public Ship(float speed, int hp,
+                int armor, String shipSprite,
+                String Sprite, float weaponPositionX[],
+                float weaponPositionY[],
+                int carryWeapons, int carryEquipment,
+                ArrayList<Weapon> weaponArrayList,
     int height, int width){
         this.speed = speed;
         this.hp = hp;
         this.armor = armor;
         this.shipSprite = shipSprite;
         this.Sprite = Sprite;
+
+
 /*
         for (int i = 0; i < carryWeapons; i++)
             this.weaponPositionX[i] = weaponPositionX[i];

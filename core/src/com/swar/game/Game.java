@@ -58,6 +58,8 @@ public class Game extends ApplicationAdapter {
 
 		res.loadTexture("sprites/weapon_1.png", "weapon_1");
 		res.loadTexture("sprites/weapon_2.png", "weapon_2");
+		res.loadTexture("sprites/weapon_3.png", "weapon_3");
+		res.loadTexture("sprites/weapon_4.png", "weapon_4");
 
 		res.loadTexture("sprites/asteroid_1.png", "asteroid_1");
 		res.loadTexture("sprites/asteroid_2.png", "asteroid_2");
@@ -67,6 +69,8 @@ public class Game extends ApplicationAdapter {
 
 		res.loadTexture("sprites/bullet_1.png", "bullet_1");
 		res.loadTexture("sprites/bullet_2.png", "bullet_2");
+		res.loadTexture("sprites/bullet_3.png", "bullet_3");
+		res.loadTexture("sprites/bullet_4.png", "bullet_4");
 
 		res.loadTexture("sprites/ship_1.png", "ship_1");
 		res.loadTexture("sprites/ship_1_left.png", "ship_1_l");
