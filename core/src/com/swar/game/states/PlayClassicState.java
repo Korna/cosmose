@@ -11,6 +11,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
+import com.swar.game.Models.Weapon;
 import com.swar.game.ShipType;
 import com.swar.game.entities.*;
 import com.swar.game.managers.*;
@@ -134,6 +135,10 @@ public class PlayClassicState extends GameState{
         shadowMovement();
 
         player.update(delta);
+
+        for(Weapon weapon : player.ship.weapons){
+            weapon.setTimeAfterShot(weapon.getTimeAfterShot() + delta);
+        }
 
         int energy = cl.getEnergyAndClear();
         player.ship.setEnergy(player.ship.getEnergy() + energy);
@@ -306,7 +311,7 @@ public class PlayClassicState extends GameState{
             player.ship();
         if(shot){
             if(player.ship.getEnergy() > 0){
-                playerShot(available);
+                playerShot(CONFIG_VIBRATION);
 
                 player.ship.setEnergy(player.ship.getEnergy() - 1);
             }
@@ -327,26 +332,37 @@ public class PlayClassicState extends GameState{
 
         if(player.ship.weapons.size() > 1){
 
-            bulletBody = bodyBuilder.createBulletPlayer(x - 12, y, type);
-            b = new Bullet(bulletBody, player.ship.weapons.get(0).bulletModel.bulletType, player.ship.weapons.get(0).bulletModel);
-            bulletBody.setUserData(b);
-            objectHandler.add(b);
+            if(player.ship.weapons.get(0).getReload() < player.ship.weapons.get(0).getTimeAfterShot()){
+                player.ship.weapons.get(0).setTimeAfterShot(0.0f);
+                bulletBody = bodyBuilder.createBulletPlayer(x - 12, y, type);
+                b = new Bullet(bulletBody, player.ship.weapons.get(0).bulletModel.bulletType, player.ship.weapons.get(0).bulletModel);
+                bulletBody.setUserData(b);
+                objectHandler.add(b);
 
-            bulletBody = bodyBuilder.createBulletPlayer(x + 12, y, type);
-            b = new Bullet(bulletBody, player.ship.weapons.get(1).bulletModel.bulletType, player.ship.weapons.get(0).bulletModel);
-            bulletBody.setUserData(b);
-            objectHandler.add(b);
+
+                bulletBody = bodyBuilder.createBulletPlayer(x + 12, y, type);
+                b = new Bullet(bulletBody, player.ship.weapons.get(0).bulletModel.bulletType, player.ship.weapons.get(0).bulletModel);
+                bulletBody.setUserData(b);
+                objectHandler.add(b);
+
+                if(vibrate)
+                    Gdx.input.vibrate(VIBRATION_LONG);
+            }
 
         }else{
+            if(player.ship.weapons.get(0).getReload() < player.ship.weapons.get(0).getTimeAfterShot()) {
+                player.ship.weapons.get(0).setTimeAfterShot(0.0f);
+                bulletBody = bodyBuilder.createBulletPlayer(x, y + 5, type);
+                b = new Bullet(bulletBody, player.ship.weapons.get(0).bulletModel.bulletType, player.ship.weapons.get(0).bulletModel);
+                bulletBody.setUserData(b);
+                objectHandler.add(b);
 
-            bulletBody = bodyBuilder.createBulletPlayer(x, y + 5, type);
-            b = new Bullet(bulletBody, player.ship.weapons.get(0).bulletModel.bulletType, player.ship.weapons.get(0).bulletModel);
-            bulletBody.setUserData(b);
-            objectHandler.add(b);
+                if(vibrate)
+                    Gdx.input.vibrate(VIBRATION_LONG);
+            }
         }
 
-        if(vibrate)
-            Gdx.input.vibrate(VIBRATION_LONG);
+
     }
 
     @Override

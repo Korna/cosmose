@@ -9,9 +9,29 @@ public class Weapon {
 
     private int energy;
     public BulletModel bulletModel;
+    private float reload;
+    private float timeAfterShot;
 
-    public Weapon(int energy, BulletModel bulletModel) {
+    public Weapon(int energy, BulletModel bulletModel, float reload, float timeAfterShot) {
         this.energy = energy;
         this.bulletModel = bulletModel;
+        this.reload = reload;
+        this.timeAfterShot = timeAfterShot;
+    }
+
+    public void setReload(float reload) {
+        this.reload = reload;
+    }
+
+    public float getReload() {
+        return reload;
+    }
+
+    public float getTimeAfterShot() {
+        return timeAfterShot;
+    }
+
+    public void setTimeAfterShot(float timeAfterShot) {
+        this.timeAfterShot = timeAfterShot;
     }
 }
