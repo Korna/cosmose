@@ -1,4 +1,4 @@
-package com.swar.game.managers;
+package com.swar.game.managers.World;
 
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;

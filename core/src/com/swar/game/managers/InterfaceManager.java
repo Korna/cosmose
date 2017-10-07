@@ -60,6 +60,8 @@ public class InterfaceManager {
             if(Gdx.input.justTouched()){
                shot = true;
             }
+            if(Gdx.input.isTouched())
+                shot = true;
 
         }else{
 

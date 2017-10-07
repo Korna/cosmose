@@ -17,7 +17,7 @@ public enum WeaponType {
                 weapon = new Weapon(3000, BulletType.getbullet(BulletType.bullet_1), 1.0f, 0.0f);
                 break;
             case weapon_2:
-                weapon = new Weapon(4500, BulletType.getbullet(BulletType.bullet_2), 0.2f, 0.0f);
+                weapon = new Weapon(4500, BulletType.getbullet(BulletType.bullet_2), 0.1f, 0.0f);
                 break;
             case weapon_3:
                 weapon = new Weapon(4500, BulletType.getbullet(BulletType.bullet_3), 0.5f, 0.0f);

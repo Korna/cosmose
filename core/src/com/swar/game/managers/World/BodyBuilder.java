@@ -1,4 +1,4 @@
-package com.swar.game.managers;
+package com.swar.game.managers.World;
 
 
 import com.badlogic.gdx.physics.box2d.*;
@@ -8,11 +8,11 @@ import static com.swar.game.utils.constants.*;
 /**
  * Created by Koma on 01.10.2017.
  */
-public class BodyBuilder {
-    private World world;
+public class BodyBuilder extends Builder {
+
 
     public BodyBuilder(World world) {
-        this.world = world;
+        super(world);
     }
 
 

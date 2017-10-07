@@ -19,9 +19,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
+import com.swar.game.State;
 import com.swar.game.managers.GameConfig;
 import com.swar.game.managers.GameStateManagement;
-import com.swar.game.managers.State;
 import com.swar.game.utils.constants;
 
 /**

@@ -1,4 +1,4 @@
-package com.swar.game.managers;
+package com.swar.game.managers.World;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;

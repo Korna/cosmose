@@ -4,8 +4,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.swar.game.Game;
+import com.swar.game.State;
 import com.swar.game.managers.GameStateManagement;
-import com.swar.game.managers.State;
 
 import static com.swar.game.utils.constants.GAME_HEIGHT;
 import static com.swar.game.utils.constants.GAME_WIDTH;

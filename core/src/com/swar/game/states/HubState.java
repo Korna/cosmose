@@ -18,11 +18,11 @@ import com.swar.game.Game;
 import com.swar.game.Models.Ship;
 import com.swar.game.Models.Weapon;
 import com.swar.game.ShipType;
+import com.swar.game.State;
 import com.swar.game.WeaponType;
 import com.swar.game.entities.Player;
-import com.swar.game.managers.GameContactListener;
 import com.swar.game.managers.GameStateManagement;
-import com.swar.game.managers.State;
+import com.swar.game.managers.World.GameContactListener;
 import com.swar.game.utils.constants;
 
 import static com.swar.game.utils.constants.*;
@@ -148,13 +148,15 @@ public class HubState extends GameState {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 super.clicked(event, x, y);
-                System.out.printf("%d\n", currentPositionShip);
-                --currentPositionShip;
-                imageUpdate();
+                if(currentPositionShip  >= 1) {
+                    System.out.printf("%d\n", currentPositionShip);
+                    --currentPositionShip;
+                    imageUpdate();
 
 
-                clearStage();
-                buildTable();
+                    clearStage();
+                    buildTable();
+                }
             }
         });
 
@@ -164,13 +166,15 @@ public class HubState extends GameState {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 super.clicked(event, x, y);
-                System.out.printf("%d\n", currentPositionShip);
+                if(ShipType.values().length > currentPositionShip + 1) {
+                    System.out.printf("%d\n", currentPositionShip);
 
-                ++currentPositionShip;
-                imageUpdate();
+                    ++currentPositionShip;
+                    imageUpdate();
 
-                clearStage();
-                buildTable();
+                    clearStage();
+                    buildTable();
+                }
             }
         });
 
@@ -180,13 +184,15 @@ public class HubState extends GameState {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 super.clicked(event, x, y);
-                System.out.printf("%d\n", currentPositionWeapon);
+                if(currentPositionWeapon  >= 1) {
+                    System.out.printf("%d\n", currentPositionWeapon);
 
-                --currentPositionWeapon;
-                imageUpdate();
+                    --currentPositionWeapon;
+                    imageUpdate();
 
-                clearStage();
-                buildTable();
+                    clearStage();
+                    buildTable();
+                }
             }
         });
 
@@ -196,13 +202,17 @@ public class HubState extends GameState {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 super.clicked(event, x, y);
-                System.out.printf("%d\n", currentPositionWeapon);
+                if(WeaponType.values().length > currentPositionWeapon + 1){
+                    System.out.printf("%d\n", currentPositionWeapon);
 
-                ++currentPositionWeapon;
-                imageUpdate();
+                    ++currentPositionWeapon;
+                    imageUpdate();
 
-                clearStage();
-                buildTable();
+                    clearStage();
+                    buildTable();
+
+                }
+
             }
         });
 

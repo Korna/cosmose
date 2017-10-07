@@ -5,9 +5,11 @@ import java.util.ArrayList;
 /**
  * Created by Koma on 27.01.2017.
  */
-public class Ship {
+public class Ship implements Killable, Moveable{
+    private float hp;
+
     private float speed;
-    private int hp;
+
     private int energy = 50;
     private int armor;
     private String shipSprite;
@@ -55,16 +57,44 @@ public class Ship {
         this.height = height;
         this.width = width;
     }
-
-    public int getHp() {
-        return hp;
+    @Override
+    public float getHp() {
+        return this.hp;
     }
 
-    public void setHp(int hp) {
+    @Override
+    public void setHp(float hp) {
         this.hp = hp;
     }
+
+    @Override
+    public void decreaseHp(float hp) {
+        this.hp -= hp;
+    }
+
+    @Override
+    public void increaseHp(float hp) {
+        this.hp += hp;
+    }
+
+    @Override
     public float getSpeed(){
         return this.speed;
+    }
+
+    @Override
+    public void setSpeed(float speed) {
+        this.speed = speed;
+    }
+
+    @Override
+    public void decreaseSpeed(float speed) {
+        this.speed -= speed;
+    }
+
+    @Override
+    public void increaseSpeed(float speed) {
+        this.speed += speed;
     }
 
     public int getHeight() {
@@ -98,4 +128,6 @@ public class Ship {
     public void setEnergy(int energy) {
         this.energy = energy;
     }
+
+
 }
