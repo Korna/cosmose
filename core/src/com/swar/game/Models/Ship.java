@@ -11,7 +11,7 @@ public class Ship implements Killable, Moveable{
     private float speed;
 
     private int energy = 50;
-    private int armor;
+    public int armor;
     private String shipSprite;
     private String Sprite;
 
@@ -57,6 +57,14 @@ public class Ship implements Killable, Moveable{
         this.height = height;
         this.width = width;
     }
+
+    public void makeHit(float damage){
+        float dmgAfterArmor = damage + this.armor;
+        if(dmgAfterArmor > 0)
+            setHp(getHp() - dmgAfterArmor);
+    }
+
+
     @Override
     public float getHp() {
         return this.hp;

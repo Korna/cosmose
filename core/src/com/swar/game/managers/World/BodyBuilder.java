@@ -39,6 +39,33 @@ public class BodyBuilder extends Builder {
     }
 
 
+
+    public Body createEnemy(float x, float y) {
+        int width = 32;
+        int height = 32;
+
+        BodyDef bdef = new BodyDef();
+        FixtureDef fdef = new FixtureDef();
+
+        bdef.type = BodyDef.BodyType.DynamicBody;
+
+        bdef.position.set(x, y);
+
+        PolygonShape shape = new PolygonShape();
+        shape.setAsBox(width, height);
+
+        fdef.shape = shape;
+        fdef.filter.categoryBits = BIT_ENEMY;
+        fdef.filter.maskBits = BIT_PLAYER | BIT_BULLET | BIT_BORDER;
+        fdef.isSensor = true;
+
+        Body body = this.world.createBody(bdef);
+        body.createFixture(fdef).setUserData(ENEMY);
+
+        return body;
+    }
+
+
     public Body createBonus(float x, float y){
         BodyDef bdef = new BodyDef();
         FixtureDef fdef = new FixtureDef();
@@ -80,6 +107,27 @@ public class BodyBuilder extends Builder {
 
 
         body.createFixture(fdef).setUserData(type);
+
+        return body;
+    }
+
+    public Body createBulletEnemy(float x, float y) {
+        BodyDef bdef = new BodyDef();
+        bdef.type = BodyDef.BodyType.DynamicBody;
+        FixtureDef fdef = new FixtureDef();
+
+        //позиционирование выстрела
+        bdef.position.set(x, y);
+        CircleShape cshape = new CircleShape();
+        cshape.setRadius(GAME_WIDTH/190);
+        fdef.shape = cshape;
+        fdef.isSensor = true;
+        fdef.filter.categoryBits = BIT_BULLET;
+        fdef.filter.maskBits = BIT_BORDER | BIT_PLAYER;
+
+        Body body = this.world.createBody(bdef);
+
+        body.createFixture(fdef).setUserData(BULLET_ENEMY);
 
         return body;
     }
@@ -129,6 +177,33 @@ public class BodyBuilder extends Builder {
 
         Body pBody = world.createBody(def);
         pBody.createFixture(fdef).setUserData(BORDER_HORIZONTAL);
+        shape.dispose();
+
+        return pBody;
+    }
+
+    public Body createPlayer(int x, int y, int width, int height){
+        BodyDef def = new BodyDef();
+        def.type = BodyDef.BodyType.DynamicBody;
+        def.position.set(x, y);
+        def.fixedRotation = true;
+
+
+        FixtureDef fdef = new FixtureDef();
+
+        PolygonShape shape = new PolygonShape();
+        shape.setAsBox(width, height);
+
+        fdef.shape = shape;
+        fdef.filter.categoryBits = BIT_PLAYER;
+        fdef.filter.maskBits = BIT_ENEMY | BIT_OBJECT | BIT_BORDER | BIT_BULLET;
+
+
+        Body pBody = world.createBody(def);
+
+
+        pBody.createFixture(fdef).setUserData(PLAYER_SHIP);
+
         shape.dispose();
 
         return pBody;

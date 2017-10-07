@@ -7,7 +7,8 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -22,10 +23,9 @@ import com.swar.game.State;
 import com.swar.game.WeaponType;
 import com.swar.game.entities.Player;
 import com.swar.game.managers.GameStateManagement;
+import com.swar.game.managers.World.BodyBuilder;
 import com.swar.game.managers.World.GameContactListener;
 import com.swar.game.utils.constants;
-
-import static com.swar.game.utils.constants.*;
 
 /**
  * Created by Koma on 25.01.2017.
@@ -342,30 +342,10 @@ public class HubState extends GameState {
     }
 
     private Body createPlayer(int x, int y, int width, int height){
-        BodyDef def = new BodyDef();
-        def.type = BodyDef.BodyType.DynamicBody;
-        def.position.set(x, y);
-        def.fixedRotation = true;
+        BodyBuilder bodyBuilder = new BodyBuilder(world);
+        Body b = bodyBuilder.createPlayer(x, y, width, height);
 
-
-        FixtureDef fdef = new FixtureDef();
-
-        PolygonShape shape = new PolygonShape();
-        shape.setAsBox(width, height);
-
-        fdef.shape = shape;
-        fdef.filter.categoryBits = BIT_PLAYER;
-        fdef.filter.maskBits = BIT_ENEMY | BIT_OBJECT | BIT_BORDER;
-
-
-        Body pBody = world.createBody(def);
-
-
-        pBody.createFixture(fdef).setUserData(PLAYER_SHIP);
-
-        shape.dispose();
-
-        return pBody;
+        return b;
     }
 
 }

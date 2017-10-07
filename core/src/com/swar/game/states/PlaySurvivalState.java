@@ -10,7 +10,9 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.swar.game.Models.RecordModel;
 import com.swar.game.Models.Weapon;
@@ -83,7 +85,7 @@ public class PlaySurvivalState extends GameState{
         hud = new HUD(player, State.PLAYSURVIVAL);
         available = Gdx.input.isPeripheralAvailable(Input.Peripheral.Accelerometer);
 
-        objectHandler = new ObjectHandler(new Array<>(), new Array<>(), new Array<>(), world);
+        objectHandler = new ObjectHandler(new Array<>(), new Array<>(), new Array<>(), new Array<>(), world);
         interfaceManager = new InterfaceManager(available, 0.5f, 4.5f);
     }
 
@@ -100,8 +102,9 @@ public class PlaySurvivalState extends GameState{
     public void update(float delta) {
         player.timeInGame += delta;
 
-        player.ship.setHp(player.ship.getHp() + cl.getHp());
-
+        float totalDamage = cl.getHp() + player.ship.armor;
+        if(totalDamage < 0)
+            player.ship.setHp(player.ship.getHp() + totalDamage);
 
         if(player.ship.getHp() <= 0){
             player.setDead(true);
@@ -200,7 +203,7 @@ public class PlaySurvivalState extends GameState{
 
         for(int i = 0; i<objectHandler.listBulletPlayer.size; ++i){//можно мб просто отмечать для удаления объекты? ставить маркер. а не ждать пока итератор пройдет по новой КОЛЛЕКЦИИ
             Bullet bullet = objectHandler.listBulletPlayer.get(i);
-            bullet.getBody().setLinearVelocity(bullet.currentSpeed, bullet.speedY);
+            bullet.getBody().setLinearVelocity(bullet.currentSpeed, bullet.getSpeed());
             bullet.update(delta);
         }
 
@@ -268,24 +271,22 @@ public class PlaySurvivalState extends GameState{
         maincamera.update();
     }
 
-    private void inputAction(boolean shotCommand, int horizontal, int vertical){
+    private void inputAction(boolean shot, int horizontal, int vertical){
         if(horizontal < 0)
             player.ship_l();
         if(horizontal > 0)
             player.ship_r();
         if(horizontal == 0)
             player.ship();
-        if(shotCommand){
+        if(shot){
             if(player.ship.getEnergy() > 0){
                 boolean hadShot = player.createObject(bodyBuilder, objectHandler);
-                if(hadShot)
-                    player.ship.setEnergy(player.ship.getEnergy() - 1);
+
             }
         }
 
         player.getBody().setLinearVelocity(horizontal * player.getSpeed(), vertical * player.getSpeed());
     }
-
 
 
 
@@ -301,75 +302,6 @@ public class PlaySurvivalState extends GameState{
             world.step(STEP, 6, 2);
             accumulator -= STEP;
         }
-
-    }
-
-    private void createBorders(World world){
-
-
-
-        BodyDef def = new BodyDef();
-        def.type = BodyDef.BodyType.StaticBody;
-
-
-
-        PolygonShape shape = new PolygonShape();
-        shape.setAsBox(GAME_WIDTH
-                //  / PPM
-                , 1
-                //  / PPM
-        );
-        FixtureDef fdef = new FixtureDef();
-        fdef.shape = shape;
-        fdef.filter.categoryBits = BIT_BORDER;
-
-        def.position.set(GAME_WIDTH
-                //    / PPM
-                , 0
-                //      / PPM
-        );
-
-        Body pBody = world.createBody(def);
-        pBody.createFixture(fdef).setUserData(BORDER_HORIZONTAL);
-        shape.dispose();
-
-        def = new BodyDef();
-        def.type = BodyDef.BodyType.StaticBody;
-        shape = new PolygonShape();
-        shape.setAsBox(GAME_WIDTH, 1);
-        fdef = new FixtureDef();
-        fdef.shape = shape;
-        fdef.filter.categoryBits = BIT_BORDER;
-        def.position.set(GAME_WIDTH, GAME_HEIGHT);
-        pBody = world.createBody(def);
-        pBody.createFixture(fdef).setUserData(BORDER_HORIZONTAL);
-        shape.dispose();
-
-
-        def = new BodyDef();
-        def.type = BodyDef.BodyType.StaticBody;
-        shape = new PolygonShape();
-        shape.setAsBox(1, GAME_HEIGHT);
-        fdef = new FixtureDef();
-        fdef.shape = shape;
-        fdef.filter.categoryBits = BIT_BORDER;
-        def.position.set(1, GAME_HEIGHT);
-        pBody = world.createBody(def);
-        pBody.createFixture(fdef).setUserData("border");
-        shape.dispose();
-
-
-        def = new BodyDef();
-        def.type = BodyDef.BodyType.StaticBody;
-        shape = new PolygonShape();
-        shape.setAsBox(1, GAME_HEIGHT);
-        fdef = new FixtureDef();
-        fdef.shape = shape;
-        fdef.filter.categoryBits = BIT_BORDER;
-        def.position.set(GAME_WIDTH, GAME_HEIGHT);
-        pBody = world.createBody(def);
-        pBody.createFixture(fdef).setUserData("border");
-        shape.dispose();
 
     }
 

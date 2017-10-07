@@ -110,16 +110,16 @@ public class Player extends Sprite implements Creator {//все параметр
             if (ship.weapons.get(0).getReload() < ship.weapons.get(0).getTimeAfterShot()) {
                 ship.weapons.get(0).setTimeAfterShot(0.0f);
                 bulletBody = bodyBuilder.createBulletPlayer(x - 12, y, type);
-                b = new Bullet(bulletBody, ship.weapons.get(0).bulletModel.bulletType, ship.weapons.get(0).bulletModel);
+                b = new Bullet(bulletBody, ship.weapons.get(0).bulletModel.bulletType, ship.weapons.get(0).bulletModel, 560);
                 bulletBody.setUserData(b);
                 objectHandler.add(b);
-
+                ship.setEnergy(ship.getEnergy() - 1);
 
                 bulletBody = bodyBuilder.createBulletPlayer(x + 12, y, type);
-                b = new Bullet(bulletBody, ship.weapons.get(0).bulletModel.bulletType, ship.weapons.get(0).bulletModel);
+                b = new Bullet(bulletBody, ship.weapons.get(0).bulletModel.bulletType, ship.weapons.get(0).bulletModel, 560);
                 bulletBody.setUserData(b);
                 objectHandler.add(b);
-
+                ship.setEnergy(ship.getEnergy() - 1);
 
                 return true;
 
@@ -129,10 +129,10 @@ public class Player extends Sprite implements Creator {//все параметр
             if (ship.weapons.get(0).getReload() < ship.weapons.get(0).getTimeAfterShot()) {
                 ship.weapons.get(0).setTimeAfterShot(0.0f);
                 bulletBody = bodyBuilder.createBulletPlayer(x, y + 5, type);
-                b = new Bullet(bulletBody, ship.weapons.get(0).bulletModel.bulletType, ship.weapons.get(0).bulletModel);
+                b = new Bullet(bulletBody, ship.weapons.get(0).bulletModel.bulletType, ship.weapons.get(0).bulletModel, 560);
                 bulletBody.setUserData(b);
                 objectHandler.add(b);
-
+                ship.setEnergy(ship.getEnergy() - 1);
 
                 return true;
 

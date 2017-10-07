@@ -6,6 +6,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.swar.game.BulletType;
 import com.swar.game.Game;
 import com.swar.game.Models.BulletModel;
+import com.swar.game.Models.Moveable;
 
 import static com.swar.game.utils.constants.GAME_WIDTH;
 
@@ -13,10 +14,10 @@ import static com.swar.game.utils.constants.GAME_WIDTH;
  * Created by Koma on 25.01.2017.
  */
 
-public class Bullet extends Sprite {
+public class Bullet extends Sprite implements Moveable{
 
 
-    public float speedY = GAME_WIDTH;
+    private float speedY = GAME_WIDTH;
     public float speedX;
     private int bdt = 0;
     public float currentSpeed = 0;
@@ -26,9 +27,10 @@ public class Bullet extends Sprite {
 
 
 
-    public Bullet (Body body, BulletType bulletType, BulletModel bulletModel) {
+    public Bullet (Body body, BulletType bulletType, BulletModel bulletModel, float speedY) {
         super(body);
         this.bulletModel = bulletModel;
+        this.speedY = speedY;
 
         Texture tex;
         tex = Game.res.getTexture(bulletType.name());
@@ -72,5 +74,25 @@ public class Bullet extends Sprite {
 
     public BulletModel getBulletModel() {
         return bulletModel;
+    }
+
+    @Override
+    public float getSpeed() {
+        return this.speedY;
+    }
+
+    @Override
+    public void setSpeed(float speed) {
+        this.speedY = speed;
+    }
+
+    @Override
+    public void decreaseSpeed(float speed) {
+
+    }
+
+    @Override
+    public void increaseSpeed(float speed) {
+
     }
 }

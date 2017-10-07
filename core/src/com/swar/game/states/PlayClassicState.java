@@ -93,7 +93,7 @@ public class PlayClassicState extends GameState{
         available = Gdx.input.isPeripheralAvailable(Input.Peripheral.Accelerometer);
 
 
-        objectHandler = new ObjectHandler(new Array<>(), new Array<>(), new Array<>(), world);
+        objectHandler = new ObjectHandler(new Array<>(), new Array<>(), new Array<>(), new Array<>(), world);
         interfaceManager = new InterfaceManager(available, 0.5f, 4.5f);
 
     }
@@ -119,18 +119,14 @@ public class PlayClassicState extends GameState{
             return;
         }
 
-        player.ship.setHp(player.ship.getHp() + cl.getHp());
+        float totalDamage = cl.getHp() +player.ship.armor;
+        if(totalDamage < 0)
+            player.ship.setHp(player.ship.getHp() + totalDamage);
 
         if(player.ship.getHp() <= 0){
             player.setDead(true);
-
-
-
-
             objectHandler.clearAll();
-
             gsm.setState(State.DEATH);
-
             return;
         }
 
@@ -191,6 +187,17 @@ public class PlayClassicState extends GameState{
 
             objectHandler.add(a);
         }
+        if(randomizer.chanceAsteroid()){
+            if(randomizer.chanceAsteroid()) {
+                Body enemyBody = bodyBuilder.createEnemy(randomizer.getCoordinateAsteroid(), GAME_HEIGHT - 50);
+
+                Enemy e = new Enemy(enemyBody);
+                enemyBody.setUserData(e);
+
+                objectHandler.add(e);
+            }
+        }
+
 
 
 
@@ -214,30 +221,36 @@ public class PlayClassicState extends GameState{
         HashSet<Body> set = new HashSet<>(list);
 
         for(Body body : set){
+            String str = (String) body.getFixtureList().get(0).getUserData();
 
+            switch(str){
+                case ASTEROID:
+                    Asteroid asteroid = (Asteroid) body.getUserData();
+                    objectHandler.remove(asteroid);
+                    try {
+                        if (randomizer.chanceBonus()) {
+                            Body bonusBody = bodyBuilder.createBonus(body.getPosition().x, body.getPosition().y);
 
-            try{
-                Asteroid asteroid = (Asteroid) body.getUserData();
-                objectHandler.remove(asteroid);
-                try {
-                    if (randomizer.chanceBonus()) {
-                        Body bonusBody = bodyBuilder.createBonus(body.getPosition().x, body.getPosition().y);
-
-                        Bonus b = new Bonus(bonusBody);
-                        bonusBody.setUserData(b);
-                        objectHandler.add(b);
+                            Bonus b = new Bonus(bonusBody);
+                            bonusBody.setUserData(b);
+                            objectHandler.add(b);
+                        }
+                    } catch (Exception e) {
+                        System.out.printf(e.toString() + "\n");
                     }
-                }catch(Exception e){
-                    System.out.printf(e.toString() + "\n");
-                }
-            }catch(Exception e){
-                try {
+                    break;
+                case BULLET_DESTROYABLE:
+                case BULLET_PIERCING:
+                case BULLET_ENEMY:
                     objectHandler.remove((Bullet) body.getUserData());
-                }catch(Exception bonus){
+                    break;
+                case BONUS:
                     objectHandler.remove((Bonus) body.getUserData());
-                }
+                    break;
+                case ENEMY:
+                    objectHandler.remove((Enemy) body.getUserData());
+                    break;
             }
-
 
             world.destroyBody(body);
 
@@ -256,12 +269,23 @@ public class PlayClassicState extends GameState{
                     asteroid.update(delta);
                 }
 
+        for(int i = 0; i < objectHandler.listEnemy.size; ++i) {
+            Enemy enemy = objectHandler.listEnemy.get(i);
+            Vector2 targetPosition = new Vector2(0, enemy.speed *0.9f);
+
+
+            // asteroid.getBody().applyForce(targetPosition, asteroid.getBody().getWorldCenter(), true);
+            enemy.getBody().setLinearVelocity(targetPosition);
+            enemy.update(delta);
+            if(randomizer.chanceAsteroid())
+                enemy.createObject(bodyBuilder, objectHandler);
+        }
 
 
 
                 for(int i = 0; i < objectHandler.listBulletPlayer.size; ++i){
                     Bullet bullet = objectHandler.listBulletPlayer.get(i);
-                    bullet.getBody().setLinearVelocity(bullet.currentSpeed, bullet.speedY);
+                    bullet.getBody().setLinearVelocity(bullet.currentSpeed, bullet.getSpeed());
                     bullet.update(delta);
                 }
 
@@ -323,8 +347,7 @@ public class PlayClassicState extends GameState{
         if(shot){
             if(player.ship.getEnergy() > 0){
                 boolean hadShot = player.createObject(bodyBuilder, objectHandler);
-                if(hadShot)
-                    player.ship.setEnergy(player.ship.getEnergy() - 1);
+
             }
         }
 
@@ -386,6 +409,7 @@ public class PlayClassicState extends GameState{
     private void doWorldStep(float deltaTime){
         float frameTime = Math.min(deltaTime, 0.25f);
         accumulator += frameTime;
+
         while(accumulator >= STEP){
             world.step(STEP, 6, 2);
             accumulator -= STEP;

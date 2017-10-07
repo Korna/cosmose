@@ -6,19 +6,21 @@ package com.swar.game.managers;
 
 
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.World;
 import com.swar.game.Game;
 import com.swar.game.Models.Ship;
 import com.swar.game.ShipType;
 import com.swar.game.State;
 import com.swar.game.WeaponType;
 import com.swar.game.entities.Player;
+import com.swar.game.managers.World.BodyBuilder;
 import com.swar.game.managers.World.GameContactListener;
 import com.swar.game.states.*;
 
 import java.util.Stack;
 
-import static com.swar.game.utils.constants.*;
+import static com.swar.game.utils.constants.GAME_WIDTH;
 
 
 public class GameStateManagement {
@@ -105,31 +107,12 @@ public class GameStateManagement {
         }
         return null;
     }
+
     private Body createPlayer(int x, int y, int width, int height){
-        BodyDef def = new BodyDef();
-        def.type = BodyDef.BodyType.DynamicBody;
-        def.position.set(x, y);
-        def.fixedRotation = true;
+        BodyBuilder bodyBuilder = new BodyBuilder(world);
+        Body b = bodyBuilder.createPlayer(x, y, width, height);
 
-
-        FixtureDef fdef = new FixtureDef();
-
-        PolygonShape shape = new PolygonShape();
-        shape.setAsBox(width, height);
-
-        fdef.shape = shape;
-        fdef.filter.categoryBits = BIT_PLAYER;
-        fdef.filter.maskBits = BIT_ENEMY | BIT_OBJECT | BIT_BORDER;
-
-
-        Body pBody = world.createBody(def);
-
-
-        pBody.createFixture(fdef).setUserData(PLAYER_SHIP);
-
-        shape.dispose();
-
-        return pBody;
+        return b;
     }
 
 }

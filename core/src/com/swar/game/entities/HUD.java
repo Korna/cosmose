@@ -39,22 +39,16 @@ public class HUD {
     public void render(SpriteBatch sb){
 
         sb.begin();
-      //  sb.draw(credit, GAME_WIDTH / 6.5f, GAME_HEIGHT - (GAME_HEIGHT  / 32));
-
-
         switch(state){
             case PLAY:
-                font.draw(sb, String.valueOf(player.getCredits()) + "$", GAME_WIDTH / 5, GAME_HEIGHT - (GAME_HEIGHT  / 32));
+                font.draw(sb, String.valueOf(player.getCredits()) + "$", GAME_WIDTH / 3, GAME_HEIGHT - (GAME_HEIGHT  / 32));
             case PLAYSURVIVAL:
                 fontHp.draw(sb, String.valueOf(player.ship.getHp()) + "hull", GAME_WIDTH / 16, GAME_HEIGHT - (GAME_HEIGHT  / 32));
                 fontEnergy.draw(sb, String.valueOf(player.ship.getEnergy()) + "energy", GAME_WIDTH / 16, GAME_HEIGHT - (GAME_HEIGHT  / 16));
-
-                fontTime.draw(sb, String.valueOf(((int) player.timeInGame) + " sec"), GAME_WIDTH / 3, GAME_HEIGHT - (GAME_HEIGHT  / 32));
+                fontTime.draw(sb, String.valueOf(((int) player.timeInGame) + " sec"), GAME_WIDTH / 2, GAME_HEIGHT - (GAME_HEIGHT  / 32));
                 break;
 
         }
-
-
         sb.end();
 
     }
