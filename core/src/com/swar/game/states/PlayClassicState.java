@@ -12,8 +12,8 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.swar.game.Models.Weapon;
-import com.swar.game.ShipType;
-import com.swar.game.State;
+import com.swar.game.Types.ShipType;
+import com.swar.game.Types.State;
 import com.swar.game.entities.*;
 import com.swar.game.managers.GameConfig;
 import com.swar.game.managers.GameStateManagement;
@@ -249,6 +249,12 @@ public class PlayClassicState extends GameState{
                     break;
                 case ENEMY:
                     objectHandler.remove((Enemy) body.getUserData());
+
+                    Body bonusBody = bodyBuilder.createBonus(body.getPosition().x, body.getPosition().y);
+
+                    Bonus b = new Bonus(bonusBody);
+                    bonusBody.setUserData(b);
+                    objectHandler.add(b);
                     break;
             }
 
@@ -310,7 +316,7 @@ public class PlayClassicState extends GameState{
 
 
         batch.setProjectionMatrix(maincamera.combined);
-
+        System.out.println("Size" + objectHandler.listBulletPlayer.size);
         doWorldStep(delta);
     }
 

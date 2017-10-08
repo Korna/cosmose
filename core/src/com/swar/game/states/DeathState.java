@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-import static com.swar.game.State.MAINMENU;
+import static com.swar.game.Types.State.MAINMENU;
 
 /**
  * Created by Koma on 08.09.2017.

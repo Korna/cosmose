@@ -1,4 +1,4 @@
-package com.swar.game;
+package com.swar.game.Types;
 
 import com.swar.game.Models.BulletModel;
 

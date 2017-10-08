@@ -3,7 +3,7 @@ package com.swar.game.entities;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.swar.game.State;
+import com.swar.game.Types.State;
 
 import static com.swar.game.utils.constants.GAME_HEIGHT;
 import static com.swar.game.utils.constants.GAME_WIDTH;

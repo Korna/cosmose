@@ -14,7 +14,7 @@ import static com.swar.game.utils.constants.GAME_WIDTH;
  * Created by Koma on 19.01.2017.
  */
 public class Asteroid extends Sprite implements Killable, Moveable{
-    public float hp = 100;
+    public float hp = 99;
     public float collisionDmg = 10;
     public float speed = -(GAME_WIDTH);
 

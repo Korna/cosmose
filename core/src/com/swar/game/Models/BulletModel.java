@@ -1,7 +1,7 @@
 package com.swar.game.Models;
 
-import com.swar.game.BulletType;
-import com.swar.game.PierceType;
+import com.swar.game.Types.BulletType;
+import com.swar.game.Types.PierceType;
 
 /**
  * Created by Koma on 03.10.2017.

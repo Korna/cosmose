@@ -132,24 +132,6 @@ public class GameContactListener implements ContactListener {
             return;
         }
 
-        if(isAAFirst(BULLET_DESTROYABLE, BORDER_HORIZONTAL)){
-            bodiesToRemove.add(ba);
-            return;
-        }
-        if(isABFirst(BULLET_DESTROYABLE, BORDER_HORIZONTAL)){
-            bodiesToRemove.add(bb);
-            return;
-        }
-
-        if(isAAFirst(BULLET_PIERCING, BORDER_HORIZONTAL)){
-            bodiesToRemove.add(ba);
-            return;
-        }
-        if(isABFirst(BULLET_PIERCING, BORDER_HORIZONTAL)){
-            bodiesToRemove.add(bb);
-            return;
-        }
-
 
         if(isAAFirst(BONUS, PLAYER_SHIP)){
             bodiesToRemove.add(ba);
@@ -167,6 +149,31 @@ public class GameContactListener implements ContactListener {
 
 
 
+
+    }
+
+    //when fixtures no longer collide
+    public void endContact(Contact c){
+        fa = c.getFixtureA();
+        fb = c.getFixtureB();
+        Body ba = fa.getBody();
+        Body bb = fb.getBody();
+
+        if(isAAFirst(BULLET_DESTROYABLE, BORDER_HORIZONTAL) || isAAFirst(BULLET_PIERCING, BORDER_HORIZONTAL) || isAAFirst(BULLET_ENEMY, BORDER_HORIZONTAL)
+                || isAAFirst(ENEMY, BORDER_HORIZONTAL)
+                ){
+            bodiesToRemove.add(ba);
+            return;
+        }
+        if(isABFirst(BULLET_DESTROYABLE, BORDER_HORIZONTAL) || isABFirst(BULLET_PIERCING, BORDER_HORIZONTAL) || isABFirst(BULLET_ENEMY, BORDER_HORIZONTAL)
+                || isABFirst(ENEMY, BORDER_HORIZONTAL)
+                ){
+            bodiesToRemove.add(bb);
+            return;
+        }
+
+
+
         //эту часть вставляем в end contact для норм отрисовки
         if(!fb.getUserData().equals(PLAYER_SHIP) && fa.getUserData().equals(BORDER_HORIZONTAL)){
             if (fb.getUserData().equals(ASTEROID)){
@@ -175,13 +182,12 @@ public class GameContactListener implements ContactListener {
             }
 
         }else
-            if(!fa.getUserData().equals(PLAYER_SHIP) && fb.getUserData().equals(BORDER_HORIZONTAL)) {
-                  if (fa.getUserData().equals(ASTEROID)){
-                      bodiesToRemove.add(ba);
-                      return;
-                  }
+        if(!fa.getUserData().equals(PLAYER_SHIP) && fb.getUserData().equals(BORDER_HORIZONTAL)) {
+            if (fa.getUserData().equals(ASTEROID)){
+                bodiesToRemove.add(ba);
+                return;
             }
-
+        }
 
 
     }
@@ -201,17 +207,7 @@ public class GameContactListener implements ContactListener {
             return false;
     }
 
-    //when fixtures no longer collide
-    public void endContact(Contact c){
-        Fixture fa = c.getFixtureA();
-        Fixture fb = c.getFixtureB();
 
-        if(fa == null || fb == null){
-            System.out.println("null object found");
-            return;
-        }
-
-    }
 
     public Array<Body> getBodiesToRemove() { return bodiesToRemove; }
 

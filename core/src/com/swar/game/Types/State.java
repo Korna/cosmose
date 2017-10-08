@@ -1,4 +1,4 @@
-package com.swar.game;
+package com.swar.game.Types;
 
 /**
  * Created by Koma on 01.10.2017.

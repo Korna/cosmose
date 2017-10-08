@@ -16,7 +16,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.swar.game.Models.RecordModel;
 import com.swar.game.Models.Weapon;
-import com.swar.game.State;
+import com.swar.game.Types.State;
 import com.swar.game.entities.*;
 import com.swar.game.managers.GameConfig;
 import com.swar.game.managers.GameStateManagement;

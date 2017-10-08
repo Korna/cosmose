@@ -3,11 +3,11 @@ package com.swar.game.entities;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.Body;
-import com.swar.game.BulletType;
 import com.swar.game.Game;
 import com.swar.game.Models.Creator;
 import com.swar.game.Models.Killable;
 import com.swar.game.Models.Moveable;
+import com.swar.game.Types.BulletType;
 import com.swar.game.managers.World.BodyBuilder;
 import com.swar.game.managers.World.ObjectHandler;
 

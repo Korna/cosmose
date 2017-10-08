@@ -3,10 +3,10 @@ package com.swar.game.entities;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.Body;
-import com.swar.game.BulletType;
 import com.swar.game.Game;
 import com.swar.game.Models.BulletModel;
 import com.swar.game.Models.Moveable;
+import com.swar.game.Types.BulletType;
 
 import static com.swar.game.utils.constants.GAME_WIDTH;
 
