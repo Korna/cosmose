@@ -9,7 +9,7 @@ import com.swar.game.Game;
  * Created by Koma on 03.09.2017.
  */
 public class Bonus extends Sprite  {
-
+    private float existTime = 0;
 
     public Bonus (Body body) {
         super(body);
@@ -21,4 +21,11 @@ public class Bonus extends Sprite  {
         setAnimation(sprites, 1 / 12f);
     }
 
+    public float getExistTime() {
+        return existTime;
+    }
+
+    public void setExistTime(float existTime) {
+        this.existTime = existTime;
+    }
 }

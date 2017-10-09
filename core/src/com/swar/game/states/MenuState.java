@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.swar.game.Game;
+import com.swar.game.Types.State;
 import com.swar.game.managers.GameStateManagement;
 import com.swar.game.utils.constants;
 
@@ -82,6 +83,14 @@ public class MenuState extends GameState {
                 setPlaySurvival();
             }
         });
+        TextButton buttonSettings = new TextButton("Settings", textButtonStyle);
+        buttonSettings.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                super.clicked(event, x, y);
+                setSettings();
+            }
+        });
 
 
         buttonExit.pad(GAME_WIDTH/24);//отступ
@@ -101,6 +110,11 @@ public class MenuState extends GameState {
         table.row();
         table.add(buttonPlaySurvival).width(GAME_WIDTH/5).height(GAME_WIDTH/7).pad(GAME_WIDTH/35);
 
+
+        table.row();
+        table.add(buttonSettings).width(GAME_WIDTH/5).height(GAME_WIDTH/7).pad(GAME_WIDTH/35);
+
+
         table.row();
         table.add(buttonExit).width(GAME_WIDTH/5).height(GAME_WIDTH/7);
         stage.addActor(table);
@@ -111,14 +125,19 @@ public class MenuState extends GameState {
     }
 
     private void setPlay(){
-        gsm.dispose();
-        gsm.setState(GameStateManagement.State.HUB);
+        stage.dispose();
+        gsm.setState(State.HUB);
+    }
+    private void setSettings(){
+        stage.dispose();
+        gsm.setState(State.SETTINGS);
     }
 
     private void setPlaySurvival(){
-        gsm.dispose();
-        gsm.setState(GameStateManagement.State.PLAYSURVIVAL);
+        stage.dispose();
+        gsm.setState(State.PLAYSURVIVAL);
     }
+
 
 
     public void update(float dt) {

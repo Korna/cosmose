@@ -6,16 +6,21 @@ package com.swar.game.managers;
 
 
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.World;
 import com.swar.game.Game;
+import com.swar.game.Models.Ship;
+import com.swar.game.Types.ShipType;
+import com.swar.game.Types.State;
+import com.swar.game.Types.WeaponType;
 import com.swar.game.entities.Player;
-import com.swar.game.entities.Ship;
-import com.swar.game.entities.Weapon;
+import com.swar.game.managers.World.BodyBuilder;
+import com.swar.game.managers.World.GameContactListener;
 import com.swar.game.states.*;
 
 import java.util.Stack;
 
-import static com.swar.game.utils.constants.*;
+import static com.swar.game.utils.constants.GAME_WIDTH;
 
 
 public class GameStateManagement {
@@ -29,14 +34,7 @@ public class GameStateManagement {
 
 
     private Stack<GameState> states;
-    public enum State{
-        SPLASH,
-        MAINMENU,
-        PLAY,
-        HUB,
-        DEATH,
-        PLAYSURVIVAL
-    }
+
 
     public GameStateManagement(final Game app){
         this.app = app;
@@ -81,6 +79,8 @@ public class GameStateManagement {
 
     private GameState getState(State state){
         switch(state){
+            case SETTINGS:
+                return new SettingsState(this);
             case SPLASH:
                 return new SplashState(this);
             case MAINMENU:
@@ -96,10 +96,10 @@ public class GameStateManagement {
                 world = new World(new Vector2(0, 0), false);//потому как создается игрок в хабе
 
                 playerBody = createPlayer(GAME_WIDTH / 4, 15, GAME_WIDTH/30, GAME_WIDTH/20);
+                Ship ship = ShipType.getShip(ShipType.ship_2);
+                ship.weapons.add(WeaponType.getWeapon(WeaponType.weapon_2));
+                player = new Player(playerBody, cl, ship);//здесь по индексу передаём корабль из ДБ
 
-                player = new Player(playerBody, cl, 1,
-                        new Ship(200.0f, 100, 5, "", "", new float[]{1,2}, new float[]{1,2}, 1, 2, new Weapon[]{null}, 1, 2),
-                        2);//здесь по индексу передаём корабль из ДБ
                 player.initSprite(playerBody);
 
 
@@ -107,31 +107,12 @@ public class GameStateManagement {
         }
         return null;
     }
+
     private Body createPlayer(int x, int y, int width, int height){
-        BodyDef def = new BodyDef();
-        def.type = BodyDef.BodyType.DynamicBody;
-        def.position.set(x, y);
-        def.fixedRotation = true;
+        BodyBuilder bodyBuilder = new BodyBuilder(world);
+        Body b = bodyBuilder.createPlayer(x, y, width, height);
 
-
-        FixtureDef fdef = new FixtureDef();
-
-        PolygonShape shape = new PolygonShape();
-        shape.setAsBox(width, height);
-
-        fdef.shape = shape;
-        fdef.filter.categoryBits = BIT_PLAYER;
-        fdef.filter.maskBits = BIT_ENEMY | BIT_OBJECT | BIT_BORDER;
-
-
-        Body pBody = world.createBody(def);
-
-
-        pBody.createFixture(fdef).setUserData(PLAYER_SHIP);
-
-        shape.dispose();
-
-        return pBody;
+        return b;
     }
 
 }

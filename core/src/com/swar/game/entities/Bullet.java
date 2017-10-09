@@ -4,6 +4,9 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.swar.game.Game;
+import com.swar.game.Models.BulletModel;
+import com.swar.game.Models.Moveable;
+import com.swar.game.Types.BulletType;
 
 import static com.swar.game.utils.constants.GAME_WIDTH;
 
@@ -11,28 +14,26 @@ import static com.swar.game.utils.constants.GAME_WIDTH;
  * Created by Koma on 25.01.2017.
  */
 
-public class Bullet extends Sprite {
+public class Bullet extends Sprite implements Moveable{
 
-    private float damage;
-    public String name;
-    private int id;
-    public float speedY = GAME_WIDTH;
 
+    private float speedY = GAME_WIDTH;
     public float speedX;
-    private boolean wavy;
     private int bdt = 0;
     public float currentSpeed = 0;
 
+    private BulletModel bulletModel;
 
-    private boolean pierce;
 
-    public Bullet (Body body, int bulletIndex, boolean wavy, boolean pierce) {
+
+
+    public Bullet (Body body, BulletType bulletType, BulletModel bulletModel, float speedY) {
         super(body);
-        this.wavy = wavy;
-        this.pierce = pierce;
+        this.bulletModel = bulletModel;
+        this.speedY = speedY;
 
         Texture tex;
-        tex = Game.res.getTexture("bullet_" + String.valueOf(bulletIndex));
+        tex = Game.res.getTexture(bulletType.name());
         TextureRegion[] sprites = TextureRegion.split(tex, 32, 32)[0];
 
         setAnimation(sprites, 1 / 12f);
@@ -42,7 +43,7 @@ public class Bullet extends Sprite {
     public void update(float delta){
         animation.update(delta);
         ++bdt;
-        if(wavy) {
+        if(bulletModel.wavy) {
             bdt %= 5;
             switch (bdt) {
                 case 0:
@@ -71,17 +72,27 @@ public class Bullet extends Sprite {
 
     }
 
-    public void init(float damage, String name, int id, float speedY, float speedX,  boolean wavy){
-        this.damage = damage;
-        this.name = name;
-        this.id = id;
-        this.speedY = speedY;
-        this.speedX = speedX;
-        this.wavy = wavy;
+    public BulletModel getBulletModel() {
+        return bulletModel;
     }
 
+    @Override
+    public float getSpeed() {
+        return this.speedY;
+    }
 
+    @Override
+    public void setSpeed(float speed) {
+        this.speedY = speed;
+    }
 
+    @Override
+    public void decreaseSpeed(float speed) {
 
+    }
 
+    @Override
+    public void increaseSpeed(float speed) {
+
+    }
 }

@@ -7,20 +7,29 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
-import com.swar.game.Randomizer;
-import com.swar.game.Singleton;
+import com.swar.game.Models.Weapon;
+import com.swar.game.Types.ShipType;
+import com.swar.game.Types.State;
 import com.swar.game.entities.*;
-import com.swar.game.managers.GameContactListener;
-import com.swar.game.managers.GameInputProcessor;
+import com.swar.game.managers.GameConfig;
 import com.swar.game.managers.GameStateManagement;
+import com.swar.game.managers.InterfaceManager;
+import com.swar.game.managers.World.BodyBuilder;
+import com.swar.game.managers.World.GameContactListener;
+import com.swar.game.managers.World.ObjectHandler;
+import com.swar.game.utils.Journal;
+import com.swar.game.utils.Randomizer;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 
 import static com.badlogic.gdx.math.MathUtils.random;
 import static com.swar.game.utils.constants.*;
+import static java.lang.Math.abs;
 
 /**
  * Created by Koma on 17.01.2017.
@@ -35,56 +44,71 @@ public class PlayClassicState extends GameState{
     private Player player;
     private Player shadowPlayer;
 
-    private Array<Asteroid> listAsteroid;
-    private Array<Bullet> listBulletPlayer;
-    private Array<Bonus> listBonus;
 
 
-    final static int GAME_TIME = 15;
+    private ObjectHandler objectHandler;
 
-    boolean available = false;
+    private BodyBuilder bodyBuilder;
+    private InterfaceManager interfaceManager;
+    private boolean CONFIG_VIBRATION;
+
+    private boolean available = false;
+
+    final static int GAME_TIME = 60;
+    final private Randomizer randomizer = new Randomizer();
+    final private Journal instance = Journal.getInstance();
+
+
+    int index = 0;//переменная для сохранения индекса кадра
+
     public PlayClassicState(GameStateManagement gsm) {
         super(gsm);
         cl = new GameContactListener();
 
         world = gsm.world;
         player = gsm.player;
+        bodyBuilder = new BodyBuilder(world);
+
+        GameConfig gameConfig = new GameConfig();
+        CONFIG_VIBRATION = gameConfig.isVibraion();
 
 
+        Body body = bodyBuilder.createShadow(GAME_WIDTH / 2, 15, GAME_WIDTH/15, GAME_WIDTH/10);
+        //здесь по индексу передаём корабль из ДБ
+        shadowPlayer = new Player(body, null, ShipType.getShip(ShipType.ship_2));
+        // body.setUserData(shadowPlayer);
 
-        Body body = createShadow(GAME_WIDTH / 2, 15, GAME_WIDTH/15, GAME_WIDTH/10);
-        shadowPlayer = new Player(body, null, 2, null, 1);//здесь по индексу передаём корабль из ДБ
-       // body.setUserData(shadowPlayer);
-
-        Gdx.input.setInputProcessor(new GameInputProcessor());
+        // Gdx.input.setInputProcessor(new GameInputProcessor());
 
         world.setContactListener(cl);
         b2dr = new Box2DDebugRenderer();
         batch = new SpriteBatch();
 
-        createBorders(world);
 
-        this.listAsteroid = new Array<>();
-        this.listBulletPlayer = new Array<>();
-        this.listBonus = new Array<>();
+        bodyBuilder.createBorder(BORDER_HORIZONTAL, GAME_WIDTH, 0, GAME_WIDTH, 1);
+        bodyBuilder.createBorder(BORDER_HORIZONTAL, GAME_WIDTH, GAME_HEIGHT, GAME_WIDTH, 1);
+        bodyBuilder.createBorder("border", 1, GAME_HEIGHT, 1, GAME_HEIGHT);
+        bodyBuilder.createBorder("border", GAME_WIDTH, GAME_HEIGHT, 1, GAME_HEIGHT);
 
 
 
-        hud = new HUD(player);
+        hud = new HUD(player, State.PLAY);
         available = Gdx.input.isPeripheralAvailable(Input.Peripheral.Accelerometer);
+
+
+        objectHandler = new ObjectHandler(new Array<>(), new Array<>(), new Array<>(), new Array<>(), world);
+        interfaceManager = new InterfaceManager(available, 0.5f, 4.5f);
 
     }
 
 
 
-    private final float asteroidSpeed = -(GAME_WIDTH);
-
-    private Randomizer randomizer = new Randomizer();
-
-    int index = 0;
 
 
 
+
+    private int damageEffect = 0;
+    private final static int effectTime = 5;
     @Override
     public void update(float delta) {
         player.timeInGame += delta;
@@ -92,49 +116,43 @@ public class PlayClassicState extends GameState{
             player.timeInGame = 0;
             instance.firstRun = false;
 
-            for(Asteroid asteroid : listAsteroid)
-                world.destroyBody(asteroid.getBody());
-            for(Bullet bullet : listBulletPlayer)
-                world.destroyBody(bullet.getBody());
-            for(Bonus bonus : listBonus)
-                world.destroyBody(bonus.getBody());
+            objectHandler.clearAll();
 
-            listBonus.clear();
-            listBulletPlayer.clear();
-            listAsteroid.clear();
-
-            gsm.setState(GameStateManagement.State.HUB);
+            gsm.setState(State.HUB);
 
             return;
         }
 
-        player.ship.setHp(player.ship.getHp() + cl.getHp());
+        float totalDamage = cl.getHp() +player.ship.armor;
+        if(totalDamage < 0){
+            player.ship.setHp(player.ship.getHp() + totalDamage);
+            damageEffect = effectTime;
+            if(CONFIG_VIBRATION)
+                Gdx.input.vibrate(20);
+        }
+
 
         if(player.ship.getHp() <= 0){
             player.setDead(true);
-
-            for(Asteroid asteroid : listAsteroid)
-                world.destroyBody(asteroid.getBody());
-
-            for(Bullet bullet : listBulletPlayer)
-                world.destroyBody(bullet.getBody());
-            for(Bonus bonus : listBonus)
-                world.destroyBody(bonus.getBody());
-
-            listBonus.clear();
-            listBulletPlayer.clear();
-            listAsteroid.clear();
-
-            gsm.setState(GameStateManagement.State.DEATH);
-
+            objectHandler.clearAll();
+            gsm.setState(State.DEATH);
             return;
         }
 
 
-        inputUpdate(delta);
+        interfaceManager.inputUpdate();
+        inputAction(interfaceManager.shot, interfaceManager.horizontalForce, interfaceManager.verticalForce);
+
+        shadowMovement();
+
         player.update(delta);
 
+        for(Weapon weapon : player.ship.weapons){
+            weapon.setTimeAfterShot(weapon.getTimeAfterShot() + delta);
+        }
 
+        int energy = cl.getEnergyAndClear();
+        player.ship.setEnergy(player.ship.getEnergy() + energy);
 
         if(!instance.firstRun){
             float[] move = {0,0};
@@ -161,16 +179,35 @@ public class PlayClassicState extends GameState{
 
                 index++;
             }
-        }
-        if(!instance.firstRun)
             shadowPlayer.update(delta);
 
+        }
 
 
 
 
-        if(randomizer.chanceAsteroid())
-            createAsteroid(randomizer.getCoordinateAsteroid(),GAME_HEIGHT-45);
+
+
+        if(randomizer.chanceAsteroid()){
+            Body asteroidBody = bodyBuilder.createAsteroid(randomizer.getCoordinateAsteroid(),GAME_HEIGHT-45);
+
+            Asteroid a = new Asteroid(asteroidBody);
+            asteroidBody.setUserData(a);
+
+            objectHandler.add(a);
+        }
+        if(randomizer.chanceAsteroid()){
+            if(randomizer.chanceAsteroid()) {
+                Body enemyBody = bodyBuilder.createEnemy(randomizer.getCoordinateAsteroid(), GAME_HEIGHT - 50);
+
+                Enemy e = new Enemy(enemyBody);
+                enemyBody.setUserData(e);
+
+                objectHandler.add(e);
+            }
+        }
+
+
 
 
 
@@ -187,94 +224,214 @@ public class PlayClassicState extends GameState{
         ArrayList<Body> list = new ArrayList<>();
         for(Body b : bodies){
             list.add(b);
-
         }
 
         HashSet<Body> set = new HashSet<>(list);
-
         for(Body body : set){
-
-
-            try{
-                listAsteroid.removeValue((Asteroid) body.getUserData(), true);
-                try {
-                    if (randomizer.chanceBonus()) {
-                        createBonus(body.getPosition().x, body.getPosition().y);
-                    }
-                }catch(Exception e){
-                    System.out.printf(e.toString() + "\n");
-                }
+            String str = "Deleted";
+            try {
+                str = (String) body.getFixtureList().get(0).getUserData();
             }catch(Exception e){
                 try {
-                    listBulletPlayer.removeValue((Bullet) body.getUserData(), true);
-                }catch(Exception bonus){
-                    listBonus.removeValue((Bonus) body.getUserData(), true);
+                    String clazz = body.getUserData().getClass().getName();
+                    Log.e("Class:" + clazz, e.toString());
+                }catch(NullPointerException npe){
+                    Log.e("npe", npe.toString());//когда взрываются уже отнесенные к удалению объекты
                 }
+
             }
+            switch(str){
+                case ASTEROID:
+                    Asteroid asteroid = (Asteroid) body.getUserData();
+                    objectHandler.remove(asteroid);
+                    try {
+                        if (randomizer.chanceBonus()) {
+                            Body bonusBody = bodyBuilder.createBonus(body.getPosition().x, body.getPosition().y);
 
+                            Bonus b = new Bonus(bonusBody);
+                            bonusBody.setUserData(b);
+                            objectHandler.add(b);
+                        }
+                    } catch (Exception e) {
+                        System.out.printf(e.toString() + "\n");
+                    }
+                    break;
 
-            world.destroyBody(body);
+                case BULLET_DESTROYABLE:
+                case BULLET_PIERCING:
+                case BULLET_ENEMY:
+                    Bullet b1 = (Bullet) body.getUserData();
+                    objectHandler.remove(b1);
+                    break;
+                case BULLET_EXPLOSIVE:
+
+                    Bullet b = (Bullet) body.getUserData();
+                    Vector2 bv2 = b.getPosition();
+
+                    for(Asteroid a : objectHandler.listAsteroid){
+                        Vector2 v2 = a.getBody().getPosition();
+                        if(abs(bv2.x - v2.x) < 90)
+                            if(abs(bv2.y - v2.y) < 90){
+                                a.setHp(a.getHp() - b.getBulletModel().getDamage());
+                                if(a.getHp() <= 0){
+                                    world.destroyBody(a.getBody());
+                                    objectHandler.remove(a);
+
+                                }
+                            }
+                    }
+                    for(Enemy e : objectHandler.listEnemy){
+                        Vector2 v2 = e.getBody().getPosition();
+                        if(abs(bv2.x - v2.x) < 90)
+                            if(abs(bv2.y - v2.y) < 90){
+                                e.setHp(e.getHp() - b.getBulletModel().getDamage());
+                                if(e.getHp() <= 0){
+                                    world.destroyBody(e.getBody());
+                                    objectHandler.remove(e);
+
+                                }
+                            }
+                    }
+
+                    objectHandler.remove(b);
+
+                    break;
+                case BONUS:
+                    objectHandler.remove((Bonus) body.getUserData());
+                    break;
+                case ENEMY:
+                    objectHandler.remove((Enemy) body.getUserData());
+
+                    Body bonusBody = bodyBuilder.createBonus(body.getPosition().x, body.getPosition().y);
+
+                    Bonus bonus = new Bonus(bonusBody);
+                    bonusBody.setUserData(bonus);
+                    objectHandler.add(bonus);
+                    break;
+                    default:
+                        break;
+            }
+            if(!str.equals("Deleted"))
+                world.destroyBody(body);
 
         }
 
         cl.clearList();
         //TODO сделать потоки безопасными
 
-                for(int i = 0; i < listAsteroid.size; ++i) {
-                    Asteroid asteroid = listAsteroid.get(i);
-                    Vector2 targetPosition = new Vector2(0, asteroidSpeed *1.1f);
+        for(int i = 0; i < objectHandler.listAsteroid.size; ++i) {
+            Asteroid asteroid = objectHandler.listAsteroid.get(i);
+            Vector2 targetPosition = new Vector2(0, asteroid.speed *1.1f);
 
 
-                   // asteroid.getBody().applyForce(targetPosition, asteroid.getBody().getWorldCenter(), true);
-                    asteroid.getBody().setLinearVelocity(targetPosition);
-                    asteroid.update(delta);
-                }
+            // asteroid.getBody().applyForce(targetPosition, asteroid.getBody().getWorldCenter(), true);
+            asteroid.getBody().setLinearVelocity(targetPosition);
+            asteroid.update(delta);
+        }
+
+        for(int i = 0; i < objectHandler.listEnemy.size; ++i) {
+            Enemy enemy = objectHandler.listEnemy.get(i);
+            Vector2 targetPosition = new Vector2(0, enemy.speed *0.9f);
+
+
+            // asteroid.getBody().applyForce(targetPosition, asteroid.getBody().getWorldCenter(), true);
+            enemy.getBody().setLinearVelocity(targetPosition);
+            enemy.update(delta);
+            if(randomizer.chanceAsteroid())
+                enemy.createObject(bodyBuilder, objectHandler);
+        }
+
+
+
+        for(int i = 0; i < objectHandler.listBulletPlayer.size; ++i){
+            Bullet bullet = objectHandler.listBulletPlayer.get(i);
+            bullet.getBody().setLinearVelocity(bullet.currentSpeed, bullet.getSpeed());
+            bullet.update(delta);
+        }
 
 
 
 
-                for(int i = 0; i<listBulletPlayer.size; ++i){
-                    Bullet bullet = listBulletPlayer.get(i);
-                    bullet.getBody().setLinearVelocity(bullet.currentSpeed, bullet.speedY);
-                    bullet.update(delta);
-                }
+        //удаление бонусов спустя время
+        for(int i = 0; i < objectHandler.listBonus.size; ++i){
+            Bonus bonus = objectHandler.listBonus.get(i);
+            bonus.setExistTime(bonus.getExistTime() + delta);
+            if(bonus.getExistTime() > 30){
+                world.destroyBody(bonus.getBody());
 
+                objectHandler.listBonus.removeIndex(i);
+                --i;
+            }
+
+        }
+        for(Bonus bonus :objectHandler.listBonus){
+            bonus.update(delta);
+        }
 
 
         batch.setProjectionMatrix(maincamera.combined);
-
         doWorldStep(delta);
     }
 
-    float f1 = random.nextFloat()+0.3f;
-    float f2 = random.nextFloat()+0.3f;
-    float f3 = random.nextFloat()+0.3f;
+    private float f1 = random.nextFloat()+0.3f;
+    private float f2 = random.nextFloat()+0.3f;
+    private float f3 = random.nextFloat()+0.3f;
     @Override
     public void render() {
+
         Gdx.gl.glClearColor(f1, f2, f3, 1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+        if(damageEffect > 0){
+            Gdx.gl.glClearColor(1f, 1f, 1f, 1f);
+            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+            batch.setColor(1, 1, 1, 0.05f);
+
+            System.out.println("hit!\n");
+            --damageEffect;
+        }
+        if(damageEffect==0){
+            batch.setColor(1, 1, 1, 1.0f);
+        }
 
 
         if(DEBUG_RENDER)
             b2dr.render(world, maincamera.combined);
 
 
-        for(Asteroid asteroid : listAsteroid)
-            asteroid.render(batch);
 
-        for(Bonus bonus : listBonus)
-            bonus.render(batch);
 
-        for(Bullet bullet : listBulletPlayer)
-            bullet.render(batch);
+        objectHandler.render(batch);
 
         player.render(batch);
         if(!instance.firstRun && !shadowPlayer.isDead())
             shadowPlayer.render(batch);
 
         hud.render(batch_hud);
+
     }
+
+    private void inputAction(boolean shot, float horizontal, float vertical){
+        if(horizontal < 0)
+            player.ship_l();
+        if(horizontal > 0)
+            player.ship_r();
+        if(horizontal == 0)
+            player.ship();
+        if(shot){
+            if(player.ship.getEnergy() > 0){
+                boolean hadShot = player.createObject(bodyBuilder, objectHandler);
+                if(hadShot)
+                    if(CONFIG_VIBRATION)
+                        Gdx.input.vibrate(10);
+            }
+        }
+
+        player.getBody().setLinearVelocity(horizontal * player.getSpeed(), vertical * player.getSpeed());
+    }
+
+
 
     @Override
     public void dispose() {
@@ -295,71 +452,15 @@ public class PlayClassicState extends GameState{
 
 
 
-    final int playerHandle = 5;
-    final float playerZone = 0.5f;
-    public void inputUpdate(float delta){
+
+
+    private void shadowMovement(){
+
         int horizontalForce = 0;
         int verticalForce = 0;
         int shipSpeed = player.getSpeed();
 
-        player.ship();
 
-        if(available){
-            float accelX = Gdx.input.getAccelerometerX();
-            float accelY = Gdx.input.getAccelerometerY();
-
-            if(accelX > playerZone){
-                --horizontalForce;
-                player.ship_l();
-            }
-            else
-            if(accelX < -playerZone){
-                ++horizontalForce;
-                player.ship_r();
-            }
-
-            if(accelY > (playerZone + playerHandle)){
-                --verticalForce;
-            }
-            else
-            if(accelY < (-playerZone + playerHandle)){
-                ++verticalForce;
-            }
-
-            if(Gdx.input.justTouched()){
-                createBulletPlayer();
-                Gdx.input.vibrate(VIBRATION_LONG);
-            }
-
-        }else{
-
-
-            if(Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.A)){
-                --horizontalForce;
-                player.ship_l();
-            }
-            else
-            if(Gdx.input.isKeyPressed(Input.Keys.RIGHT) || Gdx.input.isKeyPressed(Input.Keys.D)){
-                ++horizontalForce;
-                player.ship_r();
-            }
-
-            if(Gdx.input.isKeyPressed(Input.Keys.UP) || Gdx.input.isKeyPressed(Input.Keys.W)){
-                ++verticalForce;
-            }
-            else
-            if(Gdx.input.isKeyPressed(Input.Keys.DOWN) || Gdx.input.isKeyPressed(Input.Keys.S)){
-                --verticalForce;
-            }
-
-            if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)){
-                createBulletPlayer();
-            }
-
-        }
-
-
-        player.getBody().setLinearVelocity(horizontalForce * shipSpeed, verticalForce * shipSpeed);
         if(instance.firstRun)
             instance.moveHistoryList.add(new float[] {horizontalForce * shipSpeed, verticalForce * shipSpeed});
         else{
@@ -375,99 +476,13 @@ public class PlayClassicState extends GameState{
 
         }
     }
-    Singleton instance = Singleton.getInstance();
 
-    private void createAsteroid(float x, float y) {
-        BodyDef bdef = new BodyDef();
-        FixtureDef fdef = new FixtureDef();
-
-        bdef.type = BodyDef.BodyType.DynamicBody;
-
-        bdef.position.set(x, y);
-
-        CircleShape cshape = new CircleShape();
-        cshape.setRadius(GAME_WIDTH/40);
-
-        fdef.shape = cshape;
-        fdef.filter.categoryBits = BIT_ENEMY;
-        fdef.filter.maskBits = BIT_PLAYER | BIT_BULLET | BIT_BORDER;
-        fdef.isSensor = true;
-
-        Body body = this.world.createBody(bdef);
-        body.createFixture(fdef).setUserData(ASTEROID);
-
-        Asteroid a = new Asteroid(body);
-        body.setUserData(a);
-        this.listAsteroid.add(a);
-
-    }
-
-    private void createBonus(float x, float y){
-        BodyDef bdef = new BodyDef();
-        FixtureDef fdef = new FixtureDef();
-
-        bdef.type = BodyDef.BodyType.StaticBody;
-        bdef.position.set(x, y);
-
-        CircleShape cshape = new CircleShape();
-        cshape.setRadius(GAME_WIDTH/80);
-
-        fdef.shape = cshape;
-        fdef.filter.categoryBits = BIT_OBJECT;
-        fdef.filter.maskBits = BIT_PLAYER;
-        fdef.isSensor = true;
-
-        Body body = this.world.createBody(bdef);
-        body.createFixture(fdef).setUserData(BONUS);
-
-        Bonus b = new Bonus(body);
-        body.setUserData(b);
-        this.listBonus.add(b);
-
-
-    }
-
-    private int bulletAmount = 0;
-    private void createBulletPlayer() {
-        BodyDef bdef = new BodyDef();
-        bdef.type = BodyDef.BodyType.DynamicBody;
-        FixtureDef fdef = new FixtureDef();
-
-        //позиционирование выстрела
-        float x = player.getBody().getPosition().x;
-        float y = player.getBody().getPosition().y + 5;
-
-        bdef.position.set(x, y);
-        CircleShape cshape = new CircleShape();
-        cshape.setRadius(GAME_WIDTH/190);
-        fdef.shape = cshape;
-        fdef.isSensor = true;
-        fdef.filter.categoryBits = BIT_BULLET;
-        fdef.filter.maskBits = BIT_ENEMY | BIT_BORDER | BIT_SHADOW;
-
-        Body body = this.world.createBody(bdef);
-
-
-        //параметры пули
-        Bullet b;
-        if(player.bulletIndex==1){
-            body.createFixture(fdef).setUserData(BULLET_PIERCING);
-            b = new Bullet(body, player.bulletIndex, true, true);
-        }
-        else{
-            body.createFixture(fdef).setUserData(BULLET_DESTROYABLE);
-            b = new Bullet(body, player.bulletIndex, false, false);
-        }
-
-        body.setUserData(b);
-        this.listBulletPlayer.add(b);
-        System.out.println(++bulletAmount);
-    }
 
     private float accumulator = 0;
     private void doWorldStep(float deltaTime){
         float frameTime = Math.min(deltaTime, 0.25f);
         accumulator += frameTime;
+
         while(accumulator >= STEP){
             world.step(STEP, 6, 2);
             accumulator -= STEP;
@@ -475,98 +490,9 @@ public class PlayClassicState extends GameState{
 
     }
 
-    private void createBorders(World world){
 
 
 
-        BodyDef def = new BodyDef();
-        def.type = BodyDef.BodyType.StaticBody;
-
-
-
-        PolygonShape shape = new PolygonShape();
-        shape.setAsBox(GAME_WIDTH, 1);
-        FixtureDef fdef = new FixtureDef();
-        fdef.shape = shape;
-        fdef.filter.categoryBits = BIT_BORDER;
-
-        def.position.set(GAME_WIDTH, 0);
-
-        Body pBody = world.createBody(def);
-        pBody.createFixture(fdef).setUserData(BORDER_HORIZONTAL);
-        shape.dispose();
-
-        def = new BodyDef();
-        def.type = BodyDef.BodyType.StaticBody;
-        shape = new PolygonShape();
-        shape.setAsBox(GAME_WIDTH, 1);
-        fdef = new FixtureDef();
-        fdef.shape = shape;
-        fdef.filter.categoryBits = BIT_BORDER;
-        def.position.set(GAME_WIDTH, GAME_HEIGHT);
-        pBody = world.createBody(def);
-        pBody.createFixture(fdef).setUserData(BORDER_HORIZONTAL);
-        shape.dispose();
-
-
-        def = new BodyDef();
-        def.type = BodyDef.BodyType.StaticBody;
-        shape = new PolygonShape();
-        shape.setAsBox(1, GAME_HEIGHT);
-        fdef = new FixtureDef();
-        fdef.shape = shape;
-        fdef.filter.categoryBits = BIT_BORDER;
-        def.position.set(1, GAME_HEIGHT);
-        pBody = world.createBody(def);
-        pBody.createFixture(fdef).setUserData("border");
-        shape.dispose();
-
-
-        def = new BodyDef();
-        def.type = BodyDef.BodyType.StaticBody;
-        shape = new PolygonShape();
-        shape.setAsBox(1, GAME_HEIGHT);
-        fdef = new FixtureDef();
-        fdef.shape = shape;
-        fdef.filter.categoryBits = BIT_BORDER;
-        def.position.set(GAME_WIDTH, GAME_HEIGHT);
-        pBody = world.createBody(def);
-        pBody.createFixture(fdef).setUserData("border");
-        shape.dispose();
-
-    }
-
-
-    private Body createShadow(int x, int y, float width, float height){
-        Body pBody;
-
-        BodyDef def = new BodyDef();
-        def.type = BodyDef.BodyType.DynamicBody;
-
-        FixtureDef fdef = new FixtureDef();
-
-        PolygonShape shape = new PolygonShape();
-        shape.setAsBox(width, height);
-
-        fdef.shape = shape;
-        fdef.filter.categoryBits = BIT_SHADOW;
-        fdef.filter.maskBits =  BIT_BULLET | BIT_BORDER;
-
-
-        def.position.set(x, y);
-        def.fixedRotation = true;
-
-        pBody = world.createBody(def);
-
-
-
-
-        pBody.createFixture(fdef).setUserData(SHADOW);
-
-        shape.dispose();
-
-        return pBody;
-    }
 
     public SpriteBatch getBatch(){
         return batch;

@@ -4,91 +4,87 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.swar.game.Game;
-import com.swar.game.managers.GameContactListener;
-
-import static com.swar.game.utils.constants.GAME_WIDTH;
+import com.swar.game.Models.Creator;
+import com.swar.game.Models.Ship;
+import com.swar.game.managers.World.BodyBuilder;
+import com.swar.game.managers.World.GameContactListener;
+import com.swar.game.managers.World.ObjectHandler;
 
 /**
  * Created by Koma on 17.01.2017.
  */
-public class Player extends Sprite{//все параметры корабля
+public class Player extends Sprite implements Creator {//все параметры корабля
 
-    public int shipIndex = 1;//выбранный корабль
+
     public Ship ship;
 
     private Texture shipTexture;//текстура корабля
 
-    public int bulletIndex = 1;//выбранная текстура пули
-    private Texture bulletTexture;
 
     private GameContactListener player_cl;
-    private int speed = (GAME_WIDTH*12) /3;
-    private Weapon listWeapon[];
-    private int weaponNumber;
+
 
     public float timeInGame = 0;
 
     private boolean dead = false;
-    public Player(Body body, GameContactListener cl, int shipIndex, Ship ship, int weaponIndex) {
+
+    public Player(Body body, GameContactListener cl, Ship ship) {
         super(body);
-        this.shipIndex = shipIndex;
+
+
         this.ship = ship;
         player_cl = cl;
 
 
-        shipTexture = Game.res.getTexture("ship_" + String.valueOf(shipIndex));
-        bulletIndex = weaponIndex;
-        bulletTexture = Game.res.getTexture("bullet_" + String.valueOf(weaponIndex));
+        shipTexture = Game.res.getTexture(ship.getShipSprite());
 
-        TextureRegion[] sprites = TextureRegion.split(shipTexture, 32, 32)[0];
+
+        setUpAnimation();
+    }
+
+    private void setUpAnimation() {
+        TextureRegion[] sprites = TextureRegion.split(shipTexture, ship.getWidth(), ship.getHeight())[0];
         setAnimation(sprites, 1 / 12f);
 
     }
 
 
-    public void init(Body body, GameContactListener cl){
-        player_cl = cl;
-
-        shipTexture = Game.res.getTexture("ship_" + String.valueOf(shipIndex));
-
-        TextureRegion[] sprites = TextureRegion.split(shipTexture, 32, 32)[0];
-        setAnimation(sprites, 1 / 12f);
-    }
-
-
-    public void ship_l(){
-        if(shipTexture == Game.res.getTexture("ship_" + String.valueOf(shipIndex) + "_r"))
-            shipTexture = Game.res.getTexture("ship_" + String.valueOf(shipIndex));
+    public void ship_l() {
+        if (shipTexture == Game.res.getTexture(ship.getShipSprite() + "_r"))
+            shipTexture = Game.res.getTexture(ship.getShipSprite());
         else
-            shipTexture = Game.res.getTexture("ship_" + String.valueOf(shipIndex) + "_l");
+            shipTexture = Game.res.getTexture(ship.getShipSprite() + "_l");
 
-        TextureRegion[] sprites = TextureRegion.split(shipTexture, 32, 32)[0];
-        setAnimation(sprites, 1 / 12f);
+        setUpAnimation();
     }
 
-    public void ship_r(){
-        if(shipTexture == Game.res.getTexture("ship_" + String.valueOf(shipIndex) +"_l"))
-            shipTexture = Game.res.getTexture("ship_" + String.valueOf(shipIndex));
+    public void ship_r() {
+        if (shipTexture == Game.res.getTexture(ship.getShipSprite() + "_l"))
+            shipTexture = Game.res.getTexture(ship.getShipSprite());
         else
-            shipTexture = Game.res.getTexture("ship_" + String.valueOf(shipIndex)+"_r");
+            shipTexture = Game.res.getTexture(ship.getShipSprite() + "_r");
 
-        TextureRegion[] sprites = TextureRegion.split(shipTexture, 32, 32)[0];
-        setAnimation(sprites, 1 / 12f);
+        setUpAnimation();
     }
 
-    public void ship(){
-        shipTexture = Game.res.getTexture("ship_" + String.valueOf(shipIndex));
+    public void ship() {
+        shipTexture = Game.res.getTexture(ship.getShipSprite());
 
-        TextureRegion[] sprites = TextureRegion.split(shipTexture, 32, 32)[0];
-        setAnimation(sprites, 1 / 12f);
+        setUpAnimation();
 
     }
+
     private int credits = 0;
+
     public int getCredits() {
         credits += player_cl.getCredits();
 
-        return credits; }
-    public int getSpeed(){return speed;}
+        return credits;
+    }
+
+    public int getSpeed() {
+        return (int) ship.getSpeed();
+    }
 
     public boolean isDead() {
         return dead;
@@ -97,4 +93,53 @@ public class Player extends Sprite{//все параметры корабля
     public void setDead(boolean dead) {
         this.dead = dead;
     }
+
+    @Override
+    public boolean createObject(BodyBuilder bodyBuilder, ObjectHandler objectHandler) {
+        float x = getBody().getPosition().x;
+        float y = getBody().getPosition().y;
+
+        String type = ship.weapons.get(0).bulletModel.pierceType.name();
+
+
+        Body bulletBody;
+        Bullet b;
+
+        if (ship.weapons.size() > 1) {
+
+            if (ship.weapons.get(0).getReload() < ship.weapons.get(0).getTimeAfterShot()) {
+                ship.weapons.get(0).setTimeAfterShot(0.0f);
+                bulletBody = bodyBuilder.createBulletPlayer(x - 12, y, type);
+                b = new Bullet(bulletBody, ship.weapons.get(0).bulletModel.bulletType, ship.weapons.get(0).bulletModel, 560);
+                bulletBody.setUserData(b);
+                objectHandler.add(b);
+                ship.setEnergy(ship.getEnergy() - 1);
+
+                bulletBody = bodyBuilder.createBulletPlayer(x + 12, y, type);
+                b = new Bullet(bulletBody, ship.weapons.get(0).bulletModel.bulletType, ship.weapons.get(0).bulletModel, 560);
+                bulletBody.setUserData(b);
+                objectHandler.add(b);
+                ship.setEnergy(ship.getEnergy() - 1);
+
+                return true;
+
+            }
+
+        } else {
+            if (ship.weapons.get(0).getReload() < ship.weapons.get(0).getTimeAfterShot()) {
+                ship.weapons.get(0).setTimeAfterShot(0.0f);
+                bulletBody = bodyBuilder.createBulletPlayer(x, y + 5, type);
+                b = new Bullet(bulletBody, ship.weapons.get(0).bulletModel.bulletType, ship.weapons.get(0).bulletModel, 560);
+                bulletBody.setUserData(b);
+                objectHandler.add(b);
+                ship.setEnergy(ship.getEnergy() - 1);
+
+                return true;
+
+            }
+        }
+
+        return false;
+    }
+
 }
