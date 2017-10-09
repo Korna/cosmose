@@ -21,14 +21,15 @@ import com.swar.game.managers.InterfaceManager;
 import com.swar.game.managers.World.BodyBuilder;
 import com.swar.game.managers.World.GameContactListener;
 import com.swar.game.managers.World.ObjectHandler;
+import com.swar.game.utils.Journal;
 import com.swar.game.utils.Randomizer;
-import com.swar.game.utils.Singleton;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 
 import static com.badlogic.gdx.math.MathUtils.random;
 import static com.swar.game.utils.constants.*;
+import static java.lang.Math.abs;
 
 /**
  * Created by Koma on 17.01.2017.
@@ -48,13 +49,15 @@ public class PlayClassicState extends GameState{
     private ObjectHandler objectHandler;
 
     private BodyBuilder bodyBuilder;
-    InterfaceManager interfaceManager;
-    boolean CONFIG_VIBRATION;
-    final static int GAME_TIME = 60;
+    private InterfaceManager interfaceManager;
+    private boolean CONFIG_VIBRATION;
 
     private boolean available = false;
 
-    private Randomizer randomizer = new Randomizer();
+    final static int GAME_TIME = 60;
+    final private Randomizer randomizer = new Randomizer();
+    final private Journal instance = Journal.getInstance();
+
 
     int index = 0;//переменная для сохранения индекса кадра
 
@@ -73,9 +76,9 @@ public class PlayClassicState extends GameState{
         Body body = bodyBuilder.createShadow(GAME_WIDTH / 2, 15, GAME_WIDTH/15, GAME_WIDTH/10);
         //здесь по индексу передаём корабль из ДБ
         shadowPlayer = new Player(body, null, ShipType.getShip(ShipType.ship_2));
-       // body.setUserData(shadowPlayer);
+        // body.setUserData(shadowPlayer);
 
-       // Gdx.input.setInputProcessor(new GameInputProcessor());
+        // Gdx.input.setInputProcessor(new GameInputProcessor());
 
         world.setContactListener(cl);
         b2dr = new Box2DDebugRenderer();
@@ -104,7 +107,8 @@ public class PlayClassicState extends GameState{
 
 
 
-
+    private int damageEffect = 0;
+    private final static int effectTime = 5;
     @Override
     public void update(float delta) {
         player.timeInGame += delta;
@@ -120,8 +124,13 @@ public class PlayClassicState extends GameState{
         }
 
         float totalDamage = cl.getHp() +player.ship.armor;
-        if(totalDamage < 0)
+        if(totalDamage < 0){
             player.ship.setHp(player.ship.getHp() + totalDamage);
+            damageEffect = effectTime;
+            if(CONFIG_VIBRATION)
+                Gdx.input.vibrate(20);
+        }
+
 
         if(player.ship.getHp() <= 0){
             player.setDead(true);
@@ -215,14 +224,22 @@ public class PlayClassicState extends GameState{
         ArrayList<Body> list = new ArrayList<>();
         for(Body b : bodies){
             list.add(b);
-
         }
 
         HashSet<Body> set = new HashSet<>(list);
-
         for(Body body : set){
-            String str = (String) body.getFixtureList().get(0).getUserData();
+            String str = "Deleted";
+            try {
+                str = (String) body.getFixtureList().get(0).getUserData();
+            }catch(Exception e){
+                try {
+                    String clazz = body.getUserData().getClass().getName();
+                    Log.e("Class:" + clazz, e.toString());
+                }catch(NullPointerException npe){
+                    Log.e("npe", npe.toString());//когда взрываются уже отнесенные к удалению объекты
+                }
 
+            }
             switch(str){
                 case ASTEROID:
                     Asteroid asteroid = (Asteroid) body.getUserData();
@@ -239,10 +256,45 @@ public class PlayClassicState extends GameState{
                         System.out.printf(e.toString() + "\n");
                     }
                     break;
+
                 case BULLET_DESTROYABLE:
                 case BULLET_PIERCING:
                 case BULLET_ENEMY:
-                    objectHandler.remove((Bullet) body.getUserData());
+                    Bullet b1 = (Bullet) body.getUserData();
+                    objectHandler.remove(b1);
+                    break;
+                case BULLET_EXPLOSIVE:
+
+                    Bullet b = (Bullet) body.getUserData();
+                    Vector2 bv2 = b.getPosition();
+
+                    for(Asteroid a : objectHandler.listAsteroid){
+                        Vector2 v2 = a.getBody().getPosition();
+                        if(abs(bv2.x - v2.x) < 90)
+                            if(abs(bv2.y - v2.y) < 90){
+                                a.setHp(a.getHp() - b.getBulletModel().getDamage());
+                                if(a.getHp() <= 0){
+                                    world.destroyBody(a.getBody());
+                                    objectHandler.remove(a);
+
+                                }
+                            }
+                    }
+                    for(Enemy e : objectHandler.listEnemy){
+                        Vector2 v2 = e.getBody().getPosition();
+                        if(abs(bv2.x - v2.x) < 90)
+                            if(abs(bv2.y - v2.y) < 90){
+                                e.setHp(e.getHp() - b.getBulletModel().getDamage());
+                                if(e.getHp() <= 0){
+                                    world.destroyBody(e.getBody());
+                                    objectHandler.remove(e);
+
+                                }
+                            }
+                    }
+
+                    objectHandler.remove(b);
+
                     break;
                 case BONUS:
                     objectHandler.remove((Bonus) body.getUserData());
@@ -252,28 +304,30 @@ public class PlayClassicState extends GameState{
 
                     Body bonusBody = bodyBuilder.createBonus(body.getPosition().x, body.getPosition().y);
 
-                    Bonus b = new Bonus(bonusBody);
-                    bonusBody.setUserData(b);
-                    objectHandler.add(b);
+                    Bonus bonus = new Bonus(bonusBody);
+                    bonusBody.setUserData(bonus);
+                    objectHandler.add(bonus);
                     break;
+                    default:
+                        break;
             }
-
-            world.destroyBody(body);
+            if(!str.equals("Deleted"))
+                world.destroyBody(body);
 
         }
 
         cl.clearList();
         //TODO сделать потоки безопасными
 
-                for(int i = 0; i < objectHandler.listAsteroid.size; ++i) {
-                    Asteroid asteroid = objectHandler.listAsteroid.get(i);
-                    Vector2 targetPosition = new Vector2(0, asteroid.speed *1.1f);
+        for(int i = 0; i < objectHandler.listAsteroid.size; ++i) {
+            Asteroid asteroid = objectHandler.listAsteroid.get(i);
+            Vector2 targetPosition = new Vector2(0, asteroid.speed *1.1f);
 
 
-                   // asteroid.getBody().applyForce(targetPosition, asteroid.getBody().getWorldCenter(), true);
-                    asteroid.getBody().setLinearVelocity(targetPosition);
-                    asteroid.update(delta);
-                }
+            // asteroid.getBody().applyForce(targetPosition, asteroid.getBody().getWorldCenter(), true);
+            asteroid.getBody().setLinearVelocity(targetPosition);
+            asteroid.update(delta);
+        }
 
         for(int i = 0; i < objectHandler.listEnemy.size; ++i) {
             Enemy enemy = objectHandler.listEnemy.get(i);
@@ -289,11 +343,11 @@ public class PlayClassicState extends GameState{
 
 
 
-                for(int i = 0; i < objectHandler.listBulletPlayer.size; ++i){
-                    Bullet bullet = objectHandler.listBulletPlayer.get(i);
-                    bullet.getBody().setLinearVelocity(bullet.currentSpeed, bullet.getSpeed());
-                    bullet.update(delta);
-                }
+        for(int i = 0; i < objectHandler.listBulletPlayer.size; ++i){
+            Bullet bullet = objectHandler.listBulletPlayer.get(i);
+            bullet.getBody().setLinearVelocity(bullet.currentSpeed, bullet.getSpeed());
+            bullet.update(delta);
+        }
 
 
 
@@ -316,22 +370,36 @@ public class PlayClassicState extends GameState{
 
 
         batch.setProjectionMatrix(maincamera.combined);
-        System.out.println("Size" + objectHandler.listBulletPlayer.size);
         doWorldStep(delta);
     }
 
-    float f1 = random.nextFloat()+0.3f;
-    float f2 = random.nextFloat()+0.3f;
-    float f3 = random.nextFloat()+0.3f;
+    private float f1 = random.nextFloat()+0.3f;
+    private float f2 = random.nextFloat()+0.3f;
+    private float f3 = random.nextFloat()+0.3f;
     @Override
     public void render() {
+
         Gdx.gl.glClearColor(f1, f2, f3, 1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+        if(damageEffect > 0){
+            Gdx.gl.glClearColor(1f, 1f, 1f, 1f);
+            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+            batch.setColor(1, 1, 1, 0.05f);
+
+            System.out.println("hit!\n");
+            --damageEffect;
+        }
+        if(damageEffect==0){
+            batch.setColor(1, 1, 1, 1.0f);
+        }
 
 
         if(DEBUG_RENDER)
             b2dr.render(world, maincamera.combined);
+
+
 
 
         objectHandler.render(batch);
@@ -341,9 +409,10 @@ public class PlayClassicState extends GameState{
             shadowPlayer.render(batch);
 
         hud.render(batch_hud);
+
     }
 
-    private void inputAction(boolean shot, int horizontal, int vertical){
+    private void inputAction(boolean shot, float horizontal, float vertical){
         if(horizontal < 0)
             player.ship_l();
         if(horizontal > 0)
@@ -353,7 +422,9 @@ public class PlayClassicState extends GameState{
         if(shot){
             if(player.ship.getEnergy() > 0){
                 boolean hadShot = player.createObject(bodyBuilder, objectHandler);
-
+                if(hadShot)
+                    if(CONFIG_VIBRATION)
+                        Gdx.input.vibrate(10);
             }
         }
 
@@ -405,10 +476,6 @@ public class PlayClassicState extends GameState{
 
         }
     }
-
-
-
-    Singleton instance = Singleton.getInstance();
 
 
     private float accumulator = 0;

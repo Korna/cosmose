@@ -5,6 +5,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.swar.game.Types.BulletType;
+import com.swar.game.Types.ShipType;
+import com.swar.game.Types.WeaponType;
 import com.swar.game.managers.Content;
 import com.swar.game.managers.GameConfig;
 import com.swar.game.managers.GameStateManagement;
@@ -56,10 +59,17 @@ public class Game extends ApplicationAdapter {
 		res.loadTexture("images/hud.png", "hud");
 		res.loadTexture("images/bgs.png", "bgs");
 
-		res.loadTexture("sprites/weapon_1.png", "weapon_1");
-		res.loadTexture("sprites/weapon_2.png", "weapon_2");
-		res.loadTexture("sprites/weapon_3.png", "weapon_3");
-		res.loadTexture("sprites/weapon_4.png", "weapon_4");
+		for(WeaponType type : WeaponType.values()){
+			String name = type.name();
+			res.loadTexture("sprites/"+name+".png", name);
+		}
+
+		for(BulletType type : BulletType.values()){
+			String name = type.name();
+			res.loadTexture("sprites/" + name + ".png", name);
+		}
+
+
 
 		res.loadTexture("sprites/asteroid_1.png", "asteroid_1");
 		res.loadTexture("sprites/asteroid_2.png", "asteroid_2");
@@ -69,26 +79,14 @@ public class Game extends ApplicationAdapter {
 
 		res.loadTexture("sprites/bonus_1.png", "bonus_1");
 
-		res.loadTexture("sprites/bullet_1.png", "bullet_1");
-		res.loadTexture("sprites/bullet_2.png", "bullet_2");
-		res.loadTexture("sprites/bullet_3.png", "bullet_3");
-		res.loadTexture("sprites/bullet_4.png", "bullet_4");
 
-		res.loadTexture("sprites/ship_1.png", "ship_1");
-		res.loadTexture("sprites/ship_1_left.png", "ship_1_l");
-		res.loadTexture("sprites/ship_1_right.png", "ship_1_r");
+		for(ShipType type : ShipType.values()){
+			String name = type.name();
+			res.loadTexture("sprites/" + name + ".png", name);
+			res.loadTexture("sprites/"+name+"_left.png", name +"_l");
+			res.loadTexture("sprites/"+name+"_right.png", name +"_r");
+		}
 
-		res.loadTexture("sprites/ship_2.png", "ship_2");
-		res.loadTexture("sprites/ship_2_left.png", "ship_2_l");
-		res.loadTexture("sprites/ship_2_right.png", "ship_2_r");
-
-		res.loadTexture("sprites/ship_3.png", "ship_3");
-		res.loadTexture("sprites/ship_3_left.png", "ship_3_l");
-		res.loadTexture("sprites/ship_3_right.png", "ship_3_r");
-
-		res.loadTexture("sprites/ship_4.png", "ship_4");
-		res.loadTexture("sprites/ship_4_left.png", "ship_4_l");
-		res.loadTexture("sprites/ship_4_right.png", "ship_4_r");
 
 	}
 

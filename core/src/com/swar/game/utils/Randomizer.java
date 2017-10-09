@@ -30,7 +30,7 @@ public class Randomizer {
     }
 
     public boolean chanceBonus(){
-        if(random.nextInt(10) == 1)
+        if(random.nextFloat() < 0.05)
             return true;
         else
             return false;

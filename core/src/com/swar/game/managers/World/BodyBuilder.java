@@ -41,8 +41,8 @@ public class BodyBuilder extends Builder {
 
 
     public Body createEnemy(float x, float y) {
-        int width = 32;
-        int height = 32;
+        int width = 24;
+        int height = 24;
 
         BodyDef bdef = new BodyDef();
         FixtureDef fdef = new FixtureDef();

@@ -74,7 +74,7 @@ public class GameContactListener implements ContactListener {
             Bullet bullet = (Bullet) bb.getUserData();
             asteroid.setHp(asteroid.getHp() - (int) bullet.getBulletModel().getDamage());
 
-            if(asteroid.getHp() < 0){
+            if(asteroid.getHp() <= 0){
                 bodiesToRemove.add(ba);
                 credits++;
                 score +=5;
@@ -89,7 +89,7 @@ public class GameContactListener implements ContactListener {
             Killable asteroid = (Killable) bb.getUserData();
             asteroid.setHp(asteroid.getHp() - bullet.getBulletModel().getDamage());
 
-            if(asteroid.getHp() < 0){
+            if(asteroid.getHp() <= 0){
                 bodiesToRemove.add(bb);
                 credits++;
                 score +=5;
@@ -104,9 +104,9 @@ public class GameContactListener implements ContactListener {
 
             Killable asteroid = (Killable) ba.getUserData();
             Bullet bullet = (Bullet) bb.getUserData();
-            asteroid.setHp(asteroid.getHp() - (int) bullet.getBulletModel().getDamage());
+            asteroid.setHp(asteroid.getHp() - bullet.getBulletModel().getDamage());
 
-            if(asteroid.getHp() < 0){
+            if(asteroid.getHp() <= 0){
                 bodiesToRemove.add(ba);
                  credits++;
                 score +=5;
@@ -115,14 +115,15 @@ public class GameContactListener implements ContactListener {
             System.out.println("Got hit");
             return;
         }
-        if(isABFirst(ASTEROID, BULLET_DESTROYABLE) || isABFirst(ENEMY, BULLET_DESTROYABLE)){
+        if(isABFirst(ASTEROID, BULLET_DESTROYABLE) || isABFirst(ENEMY, BULLET_DESTROYABLE)
+                || isABFirst(ASTEROID, BULLET_EXPLOSIVE) || isABFirst(ENEMY, BULLET_EXPLOSIVE)){
             bodiesToRemove.add(ba);
             Bullet bullet = (Bullet) ba.getUserData();
 
             Asteroid asteroid = (Asteroid) bb.getUserData();
             asteroid.setHp(asteroid.getHp() - bullet.getBulletModel().getDamage());
 
-            if(asteroid.getHp() < 0){
+            if(asteroid.getHp() <= 0){
                 bodiesToRemove.add(bb);
                 credits++;
                 score +=5;
@@ -132,18 +133,28 @@ public class GameContactListener implements ContactListener {
             return;
         }
 
+        if(isAAFirst(ENEMY, BULLET_EXPLOSIVE) ||  isAAFirst(ASTEROID, BULLET_EXPLOSIVE)){
+            bodiesToRemove.add(bb);
+            return;
+        }
+
+        if(isABFirst(ENEMY, BULLET_EXPLOSIVE) ||  isABFirst(ASTEROID, BULLET_EXPLOSIVE)){
+            bodiesToRemove.add(ba);
+            return;
+        }
+
 
         if(isAAFirst(BONUS, PLAYER_SHIP)){
             bodiesToRemove.add(ba);
             credits+=100;
             score += 50;
-            energy += 10;
+            energy += 25;
         }
         if(isABFirst(BONUS, PLAYER_SHIP)){
             bodiesToRemove.add(bb);
             credits+=100;
             score += 50;
-            energy += 10;
+            energy += 25;
         }
 
 

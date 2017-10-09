@@ -87,7 +87,7 @@ public class Enemy extends Sprite implements Killable, Moveable, Creator{
 
 
         bulletBody = bodyBuilder.createBulletEnemy(x, y + 5);
-        b = new Bullet(bulletBody, BulletType.bullet_1, BulletType.getbullet(BulletType.bullet_1), -1000);
+        b = new Bullet(bulletBody, BulletType.bullet_1, BulletType.getbullet(BulletType.bullet_1), -2000);
         bulletBody.setUserData(b);
         objectHandler.add(b);
         return true;

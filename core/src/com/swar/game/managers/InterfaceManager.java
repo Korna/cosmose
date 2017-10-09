@@ -11,12 +11,13 @@ public class InterfaceManager {
 
     boolean available;
     float playerHandle = 4.5f;
-    float playerZone = 0.5f;
+    float playerZone = 0.3f;
+    float playerNear = 0.25f;
 
 
     //bundle
-    public int horizontalForce = 0;
-    public int verticalForce = 0;
+    public float horizontalForce = 0;
+    public float verticalForce = 0;
     public boolean shot = false;
 
     public InterfaceManager(boolean available, float playerZone, float playerHandle) {
@@ -40,13 +41,17 @@ public class InterfaceManager {
             float accelX = Gdx.input.getAccelerometerX();
             float accelY = Gdx.input.getAccelerometerY();
 
-            if(accelX > playerZone){
-                --horizontalForce;
-
+            if(accelX > playerNear){
+                horizontalForce = -0.25f;
+                if(accelX > playerZone + playerNear)
+                    horizontalForce -= 0.8f;
             }
             else
-            if(accelX < -playerZone){
-                ++horizontalForce;
+            if(accelX < -playerNear){
+                horizontalForce = 0.25f;
+                if(accelX < -(playerZone + playerNear))
+                    horizontalForce += 0.8f;
+
             }
 
             if(accelY > (playerZone + playerHandle)){

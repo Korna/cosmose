@@ -24,8 +24,8 @@ import com.swar.game.managers.InterfaceManager;
 import com.swar.game.managers.World.BodyBuilder;
 import com.swar.game.managers.World.GameContactListener;
 import com.swar.game.managers.World.ObjectHandler;
+import com.swar.game.utils.Journal;
 import com.swar.game.utils.Randomizer;
-import com.swar.game.utils.Singleton;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -271,7 +271,7 @@ public class PlaySurvivalState extends GameState{
         maincamera.update();
     }
 
-    private void inputAction(boolean shot, int horizontal, int vertical){
+    private void inputAction(boolean shot, float horizontal, float vertical){
         if(horizontal < 0)
             player.ship_l();
         if(horizontal > 0)
@@ -290,7 +290,7 @@ public class PlaySurvivalState extends GameState{
 
 
 
-    Singleton instance = Singleton.getInstance();
+    Journal instance = Journal.getInstance();
 
 
 

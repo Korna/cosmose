@@ -14,7 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.swar.game.Models.RecordModel;
 import com.swar.game.managers.GameStateManagement;
-import com.swar.game.utils.Singleton;
+import com.swar.game.utils.Journal;
 import com.swar.game.utils.constants;
 
 import java.util.ArrayList;
@@ -34,7 +34,7 @@ public class DeathState extends GameState {
     int GAME_WIDTH;
     int GAME_HEIGHT;
 
-    Singleton instance = Singleton.getInstance();
+    Journal instance = Journal.getInstance();
     ArrayList<RecordModel> list = instance.recordModels;
     int SCALE = 4;
     public DeathState(GameStateManagement gsm) {
