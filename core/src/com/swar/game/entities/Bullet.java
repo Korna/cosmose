@@ -34,7 +34,7 @@ public class Bullet extends Sprite implements Moveable{
 
         Texture tex;
         tex = Game.res.getTexture(bulletType.name());
-        TextureRegion[] sprites = TextureRegion.split(tex, 32, 32)[0];
+        TextureRegion[] sprites = TextureRegion.split(tex, (int)BulletType.getSize(bulletType)[0], (int)BulletType.getSize(bulletType)[1])[0];
 
         setAnimation(sprites, 1 / 12f);
     }

@@ -3,10 +3,7 @@ package com.swar.game.managers.World;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
-import com.swar.game.entities.Asteroid;
-import com.swar.game.entities.Bonus;
-import com.swar.game.entities.Bullet;
-import com.swar.game.entities.Enemy;
+import com.swar.game.entities.*;
 
 /**
  * Created by Koma on 02.10.2017.
@@ -17,6 +14,9 @@ public class ObjectHandler {
     public Array<Bullet> listBulletPlayer;
     public Array<Bonus> listBonus;
     public Array<Enemy> listEnemy;
+
+    public Player player;
+
 
     private World world;
 

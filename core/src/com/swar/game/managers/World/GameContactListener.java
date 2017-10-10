@@ -170,13 +170,15 @@ public class GameContactListener implements ContactListener {
         Body ba = fa.getBody();
         Body bb = fb.getBody();
 
-        if(isAAFirst(BULLET_DESTROYABLE, BORDER_HORIZONTAL) || isAAFirst(BULLET_PIERCING, BORDER_HORIZONTAL) || isAAFirst(BULLET_ENEMY, BORDER_HORIZONTAL)
+        if(isAAFirst(BULLET_DESTROYABLE, BORDER_HORIZONTAL) || isAAFirst(BULLET_PIERCING, BORDER_HORIZONTAL) || isAAFirst(BULLET_EXPLOSIVE, BORDER_HORIZONTAL)
+                || isAAFirst(BULLET_ENEMY, BORDER_HORIZONTAL)
                 || isAAFirst(ENEMY, BORDER_HORIZONTAL)
                 ){
             bodiesToRemove.add(ba);
             return;
         }
-        if(isABFirst(BULLET_DESTROYABLE, BORDER_HORIZONTAL) || isABFirst(BULLET_PIERCING, BORDER_HORIZONTAL) || isABFirst(BULLET_ENEMY, BORDER_HORIZONTAL)
+        if(isABFirst(BULLET_DESTROYABLE, BORDER_HORIZONTAL) || isABFirst(BULLET_PIERCING, BORDER_HORIZONTAL) || isABFirst(BULLET_EXPLOSIVE, BORDER_HORIZONTAL)
+                || isABFirst(BULLET_ENEMY, BORDER_HORIZONTAL)
                 || isABFirst(ENEMY, BORDER_HORIZONTAL)
                 ){
             bodiesToRemove.add(bb);

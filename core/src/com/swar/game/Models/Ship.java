@@ -22,7 +22,7 @@ public class Ship implements Killable, Moveable{
     private int carryWeapons;
     private int carryEquipment;
 
-
+    public Ability ability;
     private int height;
     private int width;
 
@@ -32,12 +32,14 @@ public class Ship implements Killable, Moveable{
                 float weaponPositionY[],
                 int carryWeapons, int carryEquipment,
                 ArrayList<Weapon> weaponArrayList,
-    int height, int width){
+    int height, int width,
+                Ability ability){
         this.speed = speed;
         this.hp = hp;
         this.armor = armor;
         this.shipSprite = shipSprite;
         this.Sprite = Sprite;
+        this.ability = ability;
 
 
 /*

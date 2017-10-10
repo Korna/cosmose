@@ -2,6 +2,8 @@ package com.swar.game.managers.World;
 
 
 import com.badlogic.gdx.physics.box2d.*;
+import com.swar.game.Types.BulletType;
+import com.swar.game.Types.PierceType;
 
 import static com.swar.game.utils.constants.*;
 
@@ -70,7 +72,7 @@ public class BodyBuilder extends Builder {
         BodyDef bdef = new BodyDef();
         FixtureDef fdef = new FixtureDef();
 
-        bdef.type = BodyDef.BodyType.StaticBody;
+        bdef.type = BodyDef.BodyType.DynamicBody;
         bdef.position.set(x, y);
 
         CircleShape cshape = new CircleShape();
@@ -87,7 +89,7 @@ public class BodyBuilder extends Builder {
     }
 
 
-    public Body createBulletPlayer(float x, float y, String type) {
+    public Body createBulletPlayer(float x, float y, String type, BulletType bulletType) {
         BodyDef bdef = new BodyDef();
         bdef.type = BodyDef.BodyType.DynamicBody;
         FixtureDef fdef = new FixtureDef();
@@ -95,10 +97,25 @@ public class BodyBuilder extends Builder {
         //позиционирование выстрела
 
 
-        bdef.position.set(x, y);
-        CircleShape cshape = new CircleShape();
-        cshape.setRadius(GAME_WIDTH/190);
-        fdef.shape = cshape;
+
+        CircleShape cshape = null;
+        if(bulletType != BulletType.bullet_6){
+            bdef.position.set(x, y);
+
+            cshape = new CircleShape();
+            cshape.setRadius(GAME_WIDTH/190);
+            fdef.shape = cshape;
+        }
+        else{
+            bdef.position.set(GAME_WIDTH/2, y);
+            PolygonShape pshape = new PolygonShape();
+            pshape.setAsBox(GAME_WIDTH, 10);
+            fdef.shape = pshape;
+        }
+
+
+
+
         fdef.isSensor = true;
         fdef.filter.categoryBits = BIT_BULLET;
         fdef.filter.maskBits = BIT_ENEMY | BIT_BORDER | BIT_SHADOW;
@@ -110,6 +127,7 @@ public class BodyBuilder extends Builder {
 
         return body;
     }
+
 
     public Body createBulletEnemy(float x, float y) {
         BodyDef bdef = new BodyDef();
@@ -127,7 +145,7 @@ public class BodyBuilder extends Builder {
 
         Body body = this.world.createBody(bdef);
 
-        body.createFixture(fdef).setUserData(BULLET_ENEMY);
+        body.createFixture(fdef).setUserData(PierceType.BulletEnemy.name());
 
         return body;
     }

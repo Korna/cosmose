@@ -106,7 +106,7 @@ public class PlayClassicState extends GameState{
 
 
 
-
+    private boolean abilityOn = false;
     private int damageEffect = 0;
     private final static int effectTime = 5;
     @Override
@@ -123,36 +123,8 @@ public class PlayClassicState extends GameState{
             return;
         }
 
-        float totalDamage = cl.getHp() +player.ship.armor;
-        if(totalDamage < 0){
-            player.ship.setHp(player.ship.getHp() + totalDamage);
-            damageEffect = effectTime;
-            if(CONFIG_VIBRATION)
-                Gdx.input.vibrate(20);
-        }
-
-
-        if(player.ship.getHp() <= 0){
-            player.setDead(true);
-            objectHandler.clearAll();
-            gsm.setState(State.DEATH);
-            return;
-        }
-
-
-        interfaceManager.inputUpdate();
-        inputAction(interfaceManager.shot, interfaceManager.horizontalForce, interfaceManager.verticalForce);
 
         shadowMovement();
-
-        player.update(delta);
-
-        for(Weapon weapon : player.ship.weapons){
-            weapon.setTimeAfterShot(weapon.getTimeAfterShot() + delta);
-        }
-
-        int energy = cl.getEnergyAndClear();
-        player.ship.setEnergy(player.ship.getEnergy() + energy);
 
         if(!instance.firstRun){
             float[] move = {0,0};
@@ -189,7 +161,7 @@ public class PlayClassicState extends GameState{
 
 
         if(randomizer.chanceAsteroid()){
-            Body asteroidBody = bodyBuilder.createAsteroid(randomizer.getCoordinateAsteroid(),GAME_HEIGHT-45);
+            Body asteroidBody = bodyBuilder.createAsteroid(randomizer.getCoordinateAsteroid(),GAME_HEIGHT-32);
 
             Asteroid a = new Asteroid(asteroidBody);
             asteroidBody.setUserData(a);
@@ -198,7 +170,7 @@ public class PlayClassicState extends GameState{
         }
         if(randomizer.chanceAsteroid()){
             if(randomizer.chanceAsteroid()) {
-                Body enemyBody = bodyBuilder.createEnemy(randomizer.getCoordinateAsteroid(), GAME_HEIGHT - 50);
+                Body enemyBody = bodyBuilder.createEnemy(randomizer.getCoordinateAsteroid(), GAME_HEIGHT-32);
 
                 Enemy e = new Enemy(enemyBody);
                 enemyBody.setUserData(e);
@@ -322,9 +294,6 @@ public class PlayClassicState extends GameState{
         for(int i = 0; i < objectHandler.listAsteroid.size; ++i) {
             Asteroid asteroid = objectHandler.listAsteroid.get(i);
             Vector2 targetPosition = new Vector2(0, asteroid.speed *1.1f);
-
-
-            // asteroid.getBody().applyForce(targetPosition, asteroid.getBody().getWorldCenter(), true);
             asteroid.getBody().setLinearVelocity(targetPosition);
             asteroid.update(delta);
         }
@@ -332,13 +301,12 @@ public class PlayClassicState extends GameState{
         for(int i = 0; i < objectHandler.listEnemy.size; ++i) {
             Enemy enemy = objectHandler.listEnemy.get(i);
             Vector2 targetPosition = new Vector2(0, enemy.speed *0.9f);
-
-
-            // asteroid.getBody().applyForce(targetPosition, asteroid.getBody().getWorldCenter(), true);
             enemy.getBody().setLinearVelocity(targetPosition);
             enemy.update(delta);
+
             if(randomizer.chanceAsteroid())
                 enemy.createObject(bodyBuilder, objectHandler);
+
         }
 
 
@@ -355,18 +323,63 @@ public class PlayClassicState extends GameState{
         //удаление бонусов спустя время
         for(int i = 0; i < objectHandler.listBonus.size; ++i){
             Bonus bonus = objectHandler.listBonus.get(i);
+
+
+            bonus.update(delta);
+
+
+
             bonus.setExistTime(bonus.getExistTime() + delta);
             if(bonus.getExistTime() > 30){
                 world.destroyBody(bonus.getBody());
 
                 objectHandler.listBonus.removeIndex(i);
                 --i;
-            }
+            }else{
+                bonus.getBody().setLinearVelocity(0, -10);
 
-        }
-        for(Bonus bonus :objectHandler.listBonus){
+            }
             bonus.update(delta);
         }
+
+        //работа с игроком
+        float totalDamage = cl.getHp() +player.ship.armor;
+        if(totalDamage < 0){
+            player.ship.setHp(player.ship.getHp() + totalDamage);
+            damageEffect = effectTime;
+            if(CONFIG_VIBRATION)
+                Gdx.input.vibrate(20);
+        }
+
+
+        if(player.ship.getHp() <= 0){
+            player.setDead(true);
+            objectHandler.clearAll();
+            gsm.setState(State.DEATH);
+            return;
+        }
+
+
+        interfaceManager.inputUpdate();
+        if(interfaceManager.ability){
+            Gdx.input.vibrate(30);
+            abilityOn = true;
+        }
+
+
+        if(abilityOn)
+            player.ship.ability.update(delta);
+
+        inputAction(interfaceManager.shot, interfaceManager.horizontalForce, interfaceManager.verticalForce, abilityOn);
+        player.update(delta);
+
+
+        for(Weapon weapon : player.ship.weapons){
+            weapon.setTimeAfterShot(weapon.getTimeAfterShot() + delta);
+        }
+        int energy = cl.getEnergyAndClear();
+        player.ship.setEnergy(player.ship.getEnergy() + energy);
+
 
 
         batch.setProjectionMatrix(maincamera.combined);
@@ -412,7 +425,7 @@ public class PlayClassicState extends GameState{
 
     }
 
-    private void inputAction(boolean shot, float horizontal, float vertical){
+    private void inputAction(boolean shot, float horizontal, float vertical, boolean ability){
         if(horizontal < 0)
             player.ship_l();
         if(horizontal > 0)
@@ -427,6 +440,10 @@ public class PlayClassicState extends GameState{
                         Gdx.input.vibrate(10);
             }
         }
+        if(ability){
+            player.ship.ability.use(bodyBuilder, objectHandler, player);
+        }
+
 
         player.getBody().setLinearVelocity(horizontal * player.getSpeed(), vertical * player.getSpeed());
     }

@@ -1,7 +1,6 @@
 package com.swar.game.Types;
 
-import com.swar.game.Models.Ship;
-import com.swar.game.Models.Weapon;
+import com.swar.game.Models.*;
 
 import java.util.ArrayList;
 
@@ -15,17 +14,28 @@ public enum ShipType {
         Ship shipModel = null;
         switch(shipType){
             case ship_1:
-                shipModel = new Ship(150.0f, 100, 0, "ship_1", "", new float[]{1,2}, new float[]{1,2}, 1, 1, new ArrayList<Weapon>(), 32, 32);
+                shipModel = new Ship(150.0f, 100, 0,
+                        "ship_1", "", new float[]{1, 2}, new float[]{1, 2},
+                        1, 1, new ArrayList<Weapon>(), 32, 32, new AbilityStop() {
+
+                });
                 break;
             case ship_2:
-                shipModel = new Ship(200.0f, 120, 0, "ship_2", "", new float[]{1,2}, new float[]{1,2}, 1, 1, new ArrayList<Weapon>(), 32, 32);
+                shipModel = new Ship(200.0f, 100, 1,
+                        "ship_2", "", new float[]{1,2}, new float[]{1,2},
+                        1, 1, new ArrayList<Weapon>(), 32, 32, new AbilityJugg());
                 break;
             case ship_3:
-                shipModel = new Ship(200.0f, 150, 3, "ship_3", "", new float[]{1,2}, new float[]{1,2}, 1, 2, new ArrayList<Weapon>(), 32, 32);
+                shipModel = new Ship(200.0f, 100, 3,
+                        "ship_3", "", new float[]{1,2}, new float[]{1,2},
+                        1, 2, new ArrayList<Weapon>(), 32, 32, new AbilityExplode());
                 break;
             case ship_4:
-                shipModel = new Ship(75.0f, 200, 5, "ship_4", "", new float[]{1,2}, new float[]{1,2}, 2, 2, new ArrayList<Weapon>(), 32, 32);
+                shipModel = new Ship(75.0f, 100, 5,
+                        "ship_4", "", new float[]{1,2}, new float[]{1,2},
+                        2, 2, new ArrayList<Weapon>(), 32, 32, new AbilityShield());
                 break;
+
         }
 
         return shipModel;

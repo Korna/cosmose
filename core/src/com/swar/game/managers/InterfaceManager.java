@@ -19,6 +19,7 @@ public class InterfaceManager {
     public float horizontalForce = 0;
     public float verticalForce = 0;
     public boolean shot = false;
+    public boolean ability = false;
 
     public InterfaceManager(boolean available, float playerZone, float playerHandle) {
 
@@ -32,7 +33,7 @@ public class InterfaceManager {
         horizontalForce = 0;
         verticalForce = 0;
         shot = false;
-
+        ability = false;
 
 
 
@@ -68,6 +69,27 @@ public class InterfaceManager {
             if(Gdx.input.isTouched())
                 shot = true;
 
+
+            //обработка абилки
+
+            boolean fire = false;
+            boolean fast = false;
+            final int fireAreaMax = Gdx.graphics.getWidth()/2; // This should be scaled to the size of the screen?
+            final int fastAreaMin = Gdx.graphics.getWidth()/2;
+            for (int i = 0; i < 2; i++) { // 20 is max number of touch points
+                if (Gdx.input.isTouched(i)) {
+                    final int iX = Gdx.input.getX(i);
+                    fire = fire || (iX < fireAreaMax); // Touch coordinates are in screen space
+                    fast = fast || (iX > fastAreaMin);
+                }
+            }
+
+            if (fast && fire) {
+                ability = true;
+                System.out.println("ability");
+            }
+
+
         }else{
 
 
@@ -91,6 +113,9 @@ public class InterfaceManager {
 
             if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)){
                 shot = true;
+            }
+            if(Gdx.input.isKeyJustPressed(Input.Keys.ENTER)){
+                ability = true;
             }
 
         }
