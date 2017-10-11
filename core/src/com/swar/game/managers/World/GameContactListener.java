@@ -146,13 +146,11 @@ public class GameContactListener implements ContactListener {
 
         if(isAAFirst(BONUS, PLAYER_SHIP)){
             bodiesToRemove.add(ba);
-            credits+=100;
             score += 50;
             energy += 25;
         }
         if(isABFirst(BONUS, PLAYER_SHIP)){
             bodiesToRemove.add(bb);
-            credits+=100;
             score += 50;
             energy += 25;
         }

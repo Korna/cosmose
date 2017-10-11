@@ -7,13 +7,10 @@ import com.badlogic.gdx.Input;
  * Created by Koma on 01.10.2017.
  */
 public class InterfaceManager {
-
-
     boolean available;
     float playerHandle = 4.5f;
     float playerZone = 0.3f;
     float playerNear = 0.25f;
-
 
     //bundle
     public float horizontalForce = 0;
@@ -21,10 +18,10 @@ public class InterfaceManager {
     public boolean shot = false;
     public boolean ability = false;
 
-    public InterfaceManager(boolean available, float playerZone, float playerHandle) {
-
+    public InterfaceManager(boolean available, float playerZone, float playerHandle, float playerNear) {
         this.playerHandle = playerHandle;
         this.playerZone = playerZone;
+        this.playerNear = playerNear;
 
         this.available = available;
     }
@@ -34,9 +31,6 @@ public class InterfaceManager {
         verticalForce = 0;
         shot = false;
         ability = false;
-
-
-
 
         if(available){
             float accelX = Gdx.input.getAccelerometerX();

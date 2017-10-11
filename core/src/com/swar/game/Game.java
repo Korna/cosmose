@@ -28,8 +28,8 @@ public class Game extends ApplicationAdapter {
 
 	public static Content res;
 
-	public Game(boolean vButtons, boolean vibration){
-		gameConfig = new GameConfig(vibration, vButtons);
+	public Game(boolean vButtons, boolean vibration, float posY){
+		gameConfig = new GameConfig(vibration, vButtons, posY);
 	}
 
 
@@ -78,6 +78,8 @@ public class Game extends ApplicationAdapter {
 
 
 		res.loadTexture("sprites/bonus_1.png", "bonus_1");
+
+		res.loadTexture("sprites/explosion_1.png", "explosion_1");
 
 
 		for(ShipType type : ShipType.values()){

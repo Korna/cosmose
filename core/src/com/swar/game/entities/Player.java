@@ -7,7 +7,6 @@ import com.swar.game.Game;
 import com.swar.game.Models.Creator;
 import com.swar.game.Models.Ship;
 import com.swar.game.managers.World.BodyBuilder;
-import com.swar.game.managers.World.GameContactListener;
 import com.swar.game.managers.World.ObjectHandler;
 
 /**
@@ -20,20 +19,19 @@ public class Player extends Sprite implements Creator {//все параметр
 
     private Texture shipTexture;//текстура корабля
 
+    private int credits = 0;
 
-    private GameContactListener player_cl;
 
 
     public float timeInGame = 0;
 
     private boolean dead = false;
 
-    public Player(Body body, GameContactListener cl, Ship ship) {
+    public Player(Body body, Ship ship) {
         super(body);
 
 
         this.ship = ship;
-        player_cl = cl;
 
 
         shipTexture = Game.res.getTexture(ship.getShipSprite());
@@ -74,12 +72,13 @@ public class Player extends Sprite implements Creator {//все параметр
 
     }
 
-    private int credits = 0;
 
     public int getCredits() {
-        credits += player_cl.getCredits();
-
         return credits;
+    }
+
+    public void setCredits(int credits) {
+        this.credits = credits;
     }
 
     public int getSpeed() {

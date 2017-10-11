@@ -76,7 +76,7 @@ public class BodyBuilder extends Builder {
         bdef.position.set(x, y);
 
         CircleShape cshape = new CircleShape();
-        cshape.setRadius(GAME_WIDTH/70);
+        cshape.setRadius(GAME_WIDTH/60);
 
         fdef.shape = cshape;
         fdef.filter.categoryBits = BIT_OBJECT;
@@ -85,6 +85,26 @@ public class BodyBuilder extends Builder {
 
         Body body = this.world.createBody(bdef);
         body.createFixture(fdef).setUserData(BONUS);
+        return body;
+    }
+
+    public Body createExplosion(float x, float y){
+        BodyDef bdef = new BodyDef();
+        FixtureDef fdef = new FixtureDef();
+
+        bdef.type = BodyDef.BodyType.DynamicBody;
+        bdef.position.set(x, y);
+
+        CircleShape cshape = new CircleShape();
+        cshape.setRadius(GAME_WIDTH/60);
+
+        fdef.shape = cshape;
+        fdef.filter.categoryBits = BIT_OBJECT;
+        fdef.filter.maskBits = BIT_PLAYER;
+        fdef.isSensor = true;
+
+        Body body = this.world.createBody(bdef);
+        body.createFixture(fdef).setUserData(SFX);
         return body;
     }
 

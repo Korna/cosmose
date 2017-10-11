@@ -21,6 +21,9 @@ public class Enemy extends Sprite implements Killable, Moveable, Creator{
     public float collisionDmg = 30;
     public float speed = -(GAME_WIDTH)/5;
 
+    float time = 1.5f;
+    float period = 1.5f;
+
     public Enemy(Body body){
         super(body);
         Texture tex;
@@ -33,6 +36,7 @@ public class Enemy extends Sprite implements Killable, Moveable, Creator{
     @Override
     public void update(float dt) {
         super.update(dt);
+        time += dt;
     }
 
     @Override
@@ -77,19 +81,26 @@ public class Enemy extends Sprite implements Killable, Moveable, Creator{
     }
 
 
+
     @Override
     public boolean createObject(BodyBuilder bodyBuilder, ObjectHandler objectHandler) {
-        float x = getBody().getPosition().x;
-        float y = getBody().getPosition().y;
+        if(time > period){
+            float x = getBody().getPosition().x;
+            float y = getBody().getPosition().y;
 
-        Body bulletBody;
-        Bullet b;
+            Body bulletBody;
+            Bullet b;
 
 
-        bulletBody = bodyBuilder.createBulletEnemy(x, y + 5);
-        b = new Bullet(bulletBody, BulletType.bullet_1, BulletType.getbullet(BulletType.bullet_1), -2000);
-        bulletBody.setUserData(b);
-        objectHandler.add(b);
+            bulletBody = bodyBuilder.createBulletEnemy(x, y + 5);
+            b = new Bullet(bulletBody, BulletType.bullet_1, BulletType.getbullet(BulletType.bullet_1), -3000);
+            bulletBody.setUserData(b);
+            objectHandler.add(b);
+        }
+        if(time > period + 0.5f){
+            time = 0;
+        }
+
         return true;
 
 

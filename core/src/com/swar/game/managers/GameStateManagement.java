@@ -98,7 +98,7 @@ public class GameStateManagement {
                 playerBody = createPlayer(GAME_WIDTH / 4, 15, GAME_WIDTH/30, GAME_WIDTH/20);
                 Ship ship = ShipType.getShip(ShipType.ship_2);
                 ship.weapons.add(WeaponType.getWeapon(WeaponType.weapon_2));
-                player = new Player(playerBody, cl, ship);//здесь по индексу передаём корабль из ДБ
+                player = new Player(playerBody, ship);//здесь по индексу передаём корабль из ДБ
 
                 player.initSprite(playerBody);
 

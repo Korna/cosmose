@@ -12,7 +12,7 @@ public class ObjectHandler {
 
     public Array<Asteroid> listAsteroid;
     public Array<Bullet> listBulletPlayer;
-    public Array<Bonus> listBonus;
+    public Array<Sprite> listDisappearable;
     public Array<Enemy> listEnemy;
 
     public Player player;
@@ -20,10 +20,10 @@ public class ObjectHandler {
 
     private World world;
 
-    public ObjectHandler(Array<Asteroid> listAsteroid, Array<Bullet> listBulletPlayer, Array<Bonus> listBonus, Array<Enemy> enemyList, World world) {
+    public ObjectHandler(Array<Asteroid> listAsteroid, Array<Bullet> listBulletPlayer, Array<Sprite> listDisappearable, Array<Enemy> enemyList, World world) {
         this.listAsteroid = listAsteroid;
         this.listBulletPlayer = listBulletPlayer;
-        this.listBonus = listBonus;
+        this.listDisappearable = listDisappearable;
         this.listEnemy = enemyList;
         this.world = world;
     }
@@ -34,12 +34,12 @@ public class ObjectHandler {
             world.destroyBody(asteroid.getBody());
         for(Bullet bullet : listBulletPlayer)
             world.destroyBody(bullet.getBody());
-        for(Bonus bonus : listBonus)
+        for(Sprite bonus : listDisappearable)
             world.destroyBody(bonus.getBody());
         for(Enemy enemy : listEnemy)
             world.destroyBody(enemy.getBody());
 
-        listBonus.clear();
+        listDisappearable.clear();
         listBulletPlayer.clear();
         listAsteroid.clear();
         listEnemy.clear();
@@ -54,18 +54,22 @@ public class ObjectHandler {
         this.listBulletPlayer.add(b);
     }
     public void add(Bonus b){
-        this.listBonus.add(b);
+        this.listDisappearable.add(b);
     }
     public void add(Enemy e){
         this.listEnemy.add(e);
     }
+    public void add(Explosion e){
+        this.listDisappearable.add(e);
+    }
+
 
 
     public void remove(Asteroid a){
         listAsteroid.removeValue(a, true);
     }
     public void remove(Bonus b){
-        listBonus.removeValue(b, true);
+        listDisappearable.removeValue(b, true);
     }
     public void remove(Bullet b){
         listBulletPlayer.removeValue(b, true);
@@ -78,7 +82,7 @@ public class ObjectHandler {
         for(Asteroid asteroid : listAsteroid)
             asteroid.render(batch);
 
-        for(Bonus bonus : listBonus)
+        for(Sprite bonus : listDisappearable)
             bonus.render(batch);
 
         for(Bullet bullet : listBulletPlayer)

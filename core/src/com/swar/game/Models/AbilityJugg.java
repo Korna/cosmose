@@ -28,7 +28,7 @@ public class AbilityJugg implements Ability, Creator{
             body.setUserData(b);
             objectHandler.add(b);
             --time;
-            
+
         }
     }
 

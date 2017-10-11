@@ -6,16 +6,16 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.swar.game.Game;
 
 /**
- * Created by Koma on 03.09.2017.
+ * Created by Koma on 11.10.2017.
  */
-public class Bonus extends Sprite implements Dissapearable {
+public class Explosion extends Sprite implements Dissapearable  {
     private float existTime = 0;
 
-    public Bonus (Body body) {
+    public Explosion (Body body) {
         super(body);
 
         Texture tex;
-        tex = Game.res.getTexture("bonus_1");
+        tex = Game.res.getTexture("explosion_1");
         TextureRegion[] sprites = TextureRegion.split(tex, 32, 32)[0];
 
         setAnimation(sprites, 1 / 12f);
@@ -31,6 +31,6 @@ public class Bonus extends Sprite implements Dissapearable {
 
     @Override
     public float getMaxExistTime() {
-        return 30f;
+        return 0.2f;
     }
 }

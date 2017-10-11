@@ -71,7 +71,7 @@ public class SettingsState extends GameState {
         TextButton buttonExit = new TextButton("BACK", textButtonStyle);
         TextButton buttonVButtons = new TextButton("VIRTUAL BUTTONS:" + gameConfig.isvButtons(), textButtonStyle);
         TextButton buttonVibration = new TextButton("VIBRATION:" + gameConfig.isVibraion(), textButtonStyle);
-
+        TextButton buttonPos = new TextButton("ACCELEROMETER:" + gameConfig.getPosY(), textButtonStyle);
 
         buttonExit.pad(GAME_WIDTH/24);//отступ
 
@@ -84,13 +84,14 @@ public class SettingsState extends GameState {
         table.row();
         table.add(buttonVButtons).width(GAME_WIDTH/4).height(GAME_WIDTH/7).pad(GAME_WIDTH/35);
 
-
         table.row();
         table.add(buttonVibration).width(GAME_WIDTH/4).height(GAME_WIDTH/7);
 
         table.row();
-        table.add(buttonExit).width(GAME_WIDTH/4).height(GAME_WIDTH/7);
+        table.add(buttonPos).width(GAME_WIDTH/4).height(GAME_WIDTH/7);
 
+        table.row();
+        table.add(buttonExit).width(GAME_WIDTH/4).height(GAME_WIDTH/7);
 
         stage.addActor(table);
 
@@ -123,6 +124,19 @@ public class SettingsState extends GameState {
                 buildTable();
             }
         });
+
+        buttonPos.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                super.clicked(event, x, y);
+                float accelY = Gdx.input.getAccelerometerY();
+                gameConfig.setPosY(accelY);
+
+                clearStage();
+                buildTable();
+            }
+        });
+
 
     }
     private void clearStage(){

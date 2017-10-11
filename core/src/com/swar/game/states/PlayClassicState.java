@@ -18,6 +18,7 @@ import com.swar.game.entities.*;
 import com.swar.game.managers.GameConfig;
 import com.swar.game.managers.GameStateManagement;
 import com.swar.game.managers.InterfaceManager;
+import com.swar.game.managers.VibrationManager;
 import com.swar.game.managers.World.BodyBuilder;
 import com.swar.game.managers.World.GameContactListener;
 import com.swar.game.managers.World.ObjectHandler;
@@ -75,10 +76,8 @@ public class PlayClassicState extends GameState{
 
         Body body = bodyBuilder.createShadow(GAME_WIDTH / 2, 15, GAME_WIDTH/15, GAME_WIDTH/10);
         //здесь по индексу передаём корабль из ДБ
-        shadowPlayer = new Player(body, null, ShipType.getShip(ShipType.ship_2));
+        shadowPlayer = new Player(body,  ShipType.getShip(ShipType.ship_2));
         // body.setUserData(shadowPlayer);
-
-        // Gdx.input.setInputProcessor(new GameInputProcessor());
 
         world.setContactListener(cl);
         b2dr = new Box2DDebugRenderer();
@@ -87,8 +86,8 @@ public class PlayClassicState extends GameState{
 
         bodyBuilder.createBorder(BORDER_HORIZONTAL, GAME_WIDTH, 0, GAME_WIDTH, 1);
         bodyBuilder.createBorder(BORDER_HORIZONTAL, GAME_WIDTH, GAME_HEIGHT, GAME_WIDTH, 1);
-        bodyBuilder.createBorder("border", 1, GAME_HEIGHT, 1, GAME_HEIGHT);
-        bodyBuilder.createBorder("border", GAME_WIDTH, GAME_HEIGHT, 1, GAME_HEIGHT);
+        bodyBuilder.createBorder(BORDER_VERTICAL, 1, GAME_HEIGHT, 1, GAME_HEIGHT);
+        bodyBuilder.createBorder(BORDER_VERTICAL, GAME_WIDTH, GAME_HEIGHT, 1, GAME_HEIGHT);
 
 
 
@@ -97,8 +96,8 @@ public class PlayClassicState extends GameState{
 
 
         objectHandler = new ObjectHandler(new Array<>(), new Array<>(), new Array<>(), new Array<>(), world);
-        interfaceManager = new InterfaceManager(available, 0.5f, 4.5f);
-
+        interfaceManager = new InterfaceManager(available, 0.5f, gameConfig.getPosY(), 0.25f);
+        rangedColor(0);
     }
 
 
@@ -227,6 +226,8 @@ public class PlayClassicState extends GameState{
                     } catch (Exception e) {
                         System.out.printf(e.toString() + "\n");
                     }
+
+
                     break;
 
                 case BULLET_DESTROYABLE:
@@ -279,6 +280,13 @@ public class PlayClassicState extends GameState{
                     Bonus bonus = new Bonus(bonusBody);
                     bonusBody.setUserData(bonus);
                     objectHandler.add(bonus);
+
+
+                    Body explosionBody = bodyBuilder.createExplosion(body.getPosition().x, body.getPosition().y);
+                    Explosion e = new Explosion(explosionBody);
+                    explosionBody.setUserData(e);
+                    objectHandler.add(e);
+
                     break;
                     default:
                         break;
@@ -321,19 +329,17 @@ public class PlayClassicState extends GameState{
 
 
         //удаление бонусов спустя время
-        for(int i = 0; i < objectHandler.listBonus.size; ++i){
-            Bonus bonus = objectHandler.listBonus.get(i);
-
-
+        for(int i = 0; i < objectHandler.listDisappearable.size; ++i){
+            Sprite bonus = objectHandler.listDisappearable.get(i);
             bonus.update(delta);
+            Dissapearable dissapearable = (Dissapearable) bonus;
 
 
-
-            bonus.setExistTime(bonus.getExistTime() + delta);
-            if(bonus.getExistTime() > 30){
+            dissapearable.setExistTime(dissapearable.getExistTime() + delta);
+            if(dissapearable.getExistTime() > dissapearable.getMaxExistTime()){
                 world.destroyBody(bonus.getBody());
 
-                objectHandler.listBonus.removeIndex(i);
+                objectHandler.listDisappearable.removeIndex(i);
                 --i;
             }else{
                 bonus.getBody().setLinearVelocity(0, -10);
@@ -348,8 +354,9 @@ public class PlayClassicState extends GameState{
             player.ship.setHp(player.ship.getHp() + totalDamage);
             damageEffect = effectTime;
             if(CONFIG_VIBRATION)
-                Gdx.input.vibrate(20);
+                VibrationManager.vibrate(VibrationManager.MEDIUM);
         }
+        player.setCredits(player.getCredits() + cl.getCredits());
 
 
         if(player.ship.getHp() <= 0){
@@ -362,7 +369,7 @@ public class PlayClassicState extends GameState{
 
         interfaceManager.inputUpdate();
         if(interfaceManager.ability){
-            Gdx.input.vibrate(30);
+            VibrationManager.vibrate(VibrationManager.LONG);
             abilityOn = true;
         }
 
@@ -386,9 +393,31 @@ public class PlayClassicState extends GameState{
         doWorldStep(delta);
     }
 
-    private float f1 = random.nextFloat()+0.3f;
-    private float f2 = random.nextFloat()+0.3f;
-    private float f3 = random.nextFloat()+0.3f;
+    private float f1;
+    private float f2;
+    private float f3;
+    private float[] rangedColor(float time){
+        float cfg = 0.9f;
+        float low = 0.3f;
+
+        f1 = random.nextFloat()*0.7f;
+        f1 = lowCheck(f1, low);
+
+        f2 = random.nextFloat()*0.6f;
+        f2 = lowCheck(f2, low);
+
+        f3 = random.nextFloat() * cfg;
+        f3 = lowCheck(f3, low);
+
+        return new float[]{f1, f2, f3};
+    }
+
+    private float lowCheck(float clr, float low){
+        if(clr < low)
+            clr += low;
+        return clr;
+    }
+
     @Override
     public void render() {
 
@@ -437,7 +466,7 @@ public class PlayClassicState extends GameState{
                 boolean hadShot = player.createObject(bodyBuilder, objectHandler);
                 if(hadShot)
                     if(CONFIG_VIBRATION)
-                        Gdx.input.vibrate(10);
+                        VibrationManager.vibrate(VibrationManager.SHORT);
             }
         }
         if(ability){

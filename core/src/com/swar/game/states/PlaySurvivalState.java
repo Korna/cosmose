@@ -75,8 +75,8 @@ public class PlaySurvivalState extends GameState{
 
         bodyBuilder.createBorder(BORDER_HORIZONTAL, GAME_WIDTH, 0, GAME_WIDTH, 1);
         bodyBuilder.createBorder(BORDER_HORIZONTAL, GAME_WIDTH, GAME_HEIGHT, GAME_WIDTH, 1);
-        bodyBuilder.createBorder("border", 1, GAME_HEIGHT, 1, GAME_HEIGHT);
-        bodyBuilder.createBorder("border", GAME_WIDTH, GAME_HEIGHT, 1, GAME_HEIGHT);
+        bodyBuilder.createBorder(BORDER_VERTICAL, 1, GAME_HEIGHT, 1, GAME_HEIGHT);
+        bodyBuilder.createBorder(BORDER_VERTICAL, GAME_WIDTH, GAME_HEIGHT, 1, GAME_HEIGHT);
 
 
 
@@ -86,7 +86,8 @@ public class PlaySurvivalState extends GameState{
         available = Gdx.input.isPeripheralAvailable(Input.Peripheral.Accelerometer);
 
         objectHandler = new ObjectHandler(new Array<>(), new Array<>(), new Array<>(), new Array<>(), world);
-        interfaceManager = new InterfaceManager(available, 0.5f, 4.5f);
+        interfaceManager = new InterfaceManager(available, 0.5f, 4.5f, 0.25f);
+
     }
 
 
@@ -211,21 +212,23 @@ public class PlaySurvivalState extends GameState{
 
 
         //удаление бонусов спустя время
-        for(int i = 0; i < objectHandler.listBonus.size; ++i){
-            Bonus bonus = objectHandler.listBonus.get(i);
-            bonus.setExistTime(bonus.getExistTime() + delta);
-            if(bonus.getExistTime() > 30){
+        for(int i = 0; i < objectHandler.listDisappearable.size; ++i){
+            Sprite bonus = objectHandler.listDisappearable.get(i);
+            bonus.update(delta);
+            Dissapearable dissapearable = (Dissapearable) bonus;
+
+            dissapearable.setExistTime(dissapearable.getExistTime() + delta);
+
+            if(dissapearable.getExistTime() > dissapearable.getMaxExistTime()){
                 world.destroyBody(bonus.getBody());
 
-                objectHandler.listBonus.removeIndex(i);
+                objectHandler.listDisappearable.removeIndex(i);
                 --i;
             }
 
         }
 
-        for(Bonus bonus :objectHandler.listBonus){
-            bonus.update(delta);
-        }
+
 
 
 

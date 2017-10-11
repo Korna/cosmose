@@ -39,8 +39,8 @@ public class AbilityStop implements  Ability  {
 
 
             //удаление бонусов спустя время
-            for (int i = 0; i < objectHandler.listBonus.size; ++i) {
-                Bonus bonus = objectHandler.listBonus.get(i);
+            for (int i = 0; i < objectHandler.listDisappearable.size; ++i) {
+                Sprite bonus = objectHandler.listDisappearable.get(i);
                 bonus.getBody().setLinearVelocity(0, 0);
 
             }

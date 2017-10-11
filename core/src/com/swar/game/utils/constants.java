@@ -24,7 +24,7 @@ public class constants {
     public static final String BULLET_EXPLOSIVE = "BulletExplosive";
     public static final String BULLET_ENEMY = "BulletEnemy";
 
-
+    public static final String SFX = "SFX";
     public static final String BONUS = "Bonus";
     public static final String SHADOW = "Shadow";
     public static final String ASTEROID = "Asteroid";
@@ -33,6 +33,7 @@ public class constants {
     public static final String PLAYER_SHIP = "PlayerShip";
 
     public static final String BORDER_HORIZONTAL = "BorderHorizontal";
+    public static final String BORDER_VERTICAL = "BorderVertical";
 
     public static final int VIBRATION_LONG = 30;
 
