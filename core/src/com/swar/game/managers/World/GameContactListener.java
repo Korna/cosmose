@@ -1,10 +1,13 @@
 package com.swar.game.managers.World;
 
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
 import com.swar.game.Models.Killable;
 import com.swar.game.entities.Asteroid;
+import com.swar.game.entities.Bonus;
 import com.swar.game.entities.Bullet;
+import com.swar.game.entities.Player;
 
 import static com.swar.game.utils.constants.*;
 
@@ -17,13 +20,18 @@ public class GameContactListener implements ContactListener {
     private Array<Body> bulletsToRemove;
     public Body shadowToRemove = null;
 
+    private Array<Vector2> blasts = new Array<>();
+
     private int hp = 0;
     private int credits = 0;
     private int score = 0;
     private int energy = 0;
 
-    public GameContactListener(){
+    private Player player;
+    public GameContactListener(Player player){
         super();
+
+        this.player = player;
 
         bodiesToRemove = new Array<Body>();
         bulletsToRemove = new Array<Body>();
@@ -99,6 +107,8 @@ public class GameContactListener implements ContactListener {
             return;
         }
         if(isAAFirst(ASTEROID, BULLET_DESTROYABLE) || isAAFirst(ENEMY, BULLET_DESTROYABLE)){
+
+            blasts.add(bb.getPosition());
             bodiesToRemove.add(bb);
 
 
@@ -143,16 +153,18 @@ public class GameContactListener implements ContactListener {
             return;
         }
 
+        if(player==null)
+            System.out.println("NULL");
 
         if(isAAFirst(BONUS, PLAYER_SHIP)){
             bodiesToRemove.add(ba);
-            score += 50;
-            energy += 25;
+            Bonus bonus = (Bonus) ba.getUserData();
+            bonus.pickUp(player);
         }
         if(isABFirst(BONUS, PLAYER_SHIP)){
             bodiesToRemove.add(bb);
-            score += 50;
-            energy += 25;
+            Bonus bonus = (Bonus) bb.getUserData();
+            bonus.pickUp(player);
         }
 
 
@@ -221,7 +233,9 @@ public class GameContactListener implements ContactListener {
 
 
     public Array<Body> getBodiesToRemove() { return bodiesToRemove; }
-
+    public Array<Vector2> getBlasts(){
+        return blasts;
+    }
     public int getScoreAndClear(){
         int scoreToReturn = this.score;
         this.score = 0;
@@ -237,7 +251,7 @@ public class GameContactListener implements ContactListener {
     }
 
     public void clearList(){
-       // bodiesToRemove.clear();
+        blasts = new Array<>();
         bodiesToRemove = new Array<>();
 
     }

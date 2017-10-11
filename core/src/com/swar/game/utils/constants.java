@@ -25,7 +25,7 @@ public class constants {
     public static final String BULLET_ENEMY = "BulletEnemy";
 
     public static final String SFX = "SFX";
-    public static final String BONUS = "Bonus";
+    public static final String BONUS = "EnergyBonus";
     public static final String SHADOW = "Shadow";
     public static final String ASTEROID = "Asteroid";
     public static final String ENEMY = "Enemy";

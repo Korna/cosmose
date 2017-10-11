@@ -53,7 +53,10 @@ public class ObjectHandler {
     public void add(Bullet b){
         this.listBulletPlayer.add(b);
     }
-    public void add(Bonus b){
+    public void add(EnergyBonus b){
+        this.listDisappearable.add(b);
+    }
+    public void add(HealthBonus b){
         this.listDisappearable.add(b);
     }
     public void add(Enemy e){
@@ -62,13 +65,15 @@ public class ObjectHandler {
     public void add(Explosion e){
         this.listDisappearable.add(e);
     }
-
+    public void add(Blast b){
+        this.listDisappearable.add(b);
+    }
 
 
     public void remove(Asteroid a){
         listAsteroid.removeValue(a, true);
     }
-    public void remove(Bonus b){
+    public void remove(EnergyBonus b){
         listDisappearable.removeValue(b, true);
     }
     public void remove(Bullet b){
@@ -77,19 +82,22 @@ public class ObjectHandler {
     public void remove(Enemy e){
         listEnemy.removeValue(e, true);
     }
+    public void remove(Sprite d){
+        listDisappearable.removeValue(d, true);
+    }
 
     public void render(SpriteBatch batch){
         for(Asteroid asteroid : listAsteroid)
             asteroid.render(batch);
-
-        for(Sprite bonus : listDisappearable)
-            bonus.render(batch);
 
         for(Bullet bullet : listBulletPlayer)
             bullet.render(batch);
 
         for(Enemy enemy : listEnemy)
             enemy.render(batch);
+
+        for(Sprite bonus : listDisappearable)
+            bonus.render(batch);
     }
 
 }

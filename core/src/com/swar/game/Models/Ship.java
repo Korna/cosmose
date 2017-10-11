@@ -10,7 +10,7 @@ public class Ship implements Killable, Moveable{
 
     private float speed;
 
-    private int energy = 100;
+    private int energy = 200;
     public int armor;
     private String shipSprite;
     private String Sprite;

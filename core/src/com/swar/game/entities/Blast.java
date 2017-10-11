@@ -8,19 +8,22 @@ import com.swar.game.Game;
 /**
  * Created by Koma on 11.10.2017.
  */
-public class Explosion extends Sprite implements Dissapearable  {
+public class Blast extends Sprite implements Dissapearable  {
     private float existTime = 0;
 
-    public Explosion (Body body, float scale, String texture) {
+    public Blast (Body body, float scale, String texture) {
         super(body);
         this.scale = scale;
 
         Texture tex;
         tex = Game.res.getTexture(texture);
+
         TextureRegion[] sprites = TextureRegion.split(tex, 32, 32)[0];
 
         setAnimation(sprites, 1 / 12f);
     }
+
+
 
     public float getExistTime() {
         return existTime;
@@ -32,6 +35,6 @@ public class Explosion extends Sprite implements Dissapearable  {
 
     @Override
     public float getMaxExistTime() {
-        return 0.2f;
+        return 0.1f;
     }
 }

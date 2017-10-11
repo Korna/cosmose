@@ -112,13 +112,13 @@ public class Player extends Sprite implements Creator {//все параметр
                 b = new Bullet(bulletBody, ship.weapons.get(0).bulletModel.bulletType, ship.weapons.get(0).bulletModel, 560);
                 bulletBody.setUserData(b);
                 objectHandler.add(b);
-                ship.setEnergy(ship.getEnergy() - 1);
+                ship.setEnergy(ship.getEnergy() - ship.weapons.get(0).getEnergyCost());
 
                 bulletBody = bodyBuilder.createBulletPlayer(x + 12, y, type, null);
                 b = new Bullet(bulletBody, ship.weapons.get(0).bulletModel.bulletType, ship.weapons.get(0).bulletModel, 560);
                 bulletBody.setUserData(b);
                 objectHandler.add(b);
-                ship.setEnergy(ship.getEnergy() - 1);
+                ship.setEnergy(ship.getEnergy() - ship.weapons.get(0).getEnergyCost());
 
                 return true;
 
@@ -131,7 +131,7 @@ public class Player extends Sprite implements Creator {//все параметр
                 b = new Bullet(bulletBody, ship.weapons.get(0).bulletModel.bulletType, ship.weapons.get(0).bulletModel, 560);
                 bulletBody.setUserData(b);
                 objectHandler.add(b);
-                ship.setEnergy(ship.getEnergy() - 1);
+                ship.setEnergy(ship.getEnergy() - ship.weapons.get(0).getEnergyCost());
 
                 return true;
 

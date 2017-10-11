@@ -16,6 +16,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.swar.game.Models.RecordModel;
 import com.swar.game.Models.Weapon;
+import com.swar.game.Types.BonusType;
 import com.swar.game.Types.State;
 import com.swar.game.entities.*;
 import com.swar.game.managers.GameConfig;
@@ -56,11 +57,10 @@ public class PlaySurvivalState extends GameState{
 
     public PlaySurvivalState(GameStateManagement gsm) {
         super(gsm);
-        cl = new GameContactListener();
 
         world = gsm.world;
         player = gsm.player;
-
+        cl = new GameContactListener(player);
         GameConfig gameConfig = new GameConfig();
         CONFIG_VIBRATION = gameConfig.isVibraion();
 
@@ -164,21 +164,38 @@ public class PlaySurvivalState extends GameState{
             try{
                 objectHandler.remove((Asteroid) body.getUserData());
                 try {
-                    if (randomizer.chanceBonus()) {
-                        Body bonusBody = bodyBuilder.createBonus(body.getPosition().x, body.getPosition().y);
+                    BonusType bonusType = randomizer.chanceBonusAsteroid();
+                    Body bonusBody = null;
 
-                        Bonus b = new Bonus(bonusBody);
-                        bonusBody.setUserData(b);
-                        objectHandler.add(b);
+                    switch(bonusType) {
+                        case bonus_1:
+                            bonusBody = bodyBuilder.createBonus(body.getPosition().x, body.getPosition().y);
+
+                            EnergyBonus eb = new EnergyBonus(bonusBody);
+                            bonusBody.setUserData(eb);
+                            objectHandler.add(eb);
+
+                            break;
+                        case bonus_2:
+                            bonusBody = bodyBuilder.createBonus(body.getPosition().x, body.getPosition().y);
+
+                            HealthBonus hb = new HealthBonus(bonusBody);
+                            bonusBody.setUserData(hb);
+                            objectHandler.add(hb);
+
+                            break;
+                        default:
+                            break;
                     }
-                }catch(Exception e){
+
+                } catch (Exception e) {
                     System.out.printf(e.toString() + "\n");
                 }
             }catch(Exception e){
                 try {
                     objectHandler.remove((Bullet) body.getUserData());
                 }catch(Exception bonus){
-                    objectHandler.remove((Bonus) body.getUserData());
+                    objectHandler.remove((EnergyBonus) body.getUserData());
                 }
             }
 

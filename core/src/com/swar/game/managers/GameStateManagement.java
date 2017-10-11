@@ -26,7 +26,7 @@ import static com.swar.game.utils.constants.GAME_WIDTH;
 public class GameStateManagement {
     private final Game app;
 
-    public GameContactListener cl  = new GameContactListener();
+    public GameContactListener cl  = null;
     public Body playerBody;
     public Player player;
     public World world;

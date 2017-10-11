@@ -27,7 +27,7 @@ public class BodyBuilder extends Builder {
         bdef.position.set(x, y);
 
         CircleShape cshape = new CircleShape();
-        cshape.setRadius(GAME_WIDTH/20);
+        cshape.setRadius(GAME_WIDTH/18);
 
         fdef.shape = cshape;
         fdef.filter.categoryBits = BIT_ENEMY;
@@ -76,7 +76,7 @@ public class BodyBuilder extends Builder {
         bdef.position.set(x, y);
 
         CircleShape cshape = new CircleShape();
-        cshape.setRadius(GAME_WIDTH/60);
+        cshape.setRadius(GAME_WIDTH/30);
 
         fdef.shape = cshape;
         fdef.filter.categoryBits = BIT_OBJECT;

@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.swar.game.Types.BonusType;
 import com.swar.game.Types.BulletType;
 import com.swar.game.Types.ShipType;
 import com.swar.game.Types.WeaponType;
@@ -77,10 +78,13 @@ public class Game extends ApplicationAdapter {
 		res.loadTexture("sprites/enemy.png", "enemy");
 
 
-		res.loadTexture("sprites/bonus_1.png", "bonus_1");
+		for(BonusType type : BonusType.values()){
+			String name = type.name();
+			res.loadTexture("sprites/" + name + ".png", name);
+		}
 
 		res.loadTexture("sprites/explosion_1.png", "explosion_1");
-
+		res.loadTexture("sprites/explosion_2.png", "explosion_2");
 
 		for(ShipType type : ShipType.values()){
 			String name = type.name();

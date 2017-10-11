@@ -12,6 +12,7 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.swar.game.Models.Weapon;
+import com.swar.game.Types.BonusType;
 import com.swar.game.Types.ShipType;
 import com.swar.game.Types.State;
 import com.swar.game.entities.*;
@@ -64,10 +65,11 @@ public class PlayClassicState extends GameState{
 
     public PlayClassicState(GameStateManagement gsm) {
         super(gsm);
-        cl = new GameContactListener();
 
         world = gsm.world;
         player = gsm.player;
+        cl = new GameContactListener(player);
+
         bodyBuilder = new BodyBuilder(world);
 
         GameConfig gameConfig = new GameConfig();
@@ -153,6 +155,11 @@ public class PlayClassicState extends GameState{
             shadowPlayer.update(delta);
 
         }
+        if(cl.shadowToRemove!=null){
+            world.destroyBody(cl.shadowToRemove);
+            cl.shadowToRemove = null;
+            shadowPlayer.setDead(true);
+        }
 
 
 
@@ -179,24 +186,20 @@ public class PlayClassicState extends GameState{
         }
 
 
+        Array<Body> explosionBodies = new Array<>();
 
-
+        Array<Vector2> blasts = cl.getBlasts();
+        for(Vector2 vector2 : blasts){
+            makeBlast(vector2);
+        }
 
         //удаление астероидов
         Array<Body> bodies = cl.getBodiesToRemove();
-
-        if(cl.shadowToRemove!=null){
-            world.destroyBody(cl.shadowToRemove);
-            cl.shadowToRemove = null;
-            shadowPlayer.setDead(true);
-        }
-
         //TODO оптимизировать трансформацию AL в A
         ArrayList<Body> list = new ArrayList<>();
         for(Body b : bodies){
             list.add(b);
         }
-
         HashSet<Body> set = new HashSet<>(list);
         for(Body body : set){
             String str = "Deleted";
@@ -216,15 +219,32 @@ public class PlayClassicState extends GameState{
                     Asteroid asteroid = (Asteroid) body.getUserData();
                     objectHandler.remove(asteroid);
                     try {
-                        if (randomizer.chanceBonus()) {
-                            Body bonusBody = bodyBuilder.createBonus(body.getPosition().x, body.getPosition().y);
+                        BonusType bonusType = randomizer.chanceBonusAsteroid();
+                        Body bonusBody = null;
+                        if(bonusType!= null)
+                        switch(bonusType) {
+                            case bonus_1:
+                                bonusBody = bodyBuilder.createBonus(body.getPosition().x, body.getPosition().y);
 
-                            Bonus b = new Bonus(bonusBody);
-                            bonusBody.setUserData(b);
-                            objectHandler.add(b);
+                                EnergyBonus eb = new EnergyBonus(bonusBody);
+                                bonusBody.setUserData(eb);
+                                objectHandler.add(eb);
+
+                                break;
+                            case bonus_2:
+                                bonusBody = bodyBuilder.createBonus(body.getPosition().x, body.getPosition().y);
+
+                                HealthBonus hb = new HealthBonus(bonusBody);
+                                bonusBody.setUserData(hb);
+                                objectHandler.add(hb);
+
+                                break;
+                                default:
+                                    break;
                         }
+
                     } catch (Exception e) {
-                        System.out.printf(e.toString() + "\n");
+                        Log.w("kill aster", e.toString());
                     }
 
 
@@ -237,56 +257,72 @@ public class PlayClassicState extends GameState{
                     objectHandler.remove(b1);
                     break;
                 case BULLET_EXPLOSIVE:
-
                     Bullet b = (Bullet) body.getUserData();
                     Vector2 bv2 = b.getPosition();
+                    System.out.println("x:" + bv2.x + " y:" + bv2.y);
 
                     for(Asteroid a : objectHandler.listAsteroid){
                         Vector2 v2 = a.getBody().getPosition();
-                        if(abs(bv2.x - v2.x) < 90)
-                            if(abs(bv2.y - v2.y) < 90){
+                        if(abs(bv2.x - v2.x) < 50)
+                            if(abs(bv2.y - v2.y) < 50){
                                 a.setHp(a.getHp() - b.getBulletModel().getDamage());
                                 if(a.getHp() <= 0){
-                                    world.destroyBody(a.getBody());
-                                    objectHandler.remove(a);
-
+                                   //world.destroyBody(a.getBody());
+                                   // objectHandler.remove(a);
+                                    explosionBodies.add(a.getBody());
                                 }
                             }
                     }
                     for(Enemy e : objectHandler.listEnemy){
                         Vector2 v2 = e.getBody().getPosition();
-                        if(abs(bv2.x - v2.x) < 90)
-                            if(abs(bv2.y - v2.y) < 90){
+                        if(abs(bv2.x - v2.x) < 50)
+                            if(abs(bv2.y - v2.y) < 50){
                                 e.setHp(e.getHp() - b.getBulletModel().getDamage());
                                 if(e.getHp() <= 0){
-                                    world.destroyBody(e.getBody());
-                                    objectHandler.remove(e);
 
+                                   // world.destroyBody(e.getBody());
+                                   // objectHandler.remove(e);
+                                    explosionBodies.add(e.getBody());
                                 }
                             }
                     }
 
                     objectHandler.remove(b);
 
+
+                    makeExplosion(body.getPosition(), 3f);
+
                     break;
                 case BONUS:
-                    objectHandler.remove((Bonus) body.getUserData());
+                    objectHandler.remove((Sprite) body.getUserData());
                     break;
                 case ENEMY:
                     objectHandler.remove((Enemy) body.getUserData());
+                    makeExplosion(body.getPosition(), 1.5f);
 
-                    Body bonusBody = bodyBuilder.createBonus(body.getPosition().x, body.getPosition().y);
+                    BonusType bonusType = randomizer.chanceBonusEnemy();
+                    Body bonusBody = null;
+                    if(bonusType!= null)
+                        switch(bonusType) {
+                            case bonus_1:
+                                bonusBody = bodyBuilder.createBonus(body.getPosition().x, body.getPosition().y);
 
-                    Bonus bonus = new Bonus(bonusBody);
-                    bonusBody.setUserData(bonus);
-                    objectHandler.add(bonus);
+                                EnergyBonus eb = new EnergyBonus(bonusBody);
+                                bonusBody.setUserData(eb);
+                                objectHandler.add(eb);
 
+                                break;
+                            case bonus_2:
+                                bonusBody = bodyBuilder.createBonus(body.getPosition().x, body.getPosition().y);
 
-                    Body explosionBody = bodyBuilder.createExplosion(body.getPosition().x, body.getPosition().y);
-                    Explosion e = new Explosion(explosionBody);
-                    explosionBody.setUserData(e);
-                    objectHandler.add(e);
+                                HealthBonus hb = new HealthBonus(bonusBody);
+                                bonusBody.setUserData(hb);
+                                objectHandler.add(hb);
 
+                                break;
+                            default:
+                                break;
+                        }
                     break;
                     default:
                         break;
@@ -297,6 +333,10 @@ public class PlayClassicState extends GameState{
         }
 
         cl.clearList();
+        for(Body body : explosionBodies){
+            cl.getBodiesToRemove().add(body);
+        }
+
         //TODO сделать потоки безопасными
 
         for(int i = 0; i < objectHandler.listAsteroid.size; ++i) {
@@ -391,6 +431,20 @@ public class PlayClassicState extends GameState{
 
         batch.setProjectionMatrix(maincamera.combined);
         doWorldStep(delta);
+    }
+
+    private void makeExplosion(Vector2 body, float scale){
+        Body explosionBody = bodyBuilder.createExplosion(body.x, body.y);
+        Explosion e = new Explosion(explosionBody, scale, "explosion_1");
+        explosionBody.setUserData(e);
+        objectHandler.add(e);
+    }
+
+    private void makeBlast(Vector2 body){
+        Body explosionBody = bodyBuilder.createExplosion(body.x, body.y);
+        Blast e = new Blast(explosionBody, 0.5f, "explosion_2");
+        explosionBody.setUserData(e);
+        objectHandler.add(e);
     }
 
     private float f1;
