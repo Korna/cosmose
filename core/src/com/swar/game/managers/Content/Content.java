@@ -1,4 +1,4 @@
-package com.swar.game.managers;
+package com.swar.game.managers.Content;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
@@ -12,26 +12,27 @@ import java.util.HashMap;
  */
 public class Content {
 
-    private HashMap<String, Texture> textures;
+    private ContentTexture contentTexture;
     private HashMap<String, Music> music;
     private HashMap<String, Sound> sounds;
 
     public Content(){
-        textures = new HashMap<String, Texture>();
+        contentTexture = new ContentTexture();
+
         music = new HashMap<String, Music>();
         sounds = new HashMap<String, Sound>();
     }
 
+
     public void loadTexture(String path, String key){
-        Texture tex = new Texture(Gdx.files.internal(path));
-        textures.put(key, tex);
+        contentTexture.load(path, key);
     }
-    public Texture getTexture(String key){
-        return textures.get(key);
+    public Texture getTexture(String key) {
+        return contentTexture.get(key);
     }
 
     public void disposeTexture(String key){
-        Texture tex = textures.get(key);
+        Texture tex = contentTexture.get(key);
         if(tex != null) tex.dispose();
     }
 

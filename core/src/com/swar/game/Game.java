@@ -9,7 +9,7 @@ import com.swar.game.Types.BonusType;
 import com.swar.game.Types.BulletType;
 import com.swar.game.Types.ShipType;
 import com.swar.game.Types.WeaponType;
-import com.swar.game.managers.Content;
+import com.swar.game.managers.Content.Content;
 import com.swar.game.managers.GameConfig;
 import com.swar.game.managers.GameStateManagement;
 
@@ -36,8 +36,6 @@ public class Game extends ApplicationAdapter {
 
 	@Override
 	public void create () {
-
-
 		res = new Content();
 		resLoader(res);
 

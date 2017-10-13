@@ -6,7 +6,7 @@ import com.badlogic.gdx.Input;
 /**
  * Created by Koma on 01.10.2017.
  */
-public class InterfaceManager {
+public class InterfaceManager implements  IInterfaceManager{
     boolean available;
     float playerHandle = 4.5f;
     float playerZone = 0.3f;
@@ -25,7 +25,7 @@ public class InterfaceManager {
 
         this.available = available;
     }
-
+    @Override
     public void inputUpdate(){
         horizontalForce = 0;
         verticalForce = 0;

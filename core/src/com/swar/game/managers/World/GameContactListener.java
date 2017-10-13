@@ -160,15 +160,14 @@ public class GameContactListener implements ContactListener {
             bodiesToRemove.add(ba);
             Bonus bonus = (Bonus) ba.getUserData();
             bonus.pickUp(player);
+            return;
         }
         if(isABFirst(BONUS, PLAYER_SHIP)){
             bodiesToRemove.add(bb);
             Bonus bonus = (Bonus) bb.getUserData();
             bonus.pickUp(player);
+            return;
         }
-
-
-
 
 
     }

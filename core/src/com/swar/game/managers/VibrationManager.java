@@ -8,17 +8,26 @@ import com.badlogic.gdx.Gdx;
 public enum VibrationManager {
     SHORT, MEDIUM, LONG;
 
-    public static void vibrate(VibrationManager vibrationManager){
+    public static int vibrate(VibrationManager vibrationManager){
+        int valShort = 10;
+        int valMedium = 20;
+        int valLong = 30;
+
+        int value = 0;
+
         switch(vibrationManager){
             case SHORT:
-                Gdx.input.vibrate(10);
+                value = valShort;
                 break;
             case MEDIUM:
-                Gdx.input.vibrate(20);
+                value = valMedium;
                 break;
             case LONG:
-                Gdx.input.vibrate(30);
+                value = valLong;
                 break;
         }
+
+        Gdx.input.vibrate(value);
+        return value;
     }
 }
