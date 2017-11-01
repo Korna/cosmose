@@ -1,13 +1,12 @@
 package com.swar.game.managers;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 
 /**
  * Created by Koma on 01.10.2017.
  */
-public class InterfaceManager implements  IInterfaceManager{
-    boolean available;
+public class InterfaceManagerAndroid implements IInterfaceManager{
+
     float playerHandle = 4.5f;
     float playerZone = 0.3f;
     float playerNear = 0.25f;
@@ -18,12 +17,12 @@ public class InterfaceManager implements  IInterfaceManager{
     public boolean shot = false;
     public boolean ability = false;
 
-    public InterfaceManager(boolean available, float playerZone, float playerHandle, float playerNear) {
+    public InterfaceManagerAndroid(float playerZone, float playerHandle, float playerNear) {
         this.playerHandle = playerHandle;
         this.playerZone = playerZone;
         this.playerNear = playerNear;
 
-        this.available = available;
+
     }
     @Override
     public void inputUpdate(){
@@ -32,7 +31,7 @@ public class InterfaceManager implements  IInterfaceManager{
         shot = false;
         ability = false;
 
-        if(available){
+
             float accelX = Gdx.input.getAccelerometerX();
             float accelY = Gdx.input.getAccelerometerY();
 
@@ -49,11 +48,11 @@ public class InterfaceManager implements  IInterfaceManager{
 
             }
 
-            if(accelY > (playerZone + playerHandle)){
+            if(calculateZone(playerZone, playerHandle, accelY)){
                 --verticalForce;
             }
             else
-            if(accelY < (-playerZone + playerHandle)){
+            if(calculateZone(-playerZone, playerHandle, accelY)){
                 ++verticalForce;
             }
 
@@ -84,40 +83,34 @@ public class InterfaceManager implements  IInterfaceManager{
             }
 
 
-        }else{
 
-
-            if(Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.A)){
-                --horizontalForce;
-
-            }
-            else
-            if(Gdx.input.isKeyPressed(Input.Keys.RIGHT) || Gdx.input.isKeyPressed(Input.Keys.D)){
-                ++horizontalForce;
-
-            }
-
-            if(Gdx.input.isKeyPressed(Input.Keys.UP) || Gdx.input.isKeyPressed(Input.Keys.W)){
-                ++verticalForce;
-            }
-            else
-            if(Gdx.input.isKeyPressed(Input.Keys.DOWN) || Gdx.input.isKeyPressed(Input.Keys.S)){
-                --verticalForce;
-            }
-
-            if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)){
-                shot = true;
-            }
-            if(Gdx.input.isKeyJustPressed(Input.Keys.ENTER)){
-                ability = true;
-            }
-
-        }
 
 
 
     }
 
+    @Override
+    public boolean getShot() {
+        return shot;
+    }
+
+    @Override
+    public boolean getAbility() {
+        return ability;
+    }
+
+    @Override
+    public float getVForce() {
+        return verticalForce;
+    }
+
+    @Override
+    public float getHFloat() {
+        return horizontalForce;
+    }
+    public boolean calculateZone(float zone, float handle, float pos) {
+        return pos < (zone + handle);
+    }
 
 
 }

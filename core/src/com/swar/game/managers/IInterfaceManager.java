@@ -6,5 +6,8 @@ package com.swar.game.managers;
 public interface IInterfaceManager {
 
     public void inputUpdate();
-
+    public boolean getShot();
+    public boolean getAbility();
+    public float getVForce();
+    public float getHFloat();
 }

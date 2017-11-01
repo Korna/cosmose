@@ -19,9 +19,7 @@ import com.swar.game.Models.Weapon;
 import com.swar.game.Types.BonusType;
 import com.swar.game.Types.State;
 import com.swar.game.entities.*;
-import com.swar.game.managers.GameConfig;
-import com.swar.game.managers.GameStateManagement;
-import com.swar.game.managers.InterfaceManager;
+import com.swar.game.managers.*;
 import com.swar.game.managers.World.BodyBuilder;
 import com.swar.game.managers.World.GameContactListener;
 import com.swar.game.managers.World.ObjectHandler;
@@ -49,7 +47,7 @@ public class PlaySurvivalState extends GameState{
 
 
     private ObjectHandler objectHandler;
-    private InterfaceManager interfaceManager;
+    private IInterfaceManager interfaceManager;
     private BodyBuilder bodyBuilder;
 
     boolean CONFIG_VIBRATION;
@@ -86,7 +84,10 @@ public class PlaySurvivalState extends GameState{
         available = Gdx.input.isPeripheralAvailable(Input.Peripheral.Accelerometer);
 
         objectHandler = new ObjectHandler(new Array<Asteroid>(), new Array<Bullet>(), new Array<Sprite>(), new Array<Enemy>(), world);
-        interfaceManager = new InterfaceManager(available, 0.5f, 4.5f, 0.25f);
+        if(available)
+            interfaceManager = new InterfaceManagerAndroid(0.5f, 4.5f, 0.25f);
+        else
+            interfaceManager = new InterfaceManagerPC();
 
     }
 
@@ -125,7 +126,7 @@ public class PlaySurvivalState extends GameState{
 
 
         interfaceManager.inputUpdate();
-        inputAction(interfaceManager.shot, interfaceManager.horizontalForce, interfaceManager.verticalForce);
+        inputAction(interfaceManager.getShot(), interfaceManager.getHFloat(), interfaceManager.getVForce());
 
         player.update(delta);
         for(Weapon weapon : player.ship.weapons){

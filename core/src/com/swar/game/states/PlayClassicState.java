@@ -20,10 +20,7 @@ import com.swar.game.entities.*;
 import com.swar.game.entities.Bonuses.EnergyBonus;
 import com.swar.game.entities.Bonuses.HealthBonus;
 import com.swar.game.entities.Bonuses.UpgradeBonus;
-import com.swar.game.managers.GameConfig;
-import com.swar.game.managers.GameStateManagement;
-import com.swar.game.managers.InterfaceManager;
-import com.swar.game.managers.VibrationManager;
+import com.swar.game.managers.*;
 import com.swar.game.managers.World.BodyBuilder;
 import com.swar.game.managers.World.GameContactListener;
 import com.swar.game.managers.World.ObjectHandler;
@@ -55,7 +52,7 @@ public class PlayClassicState extends GameState{
     private ObjectHandler objectHandler;
 
     private BodyBuilder bodyBuilder;
-    private InterfaceManager interfaceManager;
+    private IInterfaceManager interfaceManager;
     private boolean CONFIG_VIBRATION;
 
     private boolean available = false;
@@ -102,7 +99,11 @@ public class PlayClassicState extends GameState{
 
 
         objectHandler = new ObjectHandler(new Array<Asteroid>(), new Array<Bullet>(), new Array<Sprite>(), new Array<Enemy>(), world);
-        interfaceManager = new InterfaceManager(available, 0.5f, gameConfig.getPosY(), 0.25f);
+        if(available)
+            interfaceManager = new InterfaceManagerAndroid(0.5f, gameConfig.getPosY(), 0.25f);
+        else
+            interfaceManager = new InterfaceManagerPC();
+
         rangedColor(0);
     }
 
@@ -345,7 +346,7 @@ public class PlayClassicState extends GameState{
 
 
         interfaceManager.inputUpdate();
-        if(interfaceManager.ability){
+        if(interfaceManager.getAbility()){
             VibrationManager.vibrate(VibrationManager.LONG);
             abilityOn = true;
         }
@@ -354,7 +355,7 @@ public class PlayClassicState extends GameState{
         if(abilityOn)
             player.ship.ability.update(delta);
 
-        inputAction(interfaceManager.shot, interfaceManager.horizontalForce, interfaceManager.verticalForce, abilityOn);
+        inputAction(interfaceManager.getShot(), interfaceManager.getHFloat(), interfaceManager.getVForce(), abilityOn);
         player.update(delta);
 
 

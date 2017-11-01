@@ -9,6 +9,7 @@ import com.swar.game.Models.Moveable;
 import com.swar.game.entities.Asteroid;
 import com.swar.game.entities.Bonuses.Dissapearable;
 import com.swar.game.entities.Bonuses.EnergyBonus;
+import com.swar.game.entities.Bullet;
 import com.swar.game.entities.Enemy;
 import com.swar.game.entities.Explosion;
 import com.swar.game.managers.Content.Content;
@@ -144,8 +145,8 @@ public class BodyBuilderTest{
         BodyBuilder builder = new BodyBuilder(world);
 
         Body body = builder.createBulletPlayer(100, 100, null, null);
-
-        dynamicObject(world, body, 600f);
+        Moveable moveable = new Bullet(body, null, null, -600f);
+        dynamicObject(world, body, moveable.getSpeed());
     }
 
     @Test
@@ -163,7 +164,7 @@ public class BodyBuilderTest{
         World world = new World(new Vector2(0, 0), false);
         BodyBuilder builder = new BodyBuilder(world);
 
-        Body body = builder.createShadow(1, 1, 32, 32);
+        Body body = builder.createShadow(333, 333, 32, 32);
 
         dynamicObject(world, body, 0f);
     }
@@ -186,6 +187,19 @@ public class BodyBuilderTest{
         Body body = builder.createPlayer(1, 1, 32, 32);
 
         dynamicObject(world, body, 0f);
+    }
+
+    @Test
+    public void createMultipleObjects() throws Exception {
+        World world = new World(new Vector2(0, 0), false);
+        BodyBuilder builder = new BodyBuilder(world);
+
+        builder.createPlayer(1, 1, 32, 32);
+        builder.createBulletEnemy(1, 1);
+        builder.createBonus(30, 30);
+        builder.createExplosion(-2, -5);
+
+        assertEquals(4, world.getBodyCount());
     }
 
 }

@@ -33,8 +33,9 @@ public class Bullet extends Sprite implements Moveable{
         this.speedY = speedY;
 
         Texture tex;
-        tex = Game.res.getTexture(bulletType.name());
+
         try {
+            tex = Game.res.getTexture(bulletType.name());
             TextureRegion[] sprites = TextureRegion.split(tex, 32, 32)[0];
 
             setAnimation(sprites, 1 / 12f);
