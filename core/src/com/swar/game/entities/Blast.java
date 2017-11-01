@@ -8,7 +8,7 @@ import com.swar.game.Game;
 /**
  * Created by Koma on 11.10.2017.
  */
-public class Blast extends Sprite implements Dissapearable  {
+public class Blast extends Sprite implements com.swar.game.entities.Bonuses.Dissapearable {
     private float existTime = 0;
 
     public Blast (Body body, float scale, String texture) {

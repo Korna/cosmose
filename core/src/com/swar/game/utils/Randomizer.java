@@ -42,20 +42,15 @@ public class Randomizer {
     public BonusType chanceBonusAsteroid(){
         float chance = random.nextFloat();
         if(chance < 0.05)
-            return BonusType.bonus_1;
-        else
-            if(chance > 0.95)
-                return BonusType.bonus_2;
+            return getRandomBonus();
         return null;
     }
 
-    public BonusType chanceBonusEnemy(){
-        float chance = random.nextFloat();
-        if(chance < 0.5f)
-            return BonusType.bonus_1;
-        else
-            return BonusType.bonus_2;
+    public BonusType getRandomBonus(){
+        int max = BonusType.values().length - 1;
+        int index = random(max);
 
+       return BonusType.values()[index];
     }
     public static int getAsteroidTexture(){
         return random.nextInt(3) + 1;

@@ -8,6 +8,7 @@ import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 import com.swar.game.managers.GameConfig;
 
 
+
 public class AndroidLauncher extends AndroidApplication {
 	private SharedPreferences sPref;
 
@@ -58,7 +59,6 @@ public class AndroidLauncher extends AndroidApplication {
 		ed.putBoolean("vButtons", vButtons);
 		ed.putBoolean("vibration", vibration);
 		ed.putFloat("yPos", posY);
-
 		Log.e("saved", ":" + vButtons + vibration + posY);
 		ed.commit();
 	}

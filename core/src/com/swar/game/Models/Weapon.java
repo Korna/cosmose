@@ -10,6 +10,7 @@ public class Weapon {
     private int energyCost;
     public BulletModel bulletModel;
     private float reload;
+    //time after shot is delta time
     private float timeAfterShot;
 
     public Weapon(int energy, BulletModel bulletModel, float reload, float timeAfterShot) {

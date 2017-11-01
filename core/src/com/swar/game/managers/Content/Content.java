@@ -4,6 +4,10 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
+import com.swar.game.Types.BonusType;
+import com.swar.game.Types.BulletType;
+import com.swar.game.Types.ShipType;
+import com.swar.game.Types.WeaponType;
 
 import java.util.HashMap;
 
@@ -22,6 +26,7 @@ public class Content {
         music = new HashMap<String, Music>();
         sounds = new HashMap<String, Sound>();
     }
+
 
 
     public void loadTexture(String path, String key){
@@ -72,4 +77,49 @@ public class Content {
 
     }
 
+
+    public void resLoader(){
+        loadTexture("images/splash.png", "splash");
+        loadTexture("images/background.png", "background_1");
+        loadTexture("images/background_menu.png", "background_menu");
+        loadTexture("images/gameHud.png", "hudCredits");
+
+        loadTexture("images/hud.png", "hud");
+        loadTexture("images/bgs.png", "bgs");
+
+        for(WeaponType type : WeaponType.values()){
+            String name = type.name();
+            loadTexture("sprites/"+name+".png", name);
+        }
+
+        for(BulletType type : BulletType.values()){
+            String name = type.name();
+            loadTexture("sprites/" + name + ".png", name);
+        }
+
+
+
+        loadTexture("sprites/asteroid_1.png", "asteroid_1");
+        loadTexture("sprites/asteroid_2.png", "asteroid_2");
+        loadTexture("sprites/asteroid_3.png", "asteroid_3");
+        loadTexture("sprites/enemy.png", "enemy");
+
+
+        for(BonusType type : BonusType.values()){
+            String name = type.name();
+            loadTexture("sprites/" + name + ".png", name);
+        }
+
+        loadTexture("sprites/explosion_1.png", "explosion_1");
+        loadTexture("sprites/explosion_2.png", "explosion_2");
+
+        for(ShipType type : ShipType.values()){
+            String name = type.name();
+            loadTexture("sprites/" + name + ".png", name);
+            loadTexture("sprites/"+name+"_left.png", name +"_l");
+            loadTexture("sprites/"+name+"_right.png", name +"_r");
+        }
+
+
+    }
 }

@@ -1,33 +1,37 @@
-package com.swar.game.entities;
+package com.swar.game.entities.Bonuses;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.swar.game.Game;
+import com.swar.game.Models.Weapon;
+import com.swar.game.entities.Player;
+import com.swar.game.entities.Sprite;
 
 /**
- * Created by Koma on 03.09.2017.
+ * Created by Koma on 14.10.2017.
  */
-public class EnergyBonus extends Sprite implements Dissapearable, Bonus{
+public class UpgradeBonus extends Sprite implements Dissapearable, Effectable {
     private float existTime = 0;
 
-    public EnergyBonus(Body body) {
+    public UpgradeBonus(Body body){
         super(body);
 
         Texture tex;
-        tex = Game.res.getTexture("bonus_1");
+        tex = Game.res.getTexture("bonus_3");
         TextureRegion[] sprites = TextureRegion.split(tex, 32, 32)[0];
 
         setAnimation(sprites, 1 / 12f);
     }
-
+    @Override
     public float getExistTime() {
         return existTime;
     }
-
+    @Override
     public void setExistTime(float existTime) {
         this.existTime = existTime;
     }
+
 
     @Override
     public float getMaxExistTime() {
@@ -36,7 +40,8 @@ public class EnergyBonus extends Sprite implements Dissapearable, Bonus{
 
     @Override
     public void pickUp(Player player) {
-        int energy = player.ship.getEnergy() + 25;
-        player.ship.setEnergy(energy);
+        for(Weapon weapon : player.ship.weapons)
+            weapon.setReload(weapon.getReload()*0.8f);
+        player.addToken();
     }
 }

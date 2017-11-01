@@ -1,6 +1,7 @@
 package com.swar.game.states;
 
-import android.util.Log;
+//import android.util.Log;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
@@ -16,6 +17,9 @@ import com.swar.game.Types.BonusType;
 import com.swar.game.Types.ShipType;
 import com.swar.game.Types.State;
 import com.swar.game.entities.*;
+import com.swar.game.entities.Bonuses.EnergyBonus;
+import com.swar.game.entities.Bonuses.HealthBonus;
+import com.swar.game.entities.Bonuses.UpgradeBonus;
 import com.swar.game.managers.GameConfig;
 import com.swar.game.managers.GameStateManagement;
 import com.swar.game.managers.InterfaceManager;
@@ -97,7 +101,7 @@ public class PlayClassicState extends GameState{
         available = Gdx.input.isPeripheralAvailable(Input.Peripheral.Accelerometer);
 
 
-        objectHandler = new ObjectHandler(new Array<>(), new Array<>(), new Array<>(), new Array<>(), world);
+        objectHandler = new ObjectHandler(new Array<Asteroid>(), new Array<Bullet>(), new Array<Sprite>(), new Array<Enemy>(), world);
         interfaceManager = new InterfaceManager(available, 0.5f, gameConfig.getPosY(), 0.25f);
         rangedColor(0);
     }
@@ -112,17 +116,10 @@ public class PlayClassicState extends GameState{
     private final static int effectTime = 5;
     @Override
     public void update(float delta) {
-        player.timeInGame += delta;
-        if(player.timeInGame >= GAME_TIME){
-            player.timeInGame = 0;
-            instance.firstRun = false;
 
-            objectHandler.clearAll();
-
-            gsm.setState(State.HUB);
-
+        if(isEndOfCycle(delta))
             return;
-        }
+
 
 
         shadowMovement();
@@ -136,7 +133,7 @@ public class PlayClassicState extends GameState{
             }catch(IndexOutOfBoundsException e){
                 shadowPlayer.getBody().setLinearVelocity(0, 0);
                 try {
-                    Log.e("shadow:", "indexOutOfBOunds");
+                    //Log.e("shadow:", "indexOutOfBOunds");
                 }catch(RuntimeException re){
                     System.out.println("indexOutOfBOunds");
                 }
@@ -165,25 +162,7 @@ public class PlayClassicState extends GameState{
 
 
 
-
-        if(randomizer.chanceAsteroid()){
-            Body asteroidBody = bodyBuilder.createAsteroid(randomizer.getCoordinateAsteroid(),GAME_HEIGHT-32);
-
-            Asteroid a = new Asteroid(asteroidBody);
-            asteroidBody.setUserData(a);
-
-            objectHandler.add(a);
-        }
-        if(randomizer.chanceAsteroid()){
-            if(randomizer.chanceAsteroid()) {
-                Body enemyBody = bodyBuilder.createEnemy(randomizer.getCoordinateAsteroid(), GAME_HEIGHT-32);
-
-                Enemy e = new Enemy(enemyBody);
-                enemyBody.setUserData(e);
-
-                objectHandler.add(e);
-            }
-        }
+        eventGenerator();
 
 
         Array<Body> explosionBodies = new Array<>();
@@ -208,9 +187,9 @@ public class PlayClassicState extends GameState{
             }catch(Exception e){
                 try {
                     String clazz = body.getUserData().getClass().getName();
-                    Log.e("Class:" + clazz, e.toString());
+                   // Log.e("Class:" + clazz, e.toString());
                 }catch(NullPointerException npe){
-                    Log.e("npe", npe.toString());//когда взрываются уже отнесенные к удалению объекты
+                   // Log.e("npe", npe.toString());//когда взрываются уже отнесенные к удалению объекты
                 }
 
             }
@@ -244,7 +223,7 @@ public class PlayClassicState extends GameState{
                         }
 
                     } catch (Exception e) {
-                        Log.w("kill aster", e.toString());
+                      //  Log.w("kill aster", e.toString());
                     }
 
 
@@ -300,7 +279,7 @@ public class PlayClassicState extends GameState{
                     objectHandler.remove((Enemy) body.getUserData());
                     makeExplosion(body.getPosition(), 1.5f);
 
-                    BonusType bonusType = randomizer.chanceBonusEnemy();
+                    BonusType bonusType = randomizer.getRandomBonus();
                     Body bonusBody = null;
                     if(bonusType!= null)
                         switch(bonusType) {
@@ -320,6 +299,12 @@ public class PlayClassicState extends GameState{
                                 objectHandler.add(hb);
 
                                 break;
+                            case bonus_3:
+                                bonusBody = bodyBuilder.createBonus(body.getPosition().x, body.getPosition().y);
+
+                                UpgradeBonus ub = new UpgradeBonus(bonusBody);
+                                bonusBody.setUserData(ub);
+                                objectHandler.add(ub);
                             default:
                                 break;
                         }
@@ -337,56 +322,8 @@ public class PlayClassicState extends GameState{
             cl.getBodiesToRemove().add(body);
         }
 
-        //TODO сделать потоки безопасными
+        updateProgress(delta);
 
-        for(int i = 0; i < objectHandler.listAsteroid.size; ++i) {
-            Asteroid asteroid = objectHandler.listAsteroid.get(i);
-            Vector2 targetPosition = new Vector2(0, asteroid.speed *1.1f);
-            asteroid.getBody().setLinearVelocity(targetPosition);
-            asteroid.update(delta);
-        }
-
-        for(int i = 0; i < objectHandler.listEnemy.size; ++i) {
-            Enemy enemy = objectHandler.listEnemy.get(i);
-            Vector2 targetPosition = new Vector2(0, enemy.speed *0.9f);
-            enemy.getBody().setLinearVelocity(targetPosition);
-            enemy.update(delta);
-
-            if(randomizer.chanceAsteroid())
-                enemy.createObject(bodyBuilder, objectHandler);
-
-        }
-
-
-
-        for(int i = 0; i < objectHandler.listBulletPlayer.size; ++i){
-            Bullet bullet = objectHandler.listBulletPlayer.get(i);
-            bullet.getBody().setLinearVelocity(bullet.currentSpeed, bullet.getSpeed());
-            bullet.update(delta);
-        }
-
-
-
-
-        //удаление бонусов спустя время
-        for(int i = 0; i < objectHandler.listDisappearable.size; ++i){
-            Sprite bonus = objectHandler.listDisappearable.get(i);
-            bonus.update(delta);
-            Dissapearable dissapearable = (Dissapearable) bonus;
-
-
-            dissapearable.setExistTime(dissapearable.getExistTime() + delta);
-            if(dissapearable.getExistTime() > dissapearable.getMaxExistTime()){
-                world.destroyBody(bonus.getBody());
-
-                objectHandler.listDisappearable.removeIndex(i);
-                --i;
-            }else{
-                bonus.getBody().setLinearVelocity(0, -10);
-
-            }
-            bonus.update(delta);
-        }
 
         //работа с игроком
         float totalDamage = cl.getHp() +player.ship.armor;
@@ -431,6 +368,97 @@ public class PlayClassicState extends GameState{
 
         batch.setProjectionMatrix(maincamera.combined);
         doWorldStep(delta);
+    }
+    private void eventGenerator(){
+        if(randomizer.chanceAsteroid()){
+            Body asteroidBody = bodyBuilder.createAsteroid(randomizer.getCoordinateAsteroid(),GAME_HEIGHT-32);
+
+            Asteroid a = new Asteroid(asteroidBody);
+            asteroidBody.setUserData(a);
+
+            objectHandler.add(a);
+        }
+        if(randomizer.chanceAsteroid()){
+            if(randomizer.chanceAsteroid()) {
+                Body enemyBody = bodyBuilder.createEnemy(randomizer.getCoordinateAsteroid(), GAME_HEIGHT-32);
+
+                Enemy e = new Enemy(enemyBody);
+                enemyBody.setUserData(e);
+
+                objectHandler.add(e);
+            }
+        }
+
+    }
+
+    private boolean isEndOfCycle(float delta){
+        player.timeInGame += delta;
+        if(player.timeInGame >= GAME_TIME){
+            player.timeInGame = 0;
+            instance.firstRun = false;
+
+            objectHandler.clearAll();
+
+            gsm.setState(State.HUB);
+
+            return true;
+        }else
+            return false;
+    }
+
+    private void updateProgress(float delta){
+
+        //TODO сделать потоки безопасными
+
+        for(int i = 0; i < objectHandler.listAsteroid.size; ++i) {
+            Asteroid asteroid = objectHandler.listAsteroid.get(i);
+            Vector2 targetPosition = new Vector2(0, asteroid.speed *1.1f);
+            asteroid.getBody().setLinearVelocity(targetPosition);
+            asteroid.update(delta);
+        }
+
+        for(int i = 0; i < objectHandler.listEnemy.size; ++i) {
+            Enemy enemy = objectHandler.listEnemy.get(i);
+            Vector2 targetPosition = new Vector2(0, enemy.speed *0.9f);
+            enemy.getBody().setLinearVelocity(targetPosition);
+            enemy.update(delta);
+
+            if(randomizer.chanceAsteroid())
+                enemy.createObject(bodyBuilder, objectHandler);
+
+        }
+
+
+
+        for(int i = 0; i < objectHandler.listBulletPlayer.size; ++i){
+            Bullet bullet = objectHandler.listBulletPlayer.get(i);
+            bullet.getBody().setLinearVelocity(bullet.currentSpeed, bullet.getSpeed());
+            bullet.update(delta);
+        }
+
+
+
+
+        //удаление бонусов спустя время
+        for(int i = 0; i < objectHandler.listDisappearable.size; ++i){
+            Sprite bonus = objectHandler.listDisappearable.get(i);
+            bonus.update(delta);
+            com.swar.game.entities.Bonuses.Dissapearable dissapearable = (com.swar.game.entities.Bonuses.Dissapearable) bonus;
+
+
+            dissapearable.setExistTime(dissapearable.getExistTime() + delta);
+            if(dissapearable.getExistTime() > dissapearable.getMaxExistTime()){
+                world.destroyBody(bonus.getBody());
+
+                objectHandler.listDisappearable.removeIndex(i);
+                --i;
+            }else{
+                bonus.getBody().setLinearVelocity(0, -10);
+
+            }
+            bonus.update(delta);
+        }
+
     }
 
     private void makeExplosion(Vector2 body, float scale){
@@ -495,17 +523,14 @@ public class PlayClassicState extends GameState{
         if(DEBUG_RENDER)
             b2dr.render(world, maincamera.combined);
 
-
-
-
         objectHandler.render(batch);
 
         player.render(batch);
         if(!instance.firstRun && !shadowPlayer.isDead())
             shadowPlayer.render(batch);
 
-        hud.render(batch_hud);
 
+        hud.render(batch_hud);
     }
 
     private void inputAction(boolean shot, float horizontal, float vertical, boolean ability){

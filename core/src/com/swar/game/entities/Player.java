@@ -20,8 +20,7 @@ public class Player extends Sprite implements Creator {//все параметр
     private Texture shipTexture;//текстура корабля
 
     private int credits = 0;
-
-
+    private int tokens = 0;
 
     public float timeInGame = 0;
 
@@ -141,4 +140,11 @@ public class Player extends Sprite implements Creator {//все параметр
         return false;
     }
 
+    public void addToken(){
+        tokens++;
+    }
+
+    public void removeToken(){
+        tokens--;
+    }
 }

@@ -5,7 +5,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
 import com.swar.game.Models.Killable;
 import com.swar.game.entities.Asteroid;
-import com.swar.game.entities.Bonus;
+import com.swar.game.entities.Bonuses.Effectable;
 import com.swar.game.entities.Bullet;
 import com.swar.game.entities.Player;
 
@@ -158,13 +158,13 @@ public class GameContactListener implements ContactListener {
 
         if(isAAFirst(BONUS, PLAYER_SHIP)){
             bodiesToRemove.add(ba);
-            Bonus bonus = (Bonus) ba.getUserData();
+            Effectable bonus = (Effectable) ba.getUserData();
             bonus.pickUp(player);
             return;
         }
         if(isABFirst(BONUS, PLAYER_SHIP)){
             bodiesToRemove.add(bb);
-            Bonus bonus = (Bonus) bb.getUserData();
+            Effectable bonus = (Effectable) bb.getUserData();
             bonus.pickUp(player);
             return;
         }

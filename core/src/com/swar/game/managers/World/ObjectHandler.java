@@ -53,10 +53,13 @@ public class ObjectHandler {
     public void add(Bullet b){
         this.listBulletPlayer.add(b);
     }
-    public void add(EnergyBonus b){
+    public void add(com.swar.game.entities.Bonuses.EnergyBonus b){
         this.listDisappearable.add(b);
     }
-    public void add(HealthBonus b){
+    public void add(com.swar.game.entities.Bonuses.HealthBonus b){
+        this.listDisappearable.add(b);
+    }
+    public void add(com.swar.game.entities.Bonuses.UpgradeBonus b){
         this.listDisappearable.add(b);
     }
     public void add(Enemy e){
@@ -73,7 +76,7 @@ public class ObjectHandler {
     public void remove(Asteroid a){
         listAsteroid.removeValue(a, true);
     }
-    public void remove(EnergyBonus b){
+    public void remove(com.swar.game.entities.Bonuses.EnergyBonus b){
         listDisappearable.removeValue(b, true);
     }
     public void remove(Bullet b){

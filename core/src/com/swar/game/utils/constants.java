@@ -12,9 +12,22 @@ public class constants {
 
     public static final float PPM = 32;
 
-    public static final int GAME_WIDTH = Gdx.graphics.getWidth() / 4;
+    public static int GAME_WIDTH;
 
-    public static final int GAME_HEIGHT = Gdx.graphics.getHeight()/ 4;
+
+    public static int GAME_HEIGHT;
+
+    static{
+        try {
+            GAME_WIDTH = Gdx.graphics.getWidth() / 4;
+            GAME_HEIGHT = Gdx.graphics.getHeight() / 4;
+        }catch(NullPointerException npe){
+            GAME_WIDTH = 540;
+            GAME_HEIGHT = 960;
+        }
+
+    }
+
 
     public static final float STEP = 1 / 60f;
 

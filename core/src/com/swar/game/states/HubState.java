@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
@@ -34,10 +33,12 @@ public class HubState extends GameState {
 
     private Stage stage = new Stage();
 
-    private TextureRegion reg;
     private int currentPositionShip = 0;
-
     private int currentPositionWeapon = 0;
+    private int energyAdd = 0;
+    private int healAdd = 0;
+    private int tokenAdd = 0;
+
 
     private WeaponType chosenWeapon;
     private ShipType chosenShip;
@@ -65,7 +66,6 @@ public class HubState extends GameState {
         player = gsm.player;
         playerBody = gsm.playerBody;
 
-        this.reg = new TextureRegion(Game.res.getTexture("bgs"), 0, 0, GAME_WIDTH/2, GAME_HEIGHT/2);
 
 
         currentWeapon = new Image(Game.res.getTexture("weapon_" + String.valueOf(currentPositionWeapon + 1)));
@@ -349,12 +349,20 @@ public class HubState extends GameState {
 
 
 
-
         if(chosenShip.equals(ShipType.ship_4))
             ship.weapons.add(weapon);
 
-        player = new Player(playerBody, ship);//здесь по индексу передаём корабль из ДБ
-        player.initSprite(playerBody);
+        if(player == null){
+
+
+            player = new Player(playerBody, ship);//здесь по индексу передаём корабль из ДБ
+            player.initSprite(playerBody);
+        }else
+            if(player.isDead()){
+                player = new Player(playerBody, ship);//здесь по индексу передаём корабль из ДБ
+                player.initSprite(playerBody);
+            }
+
 
         gsm.cl = cl;
         gsm.world = world;

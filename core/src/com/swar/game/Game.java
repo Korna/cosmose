@@ -5,10 +5,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.swar.game.Types.BonusType;
-import com.swar.game.Types.BulletType;
-import com.swar.game.Types.ShipType;
-import com.swar.game.Types.WeaponType;
 import com.swar.game.managers.Content.Content;
 import com.swar.game.managers.GameConfig;
 import com.swar.game.managers.GameStateManagement;
@@ -37,7 +33,7 @@ public class Game extends ApplicationAdapter {
 	@Override
 	public void create () {
 		res = new Content();
-		resLoader(res);
+		res.resLoader();
 
 
 		batch = new SpriteBatch();
@@ -49,50 +45,6 @@ public class Game extends ApplicationAdapter {
 
 	}
 
-	private void resLoader(Content res){
-		res.loadTexture("images/splash.png", "splash");
-		res.loadTexture("images/background.png", "background_1");
-		res.loadTexture("images/background_menu.png", "background_menu");
-		res.loadTexture("images/gameHud.png", "hudCredits");
-
-		res.loadTexture("images/hud.png", "hud");
-		res.loadTexture("images/bgs.png", "bgs");
-
-		for(WeaponType type : WeaponType.values()){
-			String name = type.name();
-			res.loadTexture("sprites/"+name+".png", name);
-		}
-
-		for(BulletType type : BulletType.values()){
-			String name = type.name();
-			res.loadTexture("sprites/" + name + ".png", name);
-		}
-
-
-
-		res.loadTexture("sprites/asteroid_1.png", "asteroid_1");
-		res.loadTexture("sprites/asteroid_2.png", "asteroid_2");
-		res.loadTexture("sprites/asteroid_3.png", "asteroid_3");
-		res.loadTexture("sprites/enemy.png", "enemy");
-
-
-		for(BonusType type : BonusType.values()){
-			String name = type.name();
-			res.loadTexture("sprites/" + name + ".png", name);
-		}
-
-		res.loadTexture("sprites/explosion_1.png", "explosion_1");
-		res.loadTexture("sprites/explosion_2.png", "explosion_2");
-
-		for(ShipType type : ShipType.values()){
-			String name = type.name();
-			res.loadTexture("sprites/" + name + ".png", name);
-			res.loadTexture("sprites/"+name+"_left.png", name +"_l");
-			res.loadTexture("sprites/"+name+"_right.png", name +"_r");
-		}
-
-
-	}
 
 	@Override
 	public void render () {

@@ -85,7 +85,7 @@ public class PlaySurvivalState extends GameState{
         hud = new HUD(player, State.PLAYSURVIVAL);
         available = Gdx.input.isPeripheralAvailable(Input.Peripheral.Accelerometer);
 
-        objectHandler = new ObjectHandler(new Array<>(), new Array<>(), new Array<>(), new Array<>(), world);
+        objectHandler = new ObjectHandler(new Array<Asteroid>(), new Array<Bullet>(), new Array<Sprite>(), new Array<Enemy>(), world);
         interfaceManager = new InterfaceManager(available, 0.5f, 4.5f, 0.25f);
 
     }
@@ -171,7 +171,7 @@ public class PlaySurvivalState extends GameState{
                         case bonus_1:
                             bonusBody = bodyBuilder.createBonus(body.getPosition().x, body.getPosition().y);
 
-                            EnergyBonus eb = new EnergyBonus(bonusBody);
+                            com.swar.game.entities.Bonuses.EnergyBonus eb = new com.swar.game.entities.Bonuses.EnergyBonus(bonusBody);
                             bonusBody.setUserData(eb);
                             objectHandler.add(eb);
 
@@ -179,7 +179,7 @@ public class PlaySurvivalState extends GameState{
                         case bonus_2:
                             bonusBody = bodyBuilder.createBonus(body.getPosition().x, body.getPosition().y);
 
-                            HealthBonus hb = new HealthBonus(bonusBody);
+                            com.swar.game.entities.Bonuses.HealthBonus hb = new com.swar.game.entities.Bonuses.HealthBonus(bonusBody);
                             bonusBody.setUserData(hb);
                             objectHandler.add(hb);
 
@@ -195,7 +195,7 @@ public class PlaySurvivalState extends GameState{
                 try {
                     objectHandler.remove((Bullet) body.getUserData());
                 }catch(Exception bonus){
-                    objectHandler.remove((EnergyBonus) body.getUserData());
+                    objectHandler.remove((com.swar.game.entities.Bonuses.EnergyBonus) body.getUserData());
                 }
             }
 
@@ -232,7 +232,7 @@ public class PlaySurvivalState extends GameState{
         for(int i = 0; i < objectHandler.listDisappearable.size; ++i){
             Sprite bonus = objectHandler.listDisappearable.get(i);
             bonus.update(delta);
-            Dissapearable dissapearable = (Dissapearable) bonus;
+            com.swar.game.entities.Bonuses.Dissapearable dissapearable = (com.swar.game.entities.Bonuses.Dissapearable) bonus;
 
             dissapearable.setExistTime(dissapearable.getExistTime() + delta);
 

@@ -9,7 +9,7 @@ import java.util.HashMap;
  * Created by Koma on 13.10.2017.
  */
 public class ContentTexture implements IContent<Texture>{
-    private HashMap<String, Texture> textures;
+    private HashMap<String, Texture> textures = new HashMap<>();
 
     @Override
     public Texture get(String key) {

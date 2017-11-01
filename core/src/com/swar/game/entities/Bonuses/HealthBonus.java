@@ -1,14 +1,16 @@
-package com.swar.game.entities;
+package com.swar.game.entities.Bonuses;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.swar.game.Game;
+import com.swar.game.entities.Player;
+import com.swar.game.entities.Sprite;
 
 /**
  * Created by Koma on 12.10.2017.
  */
-public class HealthBonus  extends Sprite implements Dissapearable, Bonus{
+public class HealthBonus  extends Sprite implements Dissapearable, Effectable {
     private float existTime = 0;
 
     public HealthBonus(Body body) {

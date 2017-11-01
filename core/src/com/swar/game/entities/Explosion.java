@@ -8,7 +8,7 @@ import com.swar.game.Game;
 /**
  * Created by Koma on 11.10.2017.
  */
-public class Explosion extends Sprite implements Dissapearable  {
+public class Explosion extends Sprite implements com.swar.game.entities.Bonuses.Dissapearable {
     private float existTime = 0;
 
     public Explosion (Body body, float scale, String texture) {
@@ -17,9 +17,17 @@ public class Explosion extends Sprite implements Dissapearable  {
 
         Texture tex;
         tex = Game.res.getTexture(texture);
-        TextureRegion[] sprites = TextureRegion.split(tex, 32, 32)[0];
+        TextureRegion[] sprites;
+        try {
+            sprites = TextureRegion.split(tex, 32, 32)[0];
 
-        setAnimation(sprites, 1 / 12f);
+            setAnimation(sprites, 1 / 12f);
+        }catch(IllegalArgumentException iae){
+
+        }catch(NullPointerException npe){
+
+        }
+
     }
 
     public float getExistTime() {

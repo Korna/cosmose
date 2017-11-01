@@ -1,4 +1,4 @@
-package com.swar.game.entities;
+package com.swar.game.entities.Bonuses;
 
 /**
  * Created by Koma on 11.10.2017.
