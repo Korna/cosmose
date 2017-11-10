@@ -2,7 +2,6 @@ package com.swar.game;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.swar.game.managers.Content.Content;
@@ -41,19 +40,13 @@ public class Game extends ApplicationAdapter {
 		maincamera.setToOrtho(false, GAME_WIDTH/SCALE, GAME_HEIGHT/SCALE);
 
 		gsm = new GameStateManagement(this);
-
-
 	}
 
 
 	@Override
 	public void render () {
-
 		gsm.update(Gdx.graphics.getDeltaTime());
 		gsm.render();
-		if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE))
-			Gdx.app.exit();
-
 	}
 	
 	@Override

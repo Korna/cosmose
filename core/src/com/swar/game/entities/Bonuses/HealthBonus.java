@@ -18,9 +18,15 @@ public class HealthBonus  extends Sprite implements Dissapearable, Effectable {
 
         Texture tex;
         tex = Game.res.getTexture("bonus_2");
-        TextureRegion[] sprites = TextureRegion.split(tex, 32, 32)[0];
+        try {
+            TextureRegion[] sprites = TextureRegion.split(tex, 32, 32)[0];
 
-        setAnimation(sprites, 1 / 12f);
+            setAnimation(sprites, 1 / 12f);
+        }catch(NullPointerException npe){
+            System.out.println(npe.toString());
+        } catch(IllegalArgumentException iae){
+            System.out.println(iae.toString());
+        }
     }
 
     public float getExistTime() {

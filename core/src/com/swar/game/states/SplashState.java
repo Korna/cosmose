@@ -3,7 +3,6 @@ package com.swar.game.states;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
-import com.swar.game.Game;
 import com.swar.game.Types.State;
 import com.swar.game.managers.GameStateManagement;
 
@@ -17,13 +16,17 @@ public class SplashState  extends GameState{
 
     float acc = 0f;
     private float time = 0f;
-    private Texture tex_splash;
+    private Texture tex_splash = null;
 
 
     public SplashState(GameStateManagement gsm){
         super(gsm);
-        tex_splash = Game.res.getTexture("splash");
-       // tex_splash = new Texture("data/splash.png");
+
+        try {
+            //tex_splash = Game.res.getTexture("splash");
+        }catch(Exception npe){
+            npe.printStackTrace();
+        }
 
     }
 
@@ -50,7 +53,7 @@ public class SplashState  extends GameState{
 
     @Override
     public void dispose() {
-        tex_splash.dispose();
+        //tex_splash.dispose();
     }
 
 }

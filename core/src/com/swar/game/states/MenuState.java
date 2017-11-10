@@ -132,9 +132,6 @@ public class MenuState extends GameState {
         table.add(buttonExit).width(GAME_WIDTH/5).height(GAME_WIDTH/7);
         stage.addActor(table);
 
-
-
-
     }
 
     private void setPlay(){
@@ -165,6 +162,7 @@ public class MenuState extends GameState {
         this.batch.setProjectionMatrix(this.maincamera.combined);
         this.batch.begin();
         this.batch.draw(this.reg, 0.0F, 0.0F);
+
         this.batch.end();
 
         stage.draw();

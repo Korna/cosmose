@@ -31,9 +31,12 @@ public class BodyBuilderTest{
         content.resLoader();
         Game.res = content;
     }
-
+    World world;
+    BodyBuilder builder;
     @Before
     public void before(){
+        world = new World(new Vector2(0, 0), false);
+        builder = new BodyBuilder(world);
     }
 
     private void dynamicObject(World world, Body body, float speed){
@@ -101,8 +104,6 @@ public class BodyBuilderTest{
 
     @Test
     public void createAsteroid() throws Exception {
-        World world = new World(new Vector2(0, 0), false);
-        BodyBuilder builder = new BodyBuilder(world);
 
         Body body = builder.createAsteroid(1, 1);
         Moveable moveable = new Asteroid(body);
@@ -111,8 +112,7 @@ public class BodyBuilderTest{
 
     @Test
     public void createEnemy() throws Exception {
-        World world = new World(new Vector2(0, 0), false);
-        BodyBuilder builder = new BodyBuilder(world);
+
 
         Body body = builder.createEnemy(1, 1);
         Moveable moveable = new Enemy(body);
@@ -121,8 +121,6 @@ public class BodyBuilderTest{
 
     @Test
     public void createBonus() throws Exception {
-        World world = new World(new Vector2(0, 0), false);
-        BodyBuilder builder = new BodyBuilder(world);
 
         Body body = builder.createBonus(1, 1);
         Dissapearable dissapearable = new EnergyBonus(body);
@@ -131,8 +129,6 @@ public class BodyBuilderTest{
 
     @Test
     public void createExplosion() throws Exception {
-        World world = new World(new Vector2(0, 0), false);
-        BodyBuilder builder = new BodyBuilder(world);
 
         Body body = builder.createExplosion(1, 1);
         Dissapearable dissapearable = new Explosion(body, 1f, "explosion");
@@ -141,8 +137,6 @@ public class BodyBuilderTest{
 
     @Test
     public void createBulletPlayer() throws Exception {
-        World world = new World(new Vector2(0, 0), false);
-        BodyBuilder builder = new BodyBuilder(world);
 
         Body body = builder.createBulletPlayer(100, 100, null, null);
         Moveable moveable = new Bullet(body, null, null, -600f);
@@ -151,8 +145,6 @@ public class BodyBuilderTest{
 
     @Test
     public void createBulletEnemy() throws Exception {
-        World world = new World(new Vector2(0, 0), false);
-        BodyBuilder builder = new BodyBuilder(world);
 
         Body body = builder.createBulletEnemy(100, 100);
 
@@ -161,8 +153,6 @@ public class BodyBuilderTest{
 
     @Test
     public void createShadow() throws Exception {
-        World world = new World(new Vector2(0, 0), false);
-        BodyBuilder builder = new BodyBuilder(world);
 
         Body body = builder.createShadow(333, 333, 32, 32);
 
@@ -171,8 +161,6 @@ public class BodyBuilderTest{
 
     @Test
     public void createBorder() throws Exception {
-        World world = new World(new Vector2(0, 0), false);
-        BodyBuilder builder = new BodyBuilder(world);
 
         Body body = builder.createBorder(null, 320, 640, 32, 32);
 
@@ -181,8 +169,6 @@ public class BodyBuilderTest{
 
     @Test
     public void createPlayer() throws Exception {
-        World world = new World(new Vector2(0, 0), false);
-        BodyBuilder builder = new BodyBuilder(world);
 
         Body body = builder.createPlayer(1, 1, 32, 32);
 
@@ -191,8 +177,6 @@ public class BodyBuilderTest{
 
     @Test
     public void createMultipleObjects() throws Exception {
-        World world = new World(new Vector2(0, 0), false);
-        BodyBuilder builder = new BodyBuilder(world);
 
         builder.createPlayer(1, 1, 32, 32);
         builder.createBulletEnemy(1, 1);

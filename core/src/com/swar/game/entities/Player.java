@@ -32,15 +32,20 @@ public class Player extends Sprite implements Creator {//все параметр
 
         this.ship = ship;
 
+        try {
+            shipTexture = Game.res.getTexture(ship.getShipSprite());
+            setUpAnimation(shipTexture);
 
-        shipTexture = Game.res.getTexture(ship.getShipSprite());
+        }catch(IllegalArgumentException npe){
+            System.out.println(npe.toString());
+        }
 
 
-        setUpAnimation();
+
     }
 
-    private void setUpAnimation() {
-        TextureRegion[] sprites = TextureRegion.split(shipTexture, ship.getWidth(), ship.getHeight())[0];
+    private void setUpAnimation(Texture texture) throws NullPointerException, IllegalArgumentException{
+        TextureRegion[] sprites = TextureRegion.split(texture, ship.getWidth(), ship.getHeight())[0];
         setAnimation(sprites, 1 / 12f);
 
     }
@@ -52,7 +57,8 @@ public class Player extends Sprite implements Creator {//все параметр
         else
             shipTexture = Game.res.getTexture(ship.getShipSprite() + "_l");
 
-        setUpAnimation();
+
+        setUpAnimation(shipTexture);
     }
 
     public void ship_r() {
@@ -61,13 +67,14 @@ public class Player extends Sprite implements Creator {//все параметр
         else
             shipTexture = Game.res.getTexture(ship.getShipSprite() + "_r");
 
-        setUpAnimation();
+
+        setUpAnimation(shipTexture);
     }
 
     public void ship() {
         shipTexture = Game.res.getTexture(ship.getShipSprite());
 
-        setUpAnimation();
+        setUpAnimation(shipTexture);
 
     }
 

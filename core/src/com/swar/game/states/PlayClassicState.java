@@ -55,7 +55,7 @@ public class PlayClassicState extends GameState{
     private IInterfaceManager interfaceManager;
     private boolean CONFIG_VIBRATION;
 
-    private boolean available = false;
+
 
     final static int GAME_TIME = 60;
     final private Randomizer randomizer = new Randomizer();
@@ -83,6 +83,7 @@ public class PlayClassicState extends GameState{
         // body.setUserData(shadowPlayer);
 
         world.setContactListener(cl);
+
         b2dr = new Box2DDebugRenderer();
         batch = new SpriteBatch();
 
@@ -95,11 +96,12 @@ public class PlayClassicState extends GameState{
 
 
         hud = new HUD(player, State.PLAY);
-        available = Gdx.input.isPeripheralAvailable(Input.Peripheral.Accelerometer);
+
 
 
         objectHandler = new ObjectHandler(new Array<Asteroid>(), new Array<Bullet>(), new Array<Sprite>(), new Array<Enemy>(), world);
-        if(available)
+
+        if(Gdx.input.isPeripheralAvailable(Input.Peripheral.Accelerometer))//на андроиде ли или нет
             interfaceManager = new InterfaceManagerAndroid(0.5f, gameConfig.getPosY(), 0.25f);
         else
             interfaceManager = new InterfaceManagerPC();
@@ -115,6 +117,7 @@ public class PlayClassicState extends GameState{
     private boolean abilityOn = false;
     private int damageEffect = 0;
     private final static int effectTime = 5;
+
     @Override
     public void update(float delta) {
 

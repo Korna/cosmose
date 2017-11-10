@@ -1,6 +1,5 @@
 package com.swar.game.managers.Content;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 
 import java.util.HashMap;
@@ -21,7 +20,9 @@ public class ContentTexture implements IContent<Texture>{
     public boolean load(String path, String key) {
         Texture tex = null;
         try {
-            tex = new Texture(Gdx.files.internal(path));
+            //tex = new Texture(Gdx.files.internal(path));
+            tex = new Texture(path);
+
         }catch(Exception e){
             return false;
         }

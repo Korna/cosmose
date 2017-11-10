@@ -56,7 +56,7 @@ public class GameContactListener implements ContactListener {
         }
     };
 
-    public void beginContact(Contact c){
+    public void beginContact(Contact c) throws NullPointerException{
         fa = c.getFixtureA();
         fb = c.getFixtureB();
         Body ba = fa.getBody();
@@ -107,19 +107,22 @@ public class GameContactListener implements ContactListener {
             return;
         }
         if(isAAFirst(ASTEROID, BULLET_DESTROYABLE) || isAAFirst(ENEMY, BULLET_DESTROYABLE)){
-
             blasts.add(bb.getPosition());
             bodiesToRemove.add(bb);
 
 
             Killable asteroid = (Killable) ba.getUserData();
             Bullet bullet = (Bullet) bb.getUserData();
-            asteroid.setHp(asteroid.getHp() - bullet.getBulletModel().getDamage());
+            try {
+                asteroid.setHp(asteroid.getHp() - bullet.getBulletModel().getDamage());
 
-            if(asteroid.getHp() <= 0){
-                bodiesToRemove.add(ba);
-                 credits++;
-                score +=5;
+                if(asteroid.getHp() <= 0){
+                    bodiesToRemove.add(ba);
+                     credits++;
+                    score +=5;
+                }
+            }catch(NullPointerException npe){
+                System.out.println(npe.toString());
             }
 
             System.out.println("Got hit");
@@ -129,14 +132,17 @@ public class GameContactListener implements ContactListener {
                 || isABFirst(ASTEROID, BULLET_EXPLOSIVE) || isABFirst(ENEMY, BULLET_EXPLOSIVE)){
             bodiesToRemove.add(ba);
             Bullet bullet = (Bullet) ba.getUserData();
-
             Asteroid asteroid = (Asteroid) bb.getUserData();
-            asteroid.setHp(asteroid.getHp() - bullet.getBulletModel().getDamage());
 
-            if(asteroid.getHp() <= 0){
-                bodiesToRemove.add(bb);
-                credits++;
-                score +=5;
+            try {
+                asteroid.setHp(asteroid.getHp() - bullet.getBulletModel().getDamage());
+                if(asteroid.getHp() <= 0){
+                    bodiesToRemove.add(bb);
+                    credits++;
+                    score +=5;
+                }
+            }catch(NullPointerException npe){
+                System.out.println(npe.toString());
             }
 
             System.out.println("Got hit");
@@ -164,8 +170,10 @@ public class GameContactListener implements ContactListener {
         }
         if(isABFirst(BONUS, PLAYER_SHIP)){
             bodiesToRemove.add(bb);
-            Effectable bonus = (Effectable) bb.getUserData();
-            bonus.pickUp(player);
+
+                Effectable bonus = (Effectable) bb.getUserData();
+                bonus.pickUp(player);
+
             return;
         }
 

@@ -111,6 +111,9 @@ project(":core") {
         compile "com.kotcrab.vis:vis-runtime:0.3.2"
         compile "com.kotcrab.vis:vis-ui:1.2.4"
         compile "com.underwaterapps.overlap2druntime:overlap2d-runtime-libgdx:0.1.0"
+
+        testCompile 'junit:junit:4.11'
+        compile 'junit:junit:4.11'
     }
 }
 /*
