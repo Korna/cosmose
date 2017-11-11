@@ -93,7 +93,8 @@ public class Enemy extends Sprite implements Killable, Moveable, Creator{
 
     @Override
     public boolean createObject(BodyBuilder bodyBuilder, ObjectHandler objectHandler) {
-        if(time > period){
+        boolean shot = false;
+        if(time >= period){
             float x = getBody().getPosition().x;
             float y = getBody().getPosition().y;
 
@@ -105,12 +106,14 @@ public class Enemy extends Sprite implements Killable, Moveable, Creator{
             b = new Bullet(bulletBody, BulletType.bullet_1, BulletType.getbullet(BulletType.bullet_1), -3000);
             bulletBody.setUserData(b);
             objectHandler.add(b);
+
+            shot = true;
         }
-        if(time > period + 0.5f){
+        if(time >= period + 0.5f){
             time = 0;
         }
 
-        return true;
+        return shot;
 
 
     }

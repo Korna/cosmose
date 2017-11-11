@@ -1,10 +1,11 @@
-package com.swar.game;
+package game;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
+import com.swar.game.Game;
 import com.swar.game.Models.Moveable;
 import com.swar.game.entities.Asteroid;
 import com.swar.game.entities.Bonuses.Dissapearable;
@@ -24,17 +25,16 @@ import static junit.framework.Assert.assertTrue;
  * Created by Koma on 01.11.2017.
  */
 public class BodyBuilderTest{
-    static Content content = null;
+    World world;
+    BodyBuilder builder;
 
-    static{
+    @Before
+    public void before(){
+        Content content = null;
         content = new Content();
         content.resLoader();
         Game.res = content;
-    }
-    World world;
-    BodyBuilder builder;
-    @Before
-    public void before(){
+
         world = new World(new Vector2(0, 0), false);
         builder = new BodyBuilder(world);
     }
@@ -130,14 +130,13 @@ public class BodyBuilderTest{
     @Test
     public void createExplosion() throws Exception {
 
-        Body body = builder.createExplosion(1, 1);
+        Body body = builder.createExplosion(-1000, -1000);
         Dissapearable dissapearable = new Explosion(body, 1f, "explosion");
         dynamicObject(world, body, 0);
     }
 
     @Test
     public void createBulletPlayer() throws Exception {
-
         Body body = builder.createBulletPlayer(100, 100, null, null);
         Moveable moveable = new Bullet(body, null, null, -600f);
         dynamicObject(world, body, moveable.getSpeed());
@@ -145,7 +144,6 @@ public class BodyBuilderTest{
 
     @Test
     public void createBulletEnemy() throws Exception {
-
         Body body = builder.createBulletEnemy(100, 100);
 
         dynamicObject(world, body, 600f);

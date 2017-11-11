@@ -83,10 +83,17 @@ public class PlayClassicState extends GameState{
         // body.setUserData(shadowPlayer);
 
         world.setContactListener(cl);
-
-        b2dr = new Box2DDebugRenderer();
-        batch = new SpriteBatch();
-
+        try {
+            b2dr = new Box2DDebugRenderer();
+        }catch(NullPointerException npe){
+            System.out.println(npe.toString());
+            DEBUG_RENDER = false;
+        }
+        try {
+            batch = new SpriteBatch();
+        }catch(UnsatisfiedLinkError ule){
+            System.out.println(ule.toString());
+        }
 
         bodyBuilder.createBorder(BORDER_HORIZONTAL, GAME_WIDTH, 0, GAME_WIDTH, 1);
         bodyBuilder.createBorder(BORDER_HORIZONTAL, GAME_WIDTH, GAME_HEIGHT, GAME_WIDTH, 1);
@@ -101,10 +108,40 @@ public class PlayClassicState extends GameState{
 
         objectHandler = new ObjectHandler(new Array<Asteroid>(), new Array<Bullet>(), new Array<Sprite>(), new Array<Enemy>(), world);
 
-        if(Gdx.input.isPeripheralAvailable(Input.Peripheral.Accelerometer))//на андроиде ли или нет
-            interfaceManager = new InterfaceManagerAndroid(0.5f, gameConfig.getPosY(), 0.25f);
-        else
-            interfaceManager = new InterfaceManagerPC();
+        try{
+            if(Gdx.input.isPeripheralAvailable(Input.Peripheral.Accelerometer))//на андроиде ли или нет
+                interfaceManager = new InterfaceManagerAndroid(0.5f, gameConfig.getPosY(), 0.25f);
+            else
+                interfaceManager = new InterfaceManagerPC();
+        }catch (NullPointerException npe){
+            System.out.println(npe.toString());
+            interfaceManager = new IInterfaceManager() {
+                @Override
+                public void inputUpdate() {
+
+                }
+
+                @Override
+                public boolean getShot() {
+                    return false;
+                }
+
+                @Override
+                public boolean getAbility() {
+                    return false;
+                }
+
+                @Override
+                public float getVForce() {
+                    return 0;
+                }
+
+                @Override
+                public float getHFloat() {
+                    return 0;
+                }
+            };
+        }
 
         rangedColor(0);
     }
@@ -369,8 +406,11 @@ public class PlayClassicState extends GameState{
         player.ship.setEnergy(player.ship.getEnergy() + energy);
 
 
-
-        batch.setProjectionMatrix(maincamera.combined);
+        try {
+            batch.setProjectionMatrix(maincamera.combined);
+        }catch(NullPointerException npe){
+            System.out.println(npe.toString());
+        }
         doWorldStep(delta);
     }
     private void eventGenerator(){
@@ -565,9 +605,16 @@ public class PlayClassicState extends GameState{
     @Override
     public void dispose() {
         //tex_background.dispose();
-        b2dr.dispose();
-        world.dispose();
-
+        try {
+            b2dr.dispose();
+        }catch(NullPointerException npe){
+            System.out.println(npe.toString());
+        }
+        try{
+            world.dispose();
+        }catch(NullPointerException npe){
+            System.out.println(npe.toString());
+        }
     }
 
     public void cameraUpdate(float delta){

@@ -115,9 +115,6 @@ public class BodyBuilder extends Builder {
         FixtureDef fdef = new FixtureDef();
 
         //позиционирование выстрела
-
-
-
         CircleShape cshape = null;
         if(bulletType != BulletType.bullet_6){
             bdef.position.set(x, y);

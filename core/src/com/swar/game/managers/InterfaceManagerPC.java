@@ -19,7 +19,7 @@ public class InterfaceManagerPC implements  IInterfaceManager{
 
     }
     @Override
-    public void inputUpdate(){
+    public void inputUpdate() {
         horizontalForce = 0;
         verticalForce = 0;
         shot = false;

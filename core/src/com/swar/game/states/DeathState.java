@@ -28,7 +28,7 @@ import static com.swar.game.Types.State.MAINMENU;
  */
 public class DeathState extends GameState {
 
-    private Stage stage = new Stage();
+    private Stage stage;
     private Table table;
 
     int GAME_WIDTH;
@@ -42,8 +42,9 @@ public class DeathState extends GameState {
         this.GAME_WIDTH = constants.GAME_WIDTH * SCALE;
         this.GAME_HEIGHT = constants.GAME_HEIGHT * SCALE;
 
-
+        stage = new Stage();
         Gdx.input.setInputProcessor(stage);
+
         TextureAtlas mainMenuAtlas = new TextureAtlas("ui/ui.pack");//если есть менеджер ассетов - загрузите ваш атлас с изображениями
         Skin skin = new Skin(mainMenuAtlas);
         //creating font

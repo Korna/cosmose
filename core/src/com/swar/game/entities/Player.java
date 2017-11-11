@@ -36,7 +36,9 @@ public class Player extends Sprite implements Creator {//все параметр
             shipTexture = Game.res.getTexture(ship.getShipSprite());
             setUpAnimation(shipTexture);
 
-        }catch(IllegalArgumentException npe){
+        }catch(IllegalArgumentException iae){
+            System.out.println(iae.toString());
+        }catch(NullPointerException npe){
             System.out.println(npe.toString());
         }
 
@@ -45,9 +47,14 @@ public class Player extends Sprite implements Creator {//все параметр
     }
 
     private void setUpAnimation(Texture texture) throws NullPointerException, IllegalArgumentException{
-        TextureRegion[] sprites = TextureRegion.split(texture, ship.getWidth(), ship.getHeight())[0];
-        setAnimation(sprites, 1 / 12f);
-
+        try {
+            TextureRegion[] sprites = TextureRegion.split(texture, ship.getWidth(), ship.getHeight())[0];
+            setAnimation(sprites, 1 / 12f);
+        }catch(NullPointerException npe){
+            System.out.println(npe.toString());
+        }catch(IllegalArgumentException iae){
+            System.out.println(iae.toString());
+        }
     }
 
 
@@ -103,46 +110,51 @@ public class Player extends Sprite implements Creator {//все параметр
     public boolean createObject(BodyBuilder bodyBuilder, ObjectHandler objectHandler) {
         float x = getBody().getPosition().x;
         float y = getBody().getPosition().y;
-
-        String type = ship.weapons.get(0).bulletModel.pierceType.name();
-
+        String type;
+        try {
+            type = ship.weapons.get(0).bulletModel.pierceType.name();
+        }catch(IndexOutOfBoundsException ibe){
+            System.out.println(ibe.toString());
+            type = null;
+        }
 
         Body bulletBody;
         Bullet b;
 
-        if (ship.weapons.size() > 1) {
+        if(type != null)
+            if (ship.weapons.size() > 1) {
 
-            if (ship.weapons.get(0).getReload() < ship.weapons.get(0).getTimeAfterShot()) {
-                ship.weapons.get(0).setTimeAfterShot(0.0f);
-                bulletBody = bodyBuilder.createBulletPlayer(x - 12, y, type, null);
-                b = new Bullet(bulletBody, ship.weapons.get(0).bulletModel.bulletType, ship.weapons.get(0).bulletModel, 560);
-                bulletBody.setUserData(b);
-                objectHandler.add(b);
-                ship.setEnergy(ship.getEnergy() - ship.weapons.get(0).getEnergyCost());
+                if (ship.weapons.get(0).getReload() < ship.weapons.get(0).getTimeAfterShot()) {
+                    ship.weapons.get(0).setTimeAfterShot(0.0f);
+                    bulletBody = bodyBuilder.createBulletPlayer(x - 12, y, type, null);
+                    b = new Bullet(bulletBody, ship.weapons.get(0).bulletModel.bulletType, ship.weapons.get(0).bulletModel, 560);
+                    bulletBody.setUserData(b);
+                    objectHandler.add(b);
+                    ship.setEnergy(ship.getEnergy() - ship.weapons.get(0).getEnergyCost());
 
-                bulletBody = bodyBuilder.createBulletPlayer(x + 12, y, type, null);
-                b = new Bullet(bulletBody, ship.weapons.get(0).bulletModel.bulletType, ship.weapons.get(0).bulletModel, 560);
-                bulletBody.setUserData(b);
-                objectHandler.add(b);
-                ship.setEnergy(ship.getEnergy() - ship.weapons.get(0).getEnergyCost());
+                    bulletBody = bodyBuilder.createBulletPlayer(x + 12, y, type, null);
+                    b = new Bullet(bulletBody, ship.weapons.get(0).bulletModel.bulletType, ship.weapons.get(0).bulletModel, 560);
+                    bulletBody.setUserData(b);
+                    objectHandler.add(b);
+                    ship.setEnergy(ship.getEnergy() - ship.weapons.get(0).getEnergyCost());
 
-                return true;
+                    return true;
 
+                }
+
+            } else {
+                if (ship.weapons.get(0).getReload() < ship.weapons.get(0).getTimeAfterShot()) {
+                    ship.weapons.get(0).setTimeAfterShot(0.0f);
+                    bulletBody = bodyBuilder.createBulletPlayer(x, y + 5, type, null);
+                    b = new Bullet(bulletBody, ship.weapons.get(0).bulletModel.bulletType, ship.weapons.get(0).bulletModel, 560);
+                    bulletBody.setUserData(b);
+                    objectHandler.add(b);
+                    ship.setEnergy(ship.getEnergy() - ship.weapons.get(0).getEnergyCost());
+
+                    return true;
+
+                }
             }
-
-        } else {
-            if (ship.weapons.get(0).getReload() < ship.weapons.get(0).getTimeAfterShot()) {
-                ship.weapons.get(0).setTimeAfterShot(0.0f);
-                bulletBody = bodyBuilder.createBulletPlayer(x, y + 5, type, null);
-                b = new Bullet(bulletBody, ship.weapons.get(0).bulletModel.bulletType, ship.weapons.get(0).bulletModel, 560);
-                bulletBody.setUserData(b);
-                objectHandler.add(b);
-                ship.setEnergy(ship.getEnergy() - ship.weapons.get(0).getEnergyCost());
-
-                return true;
-
-            }
-        }
 
         return false;
     }

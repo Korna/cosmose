@@ -1,4 +1,4 @@
-package com.swar.game;
+package game;
 
 import com.swar.game.managers.GameConfig;
 import org.junit.Test;
@@ -9,7 +9,6 @@ import static junit.framework.Assert.assertEquals;
  * Created by Koma on 01.11.2017.
  */
 public class GameConfigTest {
-
 
     @Test
     public void isVibraion() throws Exception {

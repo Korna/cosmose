@@ -1,8 +1,9 @@
-package com.swar.game;
+package game;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
+import com.swar.game.Game;
 import com.swar.game.Models.AbilityExplode;
 import com.swar.game.Models.Ship;
 import com.swar.game.Models.Weapon;

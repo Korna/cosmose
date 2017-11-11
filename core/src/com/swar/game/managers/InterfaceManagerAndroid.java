@@ -48,11 +48,11 @@ public class InterfaceManagerAndroid implements IInterfaceManager{
 
             }
 
-            if(calculateZone(playerZone, playerHandle, accelY)){
+            if(accelY > (playerZone + playerHandle)){
                 --verticalForce;
             }
             else
-            if(calculateZone(-playerZone, playerHandle, accelY)){
+            if(accelY < (-playerZone + playerHandle)){
                 ++verticalForce;
             }
 
@@ -81,13 +81,13 @@ public class InterfaceManagerAndroid implements IInterfaceManager{
                 ability = true;
                 System.out.println("ability");
             }
-
-
-
-
-
-
     }
+
+    public boolean calculateZone(float zone, float handle, float pos) {
+
+        return pos < (zone + handle);
+    }
+
 
     @Override
     public boolean getShot() {
@@ -107,9 +107,6 @@ public class InterfaceManagerAndroid implements IInterfaceManager{
     @Override
     public float getHFloat() {
         return horizontalForce;
-    }
-    public boolean calculateZone(float zone, float handle, float pos) {
-        return pos < (zone + handle);
     }
 
 

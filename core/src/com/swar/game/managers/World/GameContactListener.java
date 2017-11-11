@@ -170,10 +170,12 @@ public class GameContactListener implements ContactListener {
         }
         if(isABFirst(BONUS, PLAYER_SHIP)){
             bodiesToRemove.add(bb);
-
+            try {
                 Effectable bonus = (Effectable) bb.getUserData();
                 bonus.pickUp(player);
-
+            }catch(NullPointerException npe){
+                System.out.println(npe.toString());
+            }
             return;
         }
 

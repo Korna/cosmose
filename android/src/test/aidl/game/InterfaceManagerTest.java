@@ -1,4 +1,4 @@
-package com.swar.game;
+package game;
 
 import com.swar.game.managers.InterfaceManagerAndroid;
 import org.junit.Test;
