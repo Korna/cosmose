@@ -20,19 +20,21 @@ public class HUD {
     public HUD(Player player, State state) {
 
         this.player = player;
+        try {
+            font = new BitmapFont();
+            font.setColor(Color.GOLD);
 
-        font = new BitmapFont();
-        font.setColor(Color.GOLD);
+            fontHp = new BitmapFont();
+            fontHp.setColor(Color.FIREBRICK);
 
-        fontHp = new BitmapFont();
-        fontHp.setColor(Color.FIREBRICK);
+            fontTime = new BitmapFont();
+            fontTime.setColor(Color.WHITE);
 
-        fontTime = new BitmapFont();
-        fontTime.setColor(Color.WHITE);
-
-        fontEnergy = new BitmapFont();
-        fontEnergy.setColor(Color.NAVY);
-
+            fontEnergy = new BitmapFont();
+            fontEnergy.setColor(Color.NAVY);
+        }catch(NullPointerException npe){
+            System.out.println(npe.toString());
+        }
         this.state = state;
     }
 

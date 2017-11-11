@@ -1,10 +1,13 @@
 package com.swar.game.managers.World;
 
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
 import com.swar.game.Models.Killable;
 import com.swar.game.entities.Asteroid;
+import com.swar.game.entities.Bonuses.Effectable;
 import com.swar.game.entities.Bullet;
+import com.swar.game.entities.Player;
 
 import static com.swar.game.utils.constants.*;
 
@@ -17,13 +20,18 @@ public class GameContactListener implements ContactListener {
     private Array<Body> bulletsToRemove;
     public Body shadowToRemove = null;
 
+    private Array<Vector2> blasts = new Array<>();
+
     private int hp = 0;
     private int credits = 0;
     private int score = 0;
     private int energy = 0;
 
-    public GameContactListener(){
+    private Player player;
+    public GameContactListener(Player player){
         super();
+
+        this.player = player;
 
         bodiesToRemove = new Array<Body>();
         bulletsToRemove = new Array<Body>();
@@ -48,7 +56,7 @@ public class GameContactListener implements ContactListener {
         }
     };
 
-    public void beginContact(Contact c){
+    public void beginContact(Contact c) throws NullPointerException{
         fa = c.getFixtureA();
         fb = c.getFixtureB();
         Body ba = fa.getBody();
@@ -99,17 +107,22 @@ public class GameContactListener implements ContactListener {
             return;
         }
         if(isAAFirst(ASTEROID, BULLET_DESTROYABLE) || isAAFirst(ENEMY, BULLET_DESTROYABLE)){
+            blasts.add(bb.getPosition());
             bodiesToRemove.add(bb);
 
 
             Killable asteroid = (Killable) ba.getUserData();
             Bullet bullet = (Bullet) bb.getUserData();
-            asteroid.setHp(asteroid.getHp() - bullet.getBulletModel().getDamage());
+            try {
+                asteroid.setHp(asteroid.getHp() - bullet.getBulletModel().getDamage());
 
-            if(asteroid.getHp() <= 0){
-                bodiesToRemove.add(ba);
-                 credits++;
-                score +=5;
+                if(asteroid.getHp() <= 0){
+                    bodiesToRemove.add(ba);
+                     credits++;
+                    score +=5;
+                }
+            }catch(NullPointerException npe){
+                System.out.println(npe.toString());
             }
 
             System.out.println("Got hit");
@@ -119,14 +132,17 @@ public class GameContactListener implements ContactListener {
                 || isABFirst(ASTEROID, BULLET_EXPLOSIVE) || isABFirst(ENEMY, BULLET_EXPLOSIVE)){
             bodiesToRemove.add(ba);
             Bullet bullet = (Bullet) ba.getUserData();
-
             Asteroid asteroid = (Asteroid) bb.getUserData();
-            asteroid.setHp(asteroid.getHp() - bullet.getBulletModel().getDamage());
 
-            if(asteroid.getHp() <= 0){
-                bodiesToRemove.add(bb);
-                credits++;
-                score +=5;
+            try {
+                asteroid.setHp(asteroid.getHp() - bullet.getBulletModel().getDamage());
+                if(asteroid.getHp() <= 0){
+                    bodiesToRemove.add(bb);
+                    credits++;
+                    score +=5;
+                }
+            }catch(NullPointerException npe){
+                System.out.println(npe.toString());
             }
 
             System.out.println("Got hit");
@@ -143,22 +159,25 @@ public class GameContactListener implements ContactListener {
             return;
         }
 
+        if(player==null)
+            System.out.println("NULL");
 
         if(isAAFirst(BONUS, PLAYER_SHIP)){
             bodiesToRemove.add(ba);
-            credits+=100;
-            score += 50;
-            energy += 25;
+            Effectable bonus = (Effectable) ba.getUserData();
+            bonus.pickUp(player);
+            return;
         }
         if(isABFirst(BONUS, PLAYER_SHIP)){
             bodiesToRemove.add(bb);
-            credits+=100;
-            score += 50;
-            energy += 25;
+            try {
+                Effectable bonus = (Effectable) bb.getUserData();
+                bonus.pickUp(player);
+            }catch(NullPointerException npe){
+                System.out.println(npe.toString());
+            }
+            return;
         }
-
-
-
 
 
     }
@@ -170,13 +189,15 @@ public class GameContactListener implements ContactListener {
         Body ba = fa.getBody();
         Body bb = fb.getBody();
 
-        if(isAAFirst(BULLET_DESTROYABLE, BORDER_HORIZONTAL) || isAAFirst(BULLET_PIERCING, BORDER_HORIZONTAL) || isAAFirst(BULLET_ENEMY, BORDER_HORIZONTAL)
+        if(isAAFirst(BULLET_DESTROYABLE, BORDER_HORIZONTAL) || isAAFirst(BULLET_PIERCING, BORDER_HORIZONTAL) || isAAFirst(BULLET_EXPLOSIVE, BORDER_HORIZONTAL)
+                || isAAFirst(BULLET_ENEMY, BORDER_HORIZONTAL)
                 || isAAFirst(ENEMY, BORDER_HORIZONTAL)
                 ){
             bodiesToRemove.add(ba);
             return;
         }
-        if(isABFirst(BULLET_DESTROYABLE, BORDER_HORIZONTAL) || isABFirst(BULLET_PIERCING, BORDER_HORIZONTAL) || isABFirst(BULLET_ENEMY, BORDER_HORIZONTAL)
+        if(isABFirst(BULLET_DESTROYABLE, BORDER_HORIZONTAL) || isABFirst(BULLET_PIERCING, BORDER_HORIZONTAL) || isABFirst(BULLET_EXPLOSIVE, BORDER_HORIZONTAL)
+                || isABFirst(BULLET_ENEMY, BORDER_HORIZONTAL)
                 || isABFirst(ENEMY, BORDER_HORIZONTAL)
                 ){
             bodiesToRemove.add(bb);
@@ -221,7 +242,9 @@ public class GameContactListener implements ContactListener {
 
 
     public Array<Body> getBodiesToRemove() { return bodiesToRemove; }
-
+    public Array<Vector2> getBlasts(){
+        return blasts;
+    }
     public int getScoreAndClear(){
         int scoreToReturn = this.score;
         this.score = 0;
@@ -237,7 +260,7 @@ public class GameContactListener implements ContactListener {
     }
 
     public void clearList(){
-       // bodiesToRemove.clear();
+        blasts = new Array<>();
         bodiesToRemove = new Array<>();
 
     }

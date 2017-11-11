@@ -26,7 +26,7 @@ import static com.swar.game.utils.constants.GAME_WIDTH;
 public class GameStateManagement {
     private final Game app;
 
-    public GameContactListener cl  = new GameContactListener();
+    public GameContactListener cl  = null;
     public Body playerBody;
     public Player player;
     public World world;
@@ -98,7 +98,7 @@ public class GameStateManagement {
                 playerBody = createPlayer(GAME_WIDTH / 4, 15, GAME_WIDTH/30, GAME_WIDTH/20);
                 Ship ship = ShipType.getShip(ShipType.ship_2);
                 ship.weapons.add(WeaponType.getWeapon(WeaponType.weapon_2));
-                player = new Player(playerBody, cl, ship);//здесь по индексу передаём корабль из ДБ
+                player = new Player(playerBody, ship);//здесь по индексу передаём корабль из ДБ
 
                 player.initSprite(playerBody);
 

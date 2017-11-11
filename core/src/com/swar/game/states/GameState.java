@@ -19,17 +19,15 @@ public abstract class GameState {
 
 
     protected GameState(GameStateManagement gsm){
-        System.out.println("loaded");
         this.gsm = gsm;
-        System.out.println("loaded2");
+
         this.app = gsm.application();
-        System.out.println("loaded3");
+
 
         batch = app.getBatch();
         batch_hud = app.getBatch();
 
         maincamera = app.getCamera();
-
     }
 
 

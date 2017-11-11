@@ -16,11 +16,10 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.swar.game.Models.RecordModel;
 import com.swar.game.Models.Weapon;
+import com.swar.game.Types.BonusType;
 import com.swar.game.Types.State;
 import com.swar.game.entities.*;
-import com.swar.game.managers.GameConfig;
-import com.swar.game.managers.GameStateManagement;
-import com.swar.game.managers.InterfaceManager;
+import com.swar.game.managers.*;
 import com.swar.game.managers.World.BodyBuilder;
 import com.swar.game.managers.World.GameContactListener;
 import com.swar.game.managers.World.ObjectHandler;
@@ -48,7 +47,7 @@ public class PlaySurvivalState extends GameState{
 
 
     private ObjectHandler objectHandler;
-    private InterfaceManager interfaceManager;
+    private IInterfaceManager interfaceManager;
     private BodyBuilder bodyBuilder;
 
     boolean CONFIG_VIBRATION;
@@ -56,11 +55,10 @@ public class PlaySurvivalState extends GameState{
 
     public PlaySurvivalState(GameStateManagement gsm) {
         super(gsm);
-        cl = new GameContactListener();
 
         world = gsm.world;
         player = gsm.player;
-
+        cl = new GameContactListener(player);
         GameConfig gameConfig = new GameConfig();
         CONFIG_VIBRATION = gameConfig.isVibraion();
 
@@ -75,8 +73,8 @@ public class PlaySurvivalState extends GameState{
 
         bodyBuilder.createBorder(BORDER_HORIZONTAL, GAME_WIDTH, 0, GAME_WIDTH, 1);
         bodyBuilder.createBorder(BORDER_HORIZONTAL, GAME_WIDTH, GAME_HEIGHT, GAME_WIDTH, 1);
-        bodyBuilder.createBorder("border", 1, GAME_HEIGHT, 1, GAME_HEIGHT);
-        bodyBuilder.createBorder("border", GAME_WIDTH, GAME_HEIGHT, 1, GAME_HEIGHT);
+        bodyBuilder.createBorder(BORDER_VERTICAL, 1, GAME_HEIGHT, 1, GAME_HEIGHT);
+        bodyBuilder.createBorder(BORDER_VERTICAL, GAME_WIDTH, GAME_HEIGHT, 1, GAME_HEIGHT);
 
 
 
@@ -85,8 +83,12 @@ public class PlaySurvivalState extends GameState{
         hud = new HUD(player, State.PLAYSURVIVAL);
         available = Gdx.input.isPeripheralAvailable(Input.Peripheral.Accelerometer);
 
-        objectHandler = new ObjectHandler(new Array<>(), new Array<>(), new Array<>(), new Array<>(), world);
-        interfaceManager = new InterfaceManager(available, 0.5f, 4.5f);
+        objectHandler = new ObjectHandler(new Array<Asteroid>(), new Array<Bullet>(), new Array<Sprite>(), new Array<Enemy>(), world);
+        if(available)
+            interfaceManager = new InterfaceManagerAndroid(0.5f, 4.5f, 0.25f);
+        else
+            interfaceManager = new InterfaceManagerPC();
+
     }
 
 
@@ -124,7 +126,7 @@ public class PlaySurvivalState extends GameState{
 
 
         interfaceManager.inputUpdate();
-        inputAction(interfaceManager.shot, interfaceManager.horizontalForce, interfaceManager.verticalForce);
+        inputAction(interfaceManager.getShot(), interfaceManager.getHFloat(), interfaceManager.getVForce());
 
         player.update(delta);
         for(Weapon weapon : player.ship.weapons){
@@ -163,21 +165,38 @@ public class PlaySurvivalState extends GameState{
             try{
                 objectHandler.remove((Asteroid) body.getUserData());
                 try {
-                    if (randomizer.chanceBonus()) {
-                        Body bonusBody = bodyBuilder.createBonus(body.getPosition().x, body.getPosition().y);
+                    BonusType bonusType = randomizer.chanceBonusAsteroid();
+                    Body bonusBody = null;
 
-                        Bonus b = new Bonus(bonusBody);
-                        bonusBody.setUserData(b);
-                        objectHandler.add(b);
+                    switch(bonusType) {
+                        case bonus_1:
+                            bonusBody = bodyBuilder.createBonus(body.getPosition().x, body.getPosition().y);
+
+                            com.swar.game.entities.Bonuses.EnergyBonus eb = new com.swar.game.entities.Bonuses.EnergyBonus(bonusBody);
+                            bonusBody.setUserData(eb);
+                            objectHandler.add(eb);
+
+                            break;
+                        case bonus_2:
+                            bonusBody = bodyBuilder.createBonus(body.getPosition().x, body.getPosition().y);
+
+                            com.swar.game.entities.Bonuses.HealthBonus hb = new com.swar.game.entities.Bonuses.HealthBonus(bonusBody);
+                            bonusBody.setUserData(hb);
+                            objectHandler.add(hb);
+
+                            break;
+                        default:
+                            break;
                     }
-                }catch(Exception e){
+
+                } catch (Exception e) {
                     System.out.printf(e.toString() + "\n");
                 }
             }catch(Exception e){
                 try {
                     objectHandler.remove((Bullet) body.getUserData());
                 }catch(Exception bonus){
-                    objectHandler.remove((Bonus) body.getUserData());
+                    objectHandler.remove((com.swar.game.entities.Bonuses.EnergyBonus) body.getUserData());
                 }
             }
 
@@ -211,21 +230,23 @@ public class PlaySurvivalState extends GameState{
 
 
         //удаление бонусов спустя время
-        for(int i = 0; i < objectHandler.listBonus.size; ++i){
-            Bonus bonus = objectHandler.listBonus.get(i);
-            bonus.setExistTime(bonus.getExistTime() + delta);
-            if(bonus.getExistTime() > 30){
+        for(int i = 0; i < objectHandler.listDisappearable.size; ++i){
+            Sprite bonus = objectHandler.listDisappearable.get(i);
+            bonus.update(delta);
+            com.swar.game.entities.Bonuses.Dissapearable dissapearable = (com.swar.game.entities.Bonuses.Dissapearable) bonus;
+
+            dissapearable.setExistTime(dissapearable.getExistTime() + delta);
+
+            if(dissapearable.getExistTime() > dissapearable.getMaxExistTime()){
                 world.destroyBody(bonus.getBody());
 
-                objectHandler.listBonus.removeIndex(i);
+                objectHandler.listDisappearable.removeIndex(i);
                 --i;
             }
 
         }
 
-        for(Bonus bonus :objectHandler.listBonus){
-            bonus.update(delta);
-        }
+
 
 
 

@@ -6,15 +6,28 @@ import com.badlogic.gdx.Gdx;
  * Created by Koma on 15.01.2017.
  */
 public class constants {
-    public static final boolean DEBUG_RENDER = false; //отрисовывать ли контуры столкновения объектов
+    public static boolean DEBUG_RENDER = false; //отрисовывать ли контуры столкновения объектов
 
     public static final String GAME_NAME = "Looper";
 
     public static final float PPM = 32;
 
-    public static final int GAME_WIDTH = Gdx.graphics.getWidth() / 4;
+    public static int GAME_WIDTH;
 
-    public static final int GAME_HEIGHT = Gdx.graphics.getHeight()/ 4;
+
+    public static int GAME_HEIGHT;
+
+    static{
+        try {
+            GAME_WIDTH = Gdx.graphics.getWidth() / 4;
+            GAME_HEIGHT = Gdx.graphics.getHeight() / 4;
+        }catch(NullPointerException npe){
+            GAME_WIDTH = 540;
+            GAME_HEIGHT = 960;
+        }
+
+    }
+
 
     public static final float STEP = 1 / 60f;
 
@@ -24,8 +37,8 @@ public class constants {
     public static final String BULLET_EXPLOSIVE = "BulletExplosive";
     public static final String BULLET_ENEMY = "BulletEnemy";
 
-
-    public static final String BONUS = "Bonus";
+    public static final String SFX = "SFX";
+    public static final String BONUS = "EnergyBonus";
     public static final String SHADOW = "Shadow";
     public static final String ASTEROID = "Asteroid";
     public static final String ENEMY = "Enemy";
@@ -33,6 +46,7 @@ public class constants {
     public static final String PLAYER_SHIP = "PlayerShip";
 
     public static final String BORDER_HORIZONTAL = "BorderHorizontal";
+    public static final String BORDER_VERTICAL = "BorderVertical";
 
     public static final int VIBRATION_LONG = 30;
 

@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
@@ -34,10 +33,12 @@ public class HubState extends GameState {
 
     private Stage stage = new Stage();
 
-    private TextureRegion reg;
     private int currentPositionShip = 0;
-
     private int currentPositionWeapon = 0;
+    private int energyAdd = 0;
+    private int healAdd = 0;
+    private int tokenAdd = 0;
+
 
     private WeaponType chosenWeapon;
     private ShipType chosenShip;
@@ -65,7 +66,6 @@ public class HubState extends GameState {
         player = gsm.player;
         playerBody = gsm.playerBody;
 
-        this.reg = new TextureRegion(Game.res.getTexture("bgs"), 0, 0, GAME_WIDTH/2, GAME_HEIGHT/2);
 
 
         currentWeapon = new Image(Game.res.getTexture("weapon_" + String.valueOf(currentPositionWeapon + 1)));
@@ -77,6 +77,7 @@ public class HubState extends GameState {
 
     Skin skin = new Skin(new TextureAtlas("ui/ui.pack"));
     private void buildTable(){
+        float SCALE = 1.2f;
         Table table;
         //creating font
         BitmapFont white = new BitmapFont(Gdx.files.internal("fonts/white16.fnt"));
@@ -96,6 +97,8 @@ public class HubState extends GameState {
 
 
         TextButton buttonBack = new TextButton("BACK", textButtonStyle);
+        buttonBack.setTransform(true);
+        buttonBack.setScale(SCALE);
         buttonBack.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -106,6 +109,8 @@ public class HubState extends GameState {
         buttonBack.pad(GAME_WIDTH/30);//отступ
 
         TextButton buttonPlay = new TextButton("PLAY", textButtonStyle);
+        buttonPlay.setTransform(true);
+        buttonPlay.setScale(SCALE);
         buttonPlay.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -116,16 +121,22 @@ public class HubState extends GameState {
 
 
         Button buttonPlus= new Button();
+        buttonPlus.setTransform(true);
+        buttonPlus.setScale(SCALE);
         buttonPlus.setStyle(setUpButtonStyle("button.plus"));
 
 
         Button buttonMinus = new Button();
+        buttonMinus.setTransform(true);
+        buttonMinus.setScale(SCALE);
         buttonMinus.setStyle(setUpButtonStyle("button.minus"));
 
         Button.ButtonStyle set = new Button.ButtonStyle();
         set.up = skin.getDrawable("button.ok.up");
         set.down = skin.getDrawable("button.ok.down");
         Button buttonSet = new Button();
+        buttonSet.setTransform(true);
+        buttonSet.setScale(SCALE);
         buttonSet.setStyle(set);
         buttonSet.addListener(new ClickListener() {
             @Override
@@ -143,6 +154,8 @@ public class HubState extends GameState {
         Button.ButtonStyle arrowLeft_ship = new Button.ButtonStyle();
         arrowLeft_ship.up = skin.getDrawable("button.left");
         Button buttonArrowLeft_ship = new Button();
+        buttonArrowLeft_ship.setTransform(true);
+        buttonArrowLeft_ship.setScale(SCALE);
         buttonArrowLeft_ship.setStyle(arrowLeft_ship);
         buttonArrowLeft_ship.addListener(new ClickListener() {
             @Override
@@ -161,6 +174,8 @@ public class HubState extends GameState {
         });
 
         Button buttonArrowRight_ship = new Button();
+        buttonArrowRight_ship.setTransform(true);
+        buttonArrowRight_ship.setScale(SCALE);
         buttonArrowRight_ship.setStyle(setUpButtonStyle("button.right"));
         buttonArrowRight_ship.addListener(new ClickListener() {
             @Override
@@ -179,6 +194,8 @@ public class HubState extends GameState {
         });
 
         Button buttonArrowLeft_weapon = new Button();
+        buttonArrowLeft_weapon.setTransform(true);
+        buttonArrowLeft_weapon.setScale(SCALE);
         buttonArrowLeft_weapon.setStyle(setUpButtonStyle("button.left"));
         buttonArrowLeft_weapon.addListener(new ClickListener() {
             @Override
@@ -197,6 +214,7 @@ public class HubState extends GameState {
         });
 
         Button buttonArrowRight_weapon = new Button();
+        setUpScale(buttonArrowRight_weapon, SCALE);
         buttonArrowRight_weapon.setStyle(setUpButtonStyle("button.right"));
         buttonArrowRight_weapon.addListener(new ClickListener() {
             @Override
@@ -264,6 +282,11 @@ public class HubState extends GameState {
         stage.addActor(table);
     }
 
+    private void setUpScale(Button button, float scale){
+        button.setTransform(true);
+        button.setScale(scale);
+    }
+
 
     private Button.ButtonStyle setUpButtonStyle(String name){
         Button.ButtonStyle plus = new Button.ButtonStyle();
@@ -326,12 +349,20 @@ public class HubState extends GameState {
 
 
 
-
         if(chosenShip.equals(ShipType.ship_4))
             ship.weapons.add(weapon);
 
-        player = new Player(playerBody, cl, ship);//здесь по индексу передаём корабль из ДБ
-        player.initSprite(playerBody);
+        if(player == null){
+
+
+            player = new Player(playerBody, ship);//здесь по индексу передаём корабль из ДБ
+            player.initSprite(playerBody);
+        }else
+            if(player.isDead()){
+                player = new Player(playerBody, ship);//здесь по индексу передаём корабль из ДБ
+                player.initSprite(playerBody);
+            }
+
 
         gsm.cl = cl;
         gsm.world = world;

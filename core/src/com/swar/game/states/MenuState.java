@@ -31,6 +31,8 @@ public class MenuState extends GameState {
     int GAME_WIDTH;
     int GAME_HEIGHT;
     int SCALE = 4;
+
+    float buttonScale = 1.5f;
     public MenuState(GameStateManagement gsm) {
         super(gsm);
         this.GAME_WIDTH = constants.GAME_WIDTH * SCALE;
@@ -58,7 +60,10 @@ public class MenuState extends GameState {
         textButtonStyle.font = white;
 
 
+
         TextButton buttonExit = new TextButton("EXIT", textButtonStyle);
+        buttonExit.setTransform(true);
+        buttonExit.setScale(buttonScale);
         buttonExit.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -68,6 +73,8 @@ public class MenuState extends GameState {
         });
 
         TextButton buttonPlay = new TextButton("Classic", textButtonStyle);
+        buttonPlay.setTransform(true);
+        buttonPlay.setScale(buttonScale);
         buttonPlay.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -75,7 +82,10 @@ public class MenuState extends GameState {
                 setPlay();
             }
         });
+
         TextButton buttonPlaySurvival = new TextButton("Survival", textButtonStyle);
+        buttonPlaySurvival.setTransform(true);
+        buttonPlaySurvival.setScale(buttonScale);
         buttonPlaySurvival.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -83,7 +93,10 @@ public class MenuState extends GameState {
                 setPlaySurvival();
             }
         });
+
         TextButton buttonSettings = new TextButton("Settings", textButtonStyle);
+        buttonSettings.setTransform(true);
+        buttonSettings.setScale(buttonScale);
         buttonSettings.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -105,22 +118,19 @@ public class MenuState extends GameState {
         table.add(heading).pad(GAME_WIDTH/5);
 
         table.row();
-        table.add(buttonPlay).width(GAME_WIDTH/5).height(GAME_WIDTH/7).pad(GAME_WIDTH/35);
+        table.add(buttonPlay).width(GAME_WIDTH/5).height(GAME_WIDTH/7).pad(GAME_WIDTH/30);
 
         table.row();
-        table.add(buttonPlaySurvival).width(GAME_WIDTH/5).height(GAME_WIDTH/7).pad(GAME_WIDTH/35);
+        table.add(buttonPlaySurvival).width(GAME_WIDTH/5).height(GAME_WIDTH/7).pad(GAME_WIDTH/30);
 
 
         table.row();
-        table.add(buttonSettings).width(GAME_WIDTH/5).height(GAME_WIDTH/7).pad(GAME_WIDTH/35);
+        table.add(buttonSettings).width(GAME_WIDTH/5).height(GAME_WIDTH/7).pad(GAME_WIDTH/30);
 
 
         table.row();
         table.add(buttonExit).width(GAME_WIDTH/5).height(GAME_WIDTH/7);
         stage.addActor(table);
-
-
-
 
     }
 
@@ -152,6 +162,7 @@ public class MenuState extends GameState {
         this.batch.setProjectionMatrix(this.maincamera.combined);
         this.batch.begin();
         this.batch.draw(this.reg, 0.0F, 0.0F);
+
         this.batch.end();
 
         stage.draw();

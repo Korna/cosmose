@@ -19,9 +19,7 @@ public class Sprite {
     public Sprite(Body body){
         this.body = body;
         animation = new Animation();
-
-        //this.scale = 1.2f/0.4f;
-        this.scale = 1.2f/0.8f;
+        this.scale = 1.5f;
     }
     public void initSprite(Body body){
         this.body = body;
@@ -30,6 +28,7 @@ public class Sprite {
 
     public void setAnimation(TextureRegion[] reg, float delay){
         animation.setFrames(reg, delay);
+
         width = reg[0].getRegionWidth()*scale;
         height = reg[0].getRegionHeight()*scale;
     }

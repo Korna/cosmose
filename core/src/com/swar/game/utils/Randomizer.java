@@ -1,5 +1,7 @@
 package com.swar.game.utils;
 
+import com.swar.game.Types.BonusType;
+
 import static com.badlogic.gdx.math.MathUtils.random;
 import static com.swar.game.utils.constants.GAME_WIDTH;
 
@@ -29,13 +31,27 @@ public class Randomizer {
         return random.nextInt(GAME_WIDTH + 10) - 10;
     }
 
-    public boolean chanceBonus(){
+    public boolean chanceBonusOld(){
         if(random.nextFloat() < 0.05)
             return true;
         else
             return false;
     }
 
+
+    public BonusType chanceBonusAsteroid(){
+        float chance = random.nextFloat();
+        if(chance < 0.05)
+            return getRandomBonus();
+        return null;
+    }
+
+    public BonusType getRandomBonus(){
+        int max = BonusType.values().length - 1;
+        int index = random(max);
+
+       return BonusType.values()[index];
+    }
     public static int getAsteroidTexture(){
         return random.nextInt(3) + 1;
     }

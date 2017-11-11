@@ -8,6 +8,7 @@ import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 import com.swar.game.managers.GameConfig;
 
 
+
 public class AndroidLauncher extends AndroidApplication {
 	private SharedPreferences sPref;
 
@@ -18,9 +19,11 @@ public class AndroidLauncher extends AndroidApplication {
 		super.onCreate(savedInstanceState);
 		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
 
-		boolean[] list = loadConfig();
+		boolean[] list = loadBoolConfig();
 
- 		instance = new Game(list[0], list[1]);
+		float posY = calibrate();
+
+ 		instance = new Game(list[0], list[1], posY);
 		initialize(instance, config);
 	}
 
@@ -31,8 +34,16 @@ public class AndroidLauncher extends AndroidApplication {
 		ed.commit();
 	}
 
+	float calibrate(){
+		float prefs;
 
-	boolean[] loadConfig(){
+		prefs = sPref.getFloat("yPos", 3.5f);
+
+		return prefs;
+	}
+
+
+	boolean[] loadBoolConfig(){
 		sPref = getPreferences(MODE_PRIVATE);
 		boolean vButtons = sPref.getBoolean("vButtons", false);
 		boolean vibration = sPref.getBoolean("vibration", true);
@@ -42,12 +53,13 @@ public class AndroidLauncher extends AndroidApplication {
 		return list;
 	}
 
-	void saveConfig(boolean vButtons, boolean vibration){
+	void saveConfig(boolean vButtons, boolean vibration, float posY){
 		sPref = getPreferences(MODE_PRIVATE);
 		SharedPreferences.Editor ed = sPref.edit();
 		ed.putBoolean("vButtons", vButtons);
 		ed.putBoolean("vibration", vibration);
-		Log.e("saved", ":" + vButtons + vibration);
+		ed.putFloat("yPos", posY);
+		Log.e("saved", ":" + vButtons + vibration + posY);
 		ed.commit();
 	}
 
@@ -56,7 +68,7 @@ public class AndroidLauncher extends AndroidApplication {
 		super.onDestroy();
 		clearFile();
 		GameConfig gameConfig = new GameConfig();
-		saveConfig(gameConfig.isvButtons(), gameConfig.isVibraion());
+		saveConfig(gameConfig.isvButtons(), gameConfig.isVibraion(), gameConfig.getPosY());
 
 	}
 
