@@ -8,7 +8,6 @@ import com.swar.game.Models.BulletModel;
 public enum BulletType {
     bullet_1, bullet_2, bullet_3, bullet_4, bullet_5,
     bullet_6
-
     ;
 
     public static BulletModel getbullet(BulletType bulletType){

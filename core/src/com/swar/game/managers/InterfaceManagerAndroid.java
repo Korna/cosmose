@@ -64,15 +64,14 @@ public class InterfaceManagerAndroid implements IInterfaceManager{
 
 
             //обработка абилки
-
             boolean fire = false;
             boolean fast = false;
-            final int fireAreaMax = Gdx.graphics.getWidth()/2; // This should be scaled to the size of the screen?
+            final int fireAreaMax = Gdx.graphics.getWidth()/2;
             final int fastAreaMin = Gdx.graphics.getWidth()/2;
             for (int i = 0; i < 2; i++) { // 20 is max number of touch points
                 if (Gdx.input.isTouched(i)) {
                     final int iX = Gdx.input.getX(i);
-                    fire = fire || (iX < fireAreaMax); // Touch coordinates are in screen space
+                    fire = fire || (iX < fireAreaMax);
                     fast = fast || (iX > fastAreaMin);
                 }
             }

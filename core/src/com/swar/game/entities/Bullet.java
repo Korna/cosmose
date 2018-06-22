@@ -32,17 +32,28 @@ public class Bullet extends Sprite implements Moveable{
         this.bulletModel = bulletModel;
         this.speedY = speedY;
 
-        Texture tex;
+        Texture tex = Game.res.getTexture(bulletType.name());
 
         try {
-            tex = Game.res.getTexture(bulletType.name());
+
+            System.out.print("height " + tex.getHeight());
+            System.out.print("height " + tex.getHeight());
+
             TextureRegion[] sprites = TextureRegion.split(tex, 32, 32)[0];
 
             setAnimation(sprites, 1 / 12f);
         }catch(IllegalArgumentException iae){
-
+            iae.printStackTrace();
+            System.out.print(iae);
+           // Log.d("error", iae.getMessage());
         }catch(NullPointerException npe){
+            npe.printStackTrace();
+            System.out.print(npe);
+           // Log.d("error", npe.getMessage());
+        }catch (IndexOutOfBoundsException ioob){
+            TextureRegion[] sprites = TextureRegion.split(tex, tex.getWidth(), tex.getHeight())[0];
 
+            setAnimation(sprites, 1 / 12f);
         }
 
     }

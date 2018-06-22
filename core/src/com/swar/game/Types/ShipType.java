@@ -14,14 +14,14 @@ public enum ShipType {
         Ship shipModel = null;
         switch(shipType){
             case ship_1:
-                shipModel = new Ship(150.0f, 100, 0,
+                shipModel = new Ship(125.0f, 100, 0,
                         "ship_1", "", new float[]{1, 2}, new float[]{1, 2},
                         1, 1, new ArrayList<Weapon>(), 32, 32, new AbilityStop() {
 
                 });
                 break;
             case ship_2:
-                shipModel = new Ship(200.0f, 100, 1,
+                shipModel = new Ship(150.0f, 100, 1,
                         "ship_2", "", new float[]{1,2}, new float[]{1,2},
                         1, 1, new ArrayList<Weapon>(), 32, 32, new AbilityJugg());
                 break;

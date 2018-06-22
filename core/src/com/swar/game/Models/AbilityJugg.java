@@ -29,9 +29,8 @@ public class AbilityJugg implements Ability, Creator{
     }
 
     @Override
-    public void update(float delta) {
+    public void update(float delta) {}
 
-    }
     public void setPosition(Vector2 position){
         this.position = position;
     }

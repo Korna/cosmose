@@ -165,7 +165,7 @@ public class PlayClassicState extends GameState{
 
         shadowMovement();
 
-        if(!instance.firstRun){
+        if(!instance.firstRun && false){//TODO make shadowplayer work properly
             float[] move = {0,0};
             try {
                 move = instance.moveHistoryList.get(index);
@@ -523,16 +523,16 @@ public class PlayClassicState extends GameState{
     private float f2;
     private float f3;
     private float[] rangedColor(float time){
-        float cfg = 0.9f;
-        float low = 0.3f;
+        float cfg = 0.3f;
+        float low = 0.05f;
 
-        f1 = random.nextFloat()*0.7f;
+        f1 = random.nextFloat()*0.1f;
         f1 = lowCheck(f1, low);
 
-        f2 = random.nextFloat()*0.6f;
+        f2 = random.nextFloat()*0.1f;
         f2 = lowCheck(f2, low);
 
-        f3 = random.nextFloat() * cfg;
+        f3 = random.nextFloat() * cfg + 0.2f;
         f3 = lowCheck(f3, low);
 
         return new float[]{f1, f2, f3};
@@ -543,12 +543,14 @@ public class PlayClassicState extends GameState{
             clr += low;
         return clr;
     }
-
+    private void setBackgroundColor(){
+        Gdx.gl.glClearColor(f1, f2, f3, 1f);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+    }
     @Override
     public void render() {
 
-        Gdx.gl.glClearColor(f1, f2, f3, 1f);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        setBackgroundColor();
 
         if(damageEffect > 0){
             Gdx.gl.glClearColor(1f, 1f, 1f, 1f);
@@ -570,7 +572,8 @@ public class PlayClassicState extends GameState{
         objectHandler.render(batch);
 
         player.render(batch);
-        if(!instance.firstRun && !shadowPlayer.isDead())
+
+        if(!instance.firstRun && !shadowPlayer.isDead() && false)//TODO make shadowplayer work properly
             shadowPlayer.render(batch);
 
 
