@@ -14,7 +14,7 @@ public enum BulletType {
         BulletModel bullet = null;
         switch(bulletType){
             case bullet_1:
-                bullet = new BulletModel(100.0f, true, true, PierceType.BulletPiercing, 5000, bulletType);
+                bullet = new BulletModel(75.0f, true, true, PierceType.BulletPiercing, 10000, bulletType);
                 break;
             case bullet_2:
                 bullet = new BulletModel(50.0f, false, false, PierceType.BulletDestroyable, 3000, bulletType);

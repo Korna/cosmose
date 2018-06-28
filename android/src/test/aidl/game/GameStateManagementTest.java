@@ -54,7 +54,7 @@ public class GameStateManagementTest {
 
     @Test
     public void testUpdateWorldForSingleObject() throws Exception {
-        gameStateManagement.setState(State.PLAY);
+        gameStateManagement.setState(State.PLAY_CLASSIC);
 
         Body body = buildObject(gameStateManagement.world);
         Vector2 pos = body.getPosition();
@@ -72,7 +72,7 @@ public class GameStateManagementTest {
     }
     @Test
     public void testUpdateWorldForMultipleObjects() throws Exception {
-        gameStateManagement.setState(State.PLAY);
+        gameStateManagement.setState(State.PLAY_CLASSIC);
 
         Body body = buildObject(gameStateManagement.world);
         Vector2 pos = body.getPosition();
@@ -104,7 +104,7 @@ public class GameStateManagementTest {
 
     @Test
     public void setState() throws Exception {
-        gameStateManagement.setState(State.PLAY);
+        gameStateManagement.setState(State.PLAY_CLASSIC);
         dispose();
     }
 

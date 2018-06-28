@@ -40,8 +40,10 @@ public class UpgradeBonus extends Sprite implements Dissapearable, Effectable {
 
     @Override
     public void pickUp(Player player) {
-        for(Weapon weapon : player.ship.weapons)
-            weapon.setReload(weapon.getReload()*0.8f);
+        for(Weapon weapon : player.ship.weapons) {
+            weapon.setReload(weapon.getReload() * 0.95f);
+            weapon.setEnergyCost(weapon.getEnergyCost() * 0.9f);
+        }
         player.addToken();
     }
 }

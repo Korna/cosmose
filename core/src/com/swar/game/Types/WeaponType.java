@@ -14,19 +14,19 @@ public enum WeaponType {
 
         switch(weaponType){
             case weapon_1:
-                weapon = new Weapon(5, BulletType.getbullet(BulletType.bullet_1), 1.0f, 0.0f);
+                weapon = new Weapon(5, BulletType.getbullet(BulletType.bullet_1), 0.9f, 0.0f);
                 break;
             case weapon_2:
                 weapon = new Weapon(2, BulletType.getbullet(BulletType.bullet_2), 0.1f, 0.0f);
                 break;
             case weapon_3:
-                weapon = new Weapon(10, BulletType.getbullet(BulletType.bullet_3), 0.5f, 0.0f);
+                weapon = new Weapon(10, BulletType.getbullet(BulletType.bullet_3), 0.75f, 0.0f);
                 break;
             case weapon_4:
-                weapon = new Weapon(1, BulletType.getbullet(BulletType.bullet_4), 0.08f, 0.0f);
+                weapon = new Weapon(1, BulletType.getbullet(BulletType.bullet_4), 0.075f, 0.0f);
                 break;
             case weapon_5:
-                weapon = new Weapon(5, BulletType.getbullet(BulletType.bullet_5), 1.0f, 0.0f);
+                weapon = new Weapon(5, BulletType.getbullet(BulletType.bullet_5), 1.5f, 0.0f);
                 break;
         }
 

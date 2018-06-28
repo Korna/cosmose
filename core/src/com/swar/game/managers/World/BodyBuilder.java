@@ -27,7 +27,7 @@ public class BodyBuilder extends Builder {
         bdef.position.set(x, y);
 
         CircleShape cshape = new CircleShape();
-        cshape.setRadius(GAME_WIDTH/18);
+        cshape.setRadius(GAME_WIDTH/17);
 
         fdef.shape = cshape;
         fdef.filter.categoryBits = BIT_ENEMY;
@@ -120,7 +120,7 @@ public class BodyBuilder extends Builder {
             bdef.position.set(x, y);
 
             cshape = new CircleShape();
-            cshape.setRadius(GAME_WIDTH/190);
+            cshape.setRadius(GAME_WIDTH/185);
             fdef.shape = cshape;
         }
         else{
@@ -154,7 +154,7 @@ public class BodyBuilder extends Builder {
         //позиционирование выстрела
         bdef.position.set(x, y);
         CircleShape cshape = new CircleShape();
-        cshape.setRadius(GAME_WIDTH/190);
+        cshape.setRadius(GAME_WIDTH/185);
         fdef.shape = cshape;
         fdef.isSensor = true;
         fdef.filter.categoryBits = BIT_BULLET;

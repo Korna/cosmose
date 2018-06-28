@@ -145,7 +145,7 @@ public class MenuState extends GameState {
 
     private void setPlaySurvival(){
         stage.dispose();
-        gsm.setState(State.PLAYSURVIVAL);
+        gsm.setState(State.HUB_SURVIVAL);
     }
 
 

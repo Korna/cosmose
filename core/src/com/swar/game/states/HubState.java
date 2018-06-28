@@ -54,11 +54,14 @@ public class HubState extends GameState {
     int GAME_WIDTH;
     int GAME_HEIGHT;
     int SCALE = 4;
-    public HubState(GameStateManagement gsm) {
+    State playState;
+    public HubState(GameStateManagement gsm, State state) {
         super(gsm);
         this.GAME_WIDTH = constants.GAME_WIDTH * SCALE;
         this.GAME_HEIGHT = constants.GAME_HEIGHT * SCALE;
         Gdx.input.setInputProcessor(stage);
+
+        playState = state;
 
         cl = gsm.cl;
         world = new World(new Vector2(0, 0), false);//потому как создается игрок в хабе
@@ -108,7 +111,7 @@ public class HubState extends GameState {
         });
         buttonBack.pad(GAME_WIDTH/30);//отступ
 
-        TextButton buttonPlay = new TextButton("PLAY", textButtonStyle);
+        TextButton buttonPlay = new TextButton("PLAY_CLASSIC", textButtonStyle);
         buttonPlay.setTransform(true);
         buttonPlay.setScale(SCALE);
         buttonPlay.addListener(new ClickListener() {
@@ -298,7 +301,7 @@ public class HubState extends GameState {
 
     private void setPlay() {
         stage.dispose();
-        gsm.setState(State.PLAY);
+        gsm.setState(playState);
     }
 
     private void setBack() {

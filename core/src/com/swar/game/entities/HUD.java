@@ -25,13 +25,13 @@ public class HUD {
             font.setColor(Color.GOLD);
 
             fontHp = new BitmapFont();
-            fontHp.setColor(Color.FIREBRICK);
+            fontHp.setColor(new Color(0.7f, 0, 0.1f, 1));
 
             fontTime = new BitmapFont();
             fontTime.setColor(Color.WHITE);
 
             fontEnergy = new BitmapFont();
-            fontEnergy.setColor(Color.NAVY);
+            fontEnergy.setColor(new Color(0.1f, 0, 0.7f, 1));
         }catch(NullPointerException npe){
             System.out.println(npe.toString());
         }
@@ -42,12 +42,12 @@ public class HUD {
 
         sb.begin();
         switch(state){
-            case PLAY:
-                font.draw(sb, String.valueOf(player.getCredits()) + "$", GAME_WIDTH / 3, GAME_HEIGHT - (GAME_HEIGHT  / 32));
+            case PLAY_CLASSIC:
+                font.draw(sb, String.valueOf(player.getCredits()) + " $", GAME_WIDTH / 3, GAME_HEIGHT - (GAME_HEIGHT  / 32));
             case PLAYSURVIVAL:
-                fontHp.draw(sb, String.valueOf(player.ship.getHp()) + "hull", GAME_WIDTH / 16, GAME_HEIGHT - (GAME_HEIGHT  / 32));
-                fontEnergy.draw(sb, String.valueOf(player.ship.getEnergy()) + "energy", GAME_WIDTH / 16, GAME_HEIGHT - (GAME_HEIGHT  / 16));
-                fontTime.draw(sb, String.valueOf(((int) player.timeInGame) + " sec"), GAME_WIDTH / 2, GAME_HEIGHT - (GAME_HEIGHT  / 32));
+                fontHp.draw(sb, String.valueOf(player.ship.getHp()) + " HP", GAME_WIDTH / 16, GAME_HEIGHT - (GAME_HEIGHT  / 32));
+                fontEnergy.draw(sb, String.valueOf((int) player.ship.getEnergy()) + " ENERGY", GAME_WIDTH / 16, GAME_HEIGHT - (GAME_HEIGHT  / 16));
+                fontTime.draw(sb, String.valueOf(((int) player.timeInGame) + " SEC"), GAME_WIDTH / 2, GAME_HEIGHT - (GAME_HEIGHT  / 32));
                 break;
 
         }

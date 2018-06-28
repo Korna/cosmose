@@ -7,7 +7,7 @@ package com.swar.game.Models;
  */
 public class Weapon {
 
-    private int energyCost;
+    private float energyCost;
     public BulletModel bulletModel;
     private float reload;
     //time after shot is delta time
@@ -36,7 +36,11 @@ public class Weapon {
         this.timeAfterShot = timeAfterShot;
     }
 
-    public int getEnergyCost() {
+    public float getEnergyCost() {
         return energyCost;
+    }
+
+    public void setEnergyCost(float energyCost) {
+        this.energyCost = energyCost;
     }
 }

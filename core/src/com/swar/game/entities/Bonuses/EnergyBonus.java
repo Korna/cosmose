@@ -45,7 +45,7 @@ public class EnergyBonus extends Sprite implements Dissapearable, Effectable {
 
     @Override
     public void pickUp(Player player) {
-        int energy = player.ship.getEnergy() + 25;
+        float energy = player.ship.getEnergy() + 25;
         player.ship.setEnergy(energy);
     }
 }

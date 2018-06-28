@@ -4,6 +4,9 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.swar.game.entities.*;
+import com.swar.game.entities.Bonuses.EnergyBonus;
+import com.swar.game.entities.Bonuses.HealthBonus;
+import com.swar.game.entities.Bonuses.UpgradeBonus;
 
 /**
  * Created by Koma on 02.10.2017.
@@ -53,13 +56,13 @@ public class ObjectHandler {
     public void add(Bullet b){
         this.listBulletPlayer.add(b);
     }
-    public void add(com.swar.game.entities.Bonuses.EnergyBonus b){
+    public void add(EnergyBonus b){
         this.listDisappearable.add(b);
     }
-    public void add(com.swar.game.entities.Bonuses.HealthBonus b){
+    public void add(HealthBonus b){
         this.listDisappearable.add(b);
     }
-    public void add(com.swar.game.entities.Bonuses.UpgradeBonus b){
+    public void add(UpgradeBonus b){
         this.listDisappearable.add(b);
     }
     public void add(Enemy e){
@@ -76,7 +79,7 @@ public class ObjectHandler {
     public void remove(Asteroid a){
         listAsteroid.removeValue(a, true);
     }
-    public void remove(com.swar.game.entities.Bonuses.EnergyBonus b){
+    public void remove(EnergyBonus b){
         listDisappearable.removeValue(b, true);
     }
     public void remove(Bullet b){

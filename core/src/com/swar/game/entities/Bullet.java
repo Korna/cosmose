@@ -63,6 +63,9 @@ public class Bullet extends Sprite implements Moveable{
         animation.update(delta);
         ++bdt;
         if(bulletModel.wavy) {
+
+           // currentSpeed = (float) Math.sin(bdt);
+            /*
             bdt %= 5;
             switch (bdt) {
                 case 0:
@@ -82,11 +85,11 @@ public class Bullet extends Sprite implements Moveable{
                 default:
                     currentSpeed = 0;
                     break;
-            }
+            }*/
         }else{
-            if(bdt>10){
-                speedY = 3000;
-            }
+          //  if(bdt>10)
+          //      speedY = 3000;
+
         }
 
     }

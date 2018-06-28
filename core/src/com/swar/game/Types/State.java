@@ -6,8 +6,9 @@ package com.swar.game.Types;
 public enum State{
     SPLASH,
     MAINMENU,
-    PLAY,
+    PLAY_CLASSIC,
     HUB,
+    HUB_SURVIVAL,
     DEATH,
     PLAYSURVIVAL,
     SETTINGS

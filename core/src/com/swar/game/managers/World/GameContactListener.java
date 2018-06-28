@@ -22,10 +22,10 @@ public class GameContactListener implements ContactListener {
 
     private Array<Vector2> blasts = new Array<>();
 
-    private int hp = 0;
+    private float hp = 0;
     private int credits = 0;
     private int score = 0;
-    private int energy = 0;
+    private float energy = 0;
 
     private Player player;
     public GameContactListener(Player player){
@@ -77,6 +77,7 @@ public class GameContactListener implements ContactListener {
 
 
         if(isAAFirst(ASTEROID, BULLET_PIERCING) || isAAFirst(ENEMY, BULLET_PIERCING)){
+            blasts.add(bb.getPosition());
 
             Killable asteroid = (Killable) ba.getUserData();
             Bullet bullet = (Bullet) bb.getUserData();
@@ -92,6 +93,8 @@ public class GameContactListener implements ContactListener {
             return;
         }
         if(isABFirst(ASTEROID, BULLET_PIERCING) || isABFirst(ENEMY, BULLET_PIERCING)){
+            blasts.add(bb.getPosition());
+
             Bullet bullet = (Bullet) ba.getUserData();
 
             Killable asteroid = (Killable) bb.getUserData();
@@ -252,14 +255,16 @@ public class GameContactListener implements ContactListener {
         return scoreToReturn;
     }
 
-    public int getEnergyAndClear(){
-        int energyToReturn = this.energy;
+    public float getEnergyAndClear(){
+        float energyToReturn = this.energy;
         this.energy = 0;
 
         return energyToReturn;
     }
 
     public void clearList(){
+       // blasts.clear();
+       // bodiesToRemove.clear();
         blasts = new Array<>();
         bodiesToRemove = new Array<>();
 
@@ -269,8 +274,8 @@ public class GameContactListener implements ContactListener {
 
     private void minushp(){ hp-=10;}
 
-    public int getHp(){
-        int savedHp = hp;
+    public float getHp(){
+        float savedHp = hp;
         hp = 0;
         return savedHp;}
     public int getCredits(){

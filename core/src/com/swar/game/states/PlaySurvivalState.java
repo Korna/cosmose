@@ -6,17 +6,14 @@ package com.swar.game.states;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.swar.game.Models.RecordModel;
 import com.swar.game.Models.Weapon;
-import com.swar.game.Types.BonusType;
 import com.swar.game.Types.State;
 import com.swar.game.entities.*;
 import com.swar.game.managers.*;
@@ -26,31 +23,27 @@ import com.swar.game.managers.World.ObjectHandler;
 import com.swar.game.utils.Journal;
 import com.swar.game.utils.Randomizer;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-
-import static com.badlogic.gdx.math.MathUtils.random;
 import static com.swar.game.utils.constants.*;
 
 /**
  * Created by Koma on 17.01.2017.
  */
-public class PlaySurvivalState extends GameState{
+public class PlaySurvivalState extends PlayState{
 
     private Box2DDebugRenderer b2dr;
     private HUD hud;
 
-    private GameContactListener cl;
-    private World world;
-    private Player player;
 
 
 
-    private ObjectHandler objectHandler;
+
+
+
+
     private IInterfaceManager interfaceManager;
-    private BodyBuilder bodyBuilder;
 
-    boolean CONFIG_VIBRATION;
+
+
     boolean available = false;
 
     public PlaySurvivalState(GameStateManagement gsm) {
@@ -96,7 +89,6 @@ public class PlaySurvivalState extends GameState{
 
     private Randomizer randomizer = new Randomizer();
 
-    int index = 0;
 
 
 
@@ -133,81 +125,25 @@ public class PlaySurvivalState extends GameState{
             weapon.setTimeAfterShot(weapon.getTimeAfterShot() + delta);
         }
 
-        int energy = cl.getEnergyAndClear();
+        float energy = cl.getEnergyAndClear();
         player.ship.setEnergy(player.ship.getEnergy() + energy);
 
 
-        if(randomizer.chanceAsteroid(player.timeInGame)){
+        eventGenerator();
 
-            Body asteroidBody = bodyBuilder.createAsteroid(randomizer.getCoordinateAsteroid(),GAME_HEIGHT-30);
+        removeObjects();
 
-            Asteroid a = new Asteroid(asteroidBody);
-            asteroidBody.setUserData(a);
-
-            objectHandler.add(a);
-        }
+        updateObjectMovements(delta);
 
 
 
+        batch.setProjectionMatrix(maincamera.combined);
 
-        //удаление астероидов
-        Array<Body> bodies = cl.getBodiesToRemove();
+        doWorldStep(delta);
+    }
 
-        //TODO оптимизировать трансформацию AL в A
-        final ArrayList<Body> list = new ArrayList<>();
-        for(Body b : bodies){
-            list.add(b);
-        }
-        final HashSet<Body> set = new HashSet<>(list);
-
-        for(Body body : set){
-
-            try{
-                objectHandler.remove((Asteroid) body.getUserData());
-                try {
-                    BonusType bonusType = randomizer.chanceBonusAsteroid();
-                    Body bonusBody = null;
-
-                    switch(bonusType) {
-                        case bonus_1:
-                            bonusBody = bodyBuilder.createBonus(body.getPosition().x, body.getPosition().y);
-
-                            com.swar.game.entities.Bonuses.EnergyBonus eb = new com.swar.game.entities.Bonuses.EnergyBonus(bonusBody);
-                            bonusBody.setUserData(eb);
-                            objectHandler.add(eb);
-
-                            break;
-                        case bonus_2:
-                            bonusBody = bodyBuilder.createBonus(body.getPosition().x, body.getPosition().y);
-
-                            com.swar.game.entities.Bonuses.HealthBonus hb = new com.swar.game.entities.Bonuses.HealthBonus(bonusBody);
-                            bonusBody.setUserData(hb);
-                            objectHandler.add(hb);
-
-                            break;
-                        default:
-                            break;
-                    }
-
-                } catch (Exception e) {
-                    System.out.printf(e.toString() + "\n");
-                }
-            }catch(Exception e){
-                try {
-                    objectHandler.remove((Bullet) body.getUserData());
-                }catch(Exception bonus){
-                    objectHandler.remove((com.swar.game.entities.Bonuses.EnergyBonus) body.getUserData());
-                }
-            }
-
-            world.destroyBody(body);
-
-
-        }
-
-        cl.clearList();
-        //TODO сделать потоки безопасными
-
+    @Override
+    protected void updateAsteroids(float delta){
         for(int i = 0; i < objectHandler.listAsteroid.size; ++i) {//можно мб просто отмечать для удаления объекты? ставить маркер. а не ждать пока итератор пройдет по новой КОЛЛЕКЦИИ
             Asteroid asteroid = objectHandler.listAsteroid.get(i);
             final float cfg = 0.2f + player.timeInGame/500f;
@@ -217,51 +153,11 @@ public class PlaySurvivalState extends GameState{
 
             asteroid.update(delta);
         }
-
-
-
-        for(int i = 0; i<objectHandler.listBulletPlayer.size; ++i){//можно мб просто отмечать для удаления объекты? ставить маркер. а не ждать пока итератор пройдет по новой КОЛЛЕКЦИИ
-            Bullet bullet = objectHandler.listBulletPlayer.get(i);
-            bullet.getBody().setLinearVelocity(bullet.currentSpeed, bullet.getSpeed());
-            bullet.update(delta);
-        }
-
-
-
-
-        //удаление бонусов спустя время
-        for(int i = 0; i < objectHandler.listDisappearable.size; ++i){
-            Sprite bonus = objectHandler.listDisappearable.get(i);
-            bonus.update(delta);
-            com.swar.game.entities.Bonuses.Dissapearable dissapearable = (com.swar.game.entities.Bonuses.Dissapearable) bonus;
-
-            dissapearable.setExistTime(dissapearable.getExistTime() + delta);
-
-            if(dissapearable.getExistTime() > dissapearable.getMaxExistTime()){
-                world.destroyBody(bonus.getBody());
-
-                objectHandler.listDisappearable.removeIndex(i);
-                --i;
-            }
-
-        }
-
-
-
-
-
-        batch.setProjectionMatrix(maincamera.combined);
-
-        doWorldStep(delta);
     }
 
-    float f1 = random.nextFloat();
-    float f2 = random.nextFloat();
-    float f3 = random.nextFloat() + 0.2f;
     @Override
     public void render() {
-        Gdx.gl.glClearColor(f1, f2, f3, 1f);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        super.render();
 
 
         if(DEBUG_RENDER)
@@ -315,18 +211,20 @@ public class PlaySurvivalState extends GameState{
 
 
 
-    private float accumulator = 0;
-    private void doWorldStep(float deltaTime){
-        float frameTime = Math.min(deltaTime, 0.25f);
-        accumulator += frameTime;
-        while(accumulator >= STEP){
-            world.step(STEP, 6, 2);
-            accumulator -= STEP;
+
+
+    @Override
+    protected void eventGenerator() {
+        if(randomizer.chanceAsteroid(player.timeInGame)){
+
+            Body asteroidBody = bodyBuilder.createAsteroid(randomizer.getCoordinateAsteroid(),GAME_HEIGHT-30);
+
+            Asteroid a = new Asteroid(asteroidBody);
+            asteroidBody.setUserData(a);
+
+            objectHandler.add(a);
         }
-
     }
-
-
 
 
     public SpriteBatch getBatch(){

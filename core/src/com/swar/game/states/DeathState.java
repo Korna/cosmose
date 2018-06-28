@@ -65,7 +65,7 @@ public class DeathState extends GameState {
 
 
         TextButton buttonExit = new TextButton("EXIT", textButtonStyle);
-        TextButton buttonPlay = new TextButton("PLAY", textButtonStyle);
+        TextButton buttonPlay = new TextButton("PLAY_CLASSIC", textButtonStyle);
 
 
         buttonExit.pad(GAME_WIDTH/24);//отступ

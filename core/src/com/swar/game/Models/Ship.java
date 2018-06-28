@@ -10,7 +10,7 @@ public class Ship implements Killable, Moveable{
 
     private float speed;
 
-    private int energy = 200;
+    private float energy = 200;
     public int armor;
     private String shipSprite;
     private String Sprite;
@@ -131,11 +131,11 @@ public class Ship implements Killable, Moveable{
         this.shipSprite = shipSprite;
     }
 
-    public int getEnergy() {
+    public float getEnergy() {
         return energy;
     }
 
-    public void setEnergy(int energy) {
+    public void setEnergy(float energy) {
         this.energy = energy;
     }
 

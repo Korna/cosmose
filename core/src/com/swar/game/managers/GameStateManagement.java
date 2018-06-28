@@ -9,18 +9,13 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
 import com.swar.game.Game;
-import com.swar.game.Models.Ship;
-import com.swar.game.Types.ShipType;
 import com.swar.game.Types.State;
-import com.swar.game.Types.WeaponType;
 import com.swar.game.entities.Player;
 import com.swar.game.managers.World.BodyBuilder;
 import com.swar.game.managers.World.GameContactListener;
 import com.swar.game.states.*;
 
 import java.util.Stack;
-
-import static com.swar.game.utils.constants.GAME_WIDTH;
 
 
 public class GameStateManagement {
@@ -85,22 +80,25 @@ public class GameStateManagement {
                 return new SplashState(this);
             case MAINMENU:
                 return new MenuState(this);
-            case PLAY:
+            case PLAY_CLASSIC:
                 return new PlayClassicState(this);
             case DEATH:
                 return new DeathState(this);
             case HUB:
                 world = new World(new Vector2(0, 0), false);//потому как создается игрок в хабе
-                return new HubState(this);
+                return new HubState(this, State.PLAY_CLASSIC);
+            case HUB_SURVIVAL:
+                world = new World(new Vector2(0, 0), false);
+                return new HubState(this, State.PLAYSURVIVAL);
             case PLAYSURVIVAL:
-                world = new World(new Vector2(0, 0), false);//потому как создается игрок в хабе
+               // world = new World(new Vector2(0, 0), false);//потому как создается игрок в хабе
 
-                playerBody = createPlayer(GAME_WIDTH / 4, 15, GAME_WIDTH/30, GAME_WIDTH/20);
-                Ship ship = ShipType.getShip(ShipType.ship_2);
-                ship.weapons.add(WeaponType.getWeapon(WeaponType.weapon_2));
-                player = new Player(playerBody, ship);//здесь по индексу передаём корабль из ДБ
-
-                player.initSprite(playerBody);
+               // playerBody = createPlayer(GAME_WIDTH / 4, 30, GAME_WIDTH/30, GAME_WIDTH/20);
+               // Ship ship = ShipType.getShip(ShipType.ship_2);
+               // ship.weapons.add(WeaponType.getWeapon(WeaponType.weapon_2));
+               // player = new Player(playerBody, ship);//здесь по индексу передаём корабль из ДБ
+//
+               // player.initSprite(playerBody);
 
 
                 return new PlaySurvivalState(this);
